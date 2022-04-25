@@ -1,19 +1,19 @@
 {
   "frames": {
-    "monkey man_01 C0001.png": {
+    "Attack_03_png_0011.png": {
       "frame": {
         "x": 0,
         "y": 0,
         "w": 635,
-        "h": 616
+        "h": 340
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
         "x": 0,
-        "y": 99,
+        "y": 375,
         "w": 635,
-        "h": 616
+        "h": 340
       },
       "sourceSize": {
         "w": 1280,
@@ -24,20 +24,20 @@
         "y": 0.5
       }
     },
-    "monkey man_01 C0003.png": {
+    "Attack_03_png_0016.png": {
       "frame": {
         "x": 635,
         "y": 0,
-        "w": 635,
-        "h": 616
+        "w": 548,
+        "h": 407
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
+        "x": 65,
+        "y": 303,
+        "w": 548,
+        "h": 407
       },
       "sourceSize": {
         "w": 1280,
@@ -48,20 +48,380 @@
         "y": 0.5
       }
     },
-    "monkey man_01 C0005.png": {
+    "Attack_03_png_0015.png": {
       "frame": {
-        "x": 1270,
+        "x": 0,
+        "y": 340,
+        "w": 548,
+        "h": 402
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 67,
+        "y": 308,
+        "w": 548,
+        "h": 402
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0014.png": {
+      "frame": {
+        "x": 1183,
+        "y": 0,
+        "w": 546,
+        "h": 386
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 69,
+        "y": 314,
+        "w": 546,
+        "h": 386
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0013.png": {
+      "frame": {
+        "x": 1183,
+        "y": 386,
+        "w": 542,
+        "h": 381
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 71,
+        "y": 319,
+        "w": 542,
+        "h": 381
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0019.png": {
+      "frame": {
+        "x": 548,
+        "y": 407,
+        "w": 475,
+        "h": 374
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 331,
+        "w": 475,
+        "h": 374
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0003.png": {
+      "frame": {
+        "x": 0,
+        "y": 742,
+        "w": 466,
+        "h": 370
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 331,
+        "w": 466,
+        "h": 370
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0007.png": {
+      "frame": {
+        "x": 0,
+        "y": 1112,
+        "w": 332,
+        "h": 601
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 100,
+        "w": 332,
+        "h": 601
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0010.png": {
+      "frame": {
+        "x": 332,
+        "y": 1112,
+        "w": 388,
+        "h": 594
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 112,
+        "w": 388,
+        "h": 594
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0021.png": {
+      "frame": {
+        "x": 1023,
+        "y": 767,
+        "w": 448,
+        "h": 362
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 339,
+        "w": 448,
+        "h": 362
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0001.png": {
+      "frame": {
+        "x": 1471,
+        "y": 781,
+        "w": 439,
+        "h": 355
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 346,
+        "w": 439,
+        "h": 355
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0005.png": {
+      "frame": {
+        "x": 720,
+        "y": 1129,
+        "w": 421,
+        "h": 552
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 149,
+        "w": 421,
+        "h": 552
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0002.png": {
+      "frame": {
+        "x": 1471,
+        "y": 781,
+        "w": 439,
+        "h": 355
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 346,
+        "w": 439,
+        "h": 355
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0004.png": {
+      "frame": {
+        "x": 0,
+        "y": 742,
+        "w": 466,
+        "h": 370
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 331,
+        "w": 466,
+        "h": 370
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0006.png": {
+      "frame": {
+        "x": 720,
+        "y": 1129,
+        "w": 421,
+        "h": 552
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 149,
+        "w": 421,
+        "h": 552
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0008.png": {
+      "frame": {
+        "x": 0,
+        "y": 1112,
+        "w": 332,
+        "h": 601
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 100,
+        "w": 332,
+        "h": 601
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0009.png": {
+      "frame": {
+        "x": 0,
+        "y": 1112,
+        "w": 332,
+        "h": 601
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 100,
+        "w": 332,
+        "h": 601
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0012.png": {
+      "frame": {
+        "x": 0,
         "y": 0,
         "w": 635,
-        "h": 616
+        "h": 340
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
         "x": 0,
-        "y": 99,
+        "y": 375,
         "w": 635,
-        "h": 616
+        "h": 340
       },
       "sourceSize": {
         "w": 1280,
@@ -72,260 +432,20 @@
         "y": 0.5
       }
     },
-    "monkey man_01 C0008.png": {
-      "frame": {
-        "x": 0,
-        "y": 616,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0010.png": {
-      "frame": {
-        "x": 635,
-        "y": 616,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0011.png": {
-      "frame": {
-        "x": 1270,
-        "y": 616,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0013.png": {
-      "frame": {
-        "x": 0,
-        "y": 1232,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0014.png": {
-      "frame": {
-        "x": 0,
-        "y": 1848,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0015.png": {
-      "frame": {
-        "x": 635,
-        "y": 1232,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0016.png": {
-      "frame": {
-        "x": 1270,
-        "y": 1232,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0021.png": {
-      "frame": {
-        "x": 635,
-        "y": 1848,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0023.png": {
-      "frame": {
-        "x": 1270,
-        "y": 1848,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0002.png": {
-      "frame": {
-        "x": 0,
-        "y": 0,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0004.png": {
+    "Attack_03_png_0017.png": {
       "frame": {
         "x": 635,
         "y": 0,
-        "w": 635,
-        "h": 616
+        "w": 548,
+        "h": 407
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
+        "x": 65,
+        "y": 303,
+        "w": 548,
+        "h": 407
       },
       "sourceSize": {
         "w": 1280,
@@ -336,212 +456,20 @@
         "y": 0.5
       }
     },
-    "monkey man_01 C0006.png": {
-      "frame": {
-        "x": 1270,
-        "y": 0,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0007.png": {
-      "frame": {
-        "x": 1270,
-        "y": 0,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0009.png": {
-      "frame": {
-        "x": 0,
-        "y": 616,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0012.png": {
-      "frame": {
-        "x": 1270,
-        "y": 616,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0017.png": {
-      "frame": {
-        "x": 1270,
-        "y": 1232,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0018.png": {
-      "frame": {
-        "x": 1270,
-        "y": 1232,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0019.png": {
-      "frame": {
-        "x": 1270,
-        "y": 1232,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0020.png": {
-      "frame": {
-        "x": 1270,
-        "y": 1232,
-        "w": 635,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_01 C0022.png": {
+    "Attack_03_png_0018.png": {
       "frame": {
         "x": 635,
-        "y": 1848,
-        "w": 635,
-        "h": 616
+        "y": 0,
+        "w": 548,
+        "h": 407
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
+        "x": 65,
+        "y": 303,
+        "w": 548,
+        "h": 407
       },
       "sourceSize": {
         "w": 1280,
@@ -552,20 +480,44 @@
         "y": 0.5
       }
     },
-    "monkey man_01 C0024.png": {
+    "Attack_03_png_0020.png": {
       "frame": {
-        "x": 1270,
-        "y": 1848,
-        "w": 635,
-        "h": 616
+        "x": 548,
+        "y": 407,
+        "w": 475,
+        "h": 374
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 635,
-        "h": 616
+        "x": 53,
+        "y": 331,
+        "w": 475,
+        "h": 374
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Attack_03_png_0022.png": {
+      "frame": {
+        "x": 1023,
+        "y": 767,
+        "w": 448,
+        "h": 362
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 339,
+        "w": 448,
+        "h": 362
       },
       "sourceSize": {
         "w": 1280,
@@ -583,8 +535,8 @@
     "image": "texture.png",
     "format": "RGBA8888",
     "size": {
-      "w": 1905,
-      "h": 2464
+      "w": 1910,
+      "h": 1713
     },
     "scale": 1
   }

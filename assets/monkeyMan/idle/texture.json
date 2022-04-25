@@ -1,19 +1,19 @@
 {
   "frames": {
-    "monkey man_010001.png": {
+    "Idol_png_0001.png": {
       "frame": {
         "x": 0,
         "y": 0,
-        "w": 781,
-        "h": 616
+        "w": 439,
+        "h": 355
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
+        "x": 53,
+        "y": 346,
+        "w": 439,
+        "h": 355
       },
       "sourceSize": {
         "w": 1280,
@@ -24,92 +24,20 @@
         "y": 0.5
       }
     },
-    "monkey man_010002.png": {
+    "Idol_png_0002.png": {
       "frame": {
-        "x": 0,
-        "y": 616,
-        "w": 781,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_010003.png": {
-      "frame": {
-        "x": 0,
-        "y": 1232,
-        "w": 781,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_010004.png": {
-      "frame": {
-        "x": 0,
-        "y": 1848,
-        "w": 781,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_010005.png": {
-      "frame": {
-        "x": 781,
+        "x": 439,
         "y": 0,
-        "w": 781,
-        "h": 616
+        "w": 439,
+        "h": 355
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
+        "x": 53,
+        "y": 346,
+        "w": 439,
+        "h": 355
       },
       "sourceSize": {
         "w": 1280,
@@ -120,20 +48,20 @@
         "y": 0.5
       }
     },
-    "monkey man_010006.png": {
+    "Idol_png_0034.png": {
       "frame": {
-        "x": 1562,
+        "x": 878,
         "y": 0,
-        "w": 781,
-        "h": 616
+        "w": 439,
+        "h": 355
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
+        "x": 53,
+        "y": 346,
+        "w": 439,
+        "h": 355
       },
       "sourceSize": {
         "w": 1280,
@@ -144,20 +72,20 @@
         "y": 0.5
       }
     },
-    "monkey man_010007.png": {
+    "Idol_png_0003.png": {
       "frame": {
-        "x": 2343,
+        "x": 1317,
         "y": 0,
-        "w": 781,
-        "h": 616
+        "w": 438,
+        "h": 354
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
+        "x": 53,
+        "y": 347,
+        "w": 438,
+        "h": 354
       },
       "sourceSize": {
         "w": 1280,
@@ -168,20 +96,620 @@
         "y": 0.5
       }
     },
-    "monkey man_010008.png": {
+    "Idol_png_0033.png": {
       "frame": {
-        "x": 3124,
+        "x": 1317,
+        "y": 354,
+        "w": 438,
+        "h": 354
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 347,
+        "w": 438,
+        "h": 354
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0031.png": {
+      "frame": {
+        "x": 0,
+        "y": 355,
+        "w": 437,
+        "h": 354
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 347,
+        "w": 437,
+        "h": 354
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0005.png": {
+      "frame": {
+        "x": 437,
+        "y": 355,
+        "w": 437,
+        "h": 353
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 348,
+        "w": 437,
+        "h": 353
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0006.png": {
+      "frame": {
+        "x": 874,
+        "y": 355,
+        "w": 437,
+        "h": 352
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 349,
+        "w": 437,
+        "h": 352
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0030.png": {
+      "frame": {
+        "x": 874,
+        "y": 707,
+        "w": 435,
+        "h": 353
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 348,
+        "w": 435,
+        "h": 353
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0008.png": {
+      "frame": {
+        "x": 437,
+        "y": 708,
+        "w": 435,
+        "h": 350
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 351,
+        "w": 435,
+        "h": 350
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0009.png": {
+      "frame": {
+        "x": 0,
+        "y": 709,
+        "w": 434,
+        "h": 348
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 353,
+        "w": 434,
+        "h": 348
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0028.png": {
+      "frame": {
+        "x": 0,
+        "y": 1057,
+        "w": 432,
+        "h": 352
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 349,
+        "w": 432,
+        "h": 352
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0010.png": {
+      "frame": {
+        "x": 432,
+        "y": 1058,
+        "w": 432,
+        "h": 347
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 354,
+        "w": 432,
+        "h": 347
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0011.png": {
+      "frame": {
+        "x": 432,
+        "y": 1405,
+        "w": 431,
+        "h": 345
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 356,
+        "w": 431,
+        "h": 345
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0012.png": {
+      "frame": {
+        "x": 0,
+        "y": 1409,
+        "w": 429,
+        "h": 343
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 358,
+        "w": 429,
+        "h": 343
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0027.png": {
+      "frame": {
+        "x": 1309,
+        "y": 708,
+        "w": 428,
+        "h": 350
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 351,
+        "w": 428,
+        "h": 350
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0013.png": {
+      "frame": {
+        "x": 1309,
+        "y": 1058,
+        "w": 428,
+        "h": 341
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 360,
+        "w": 428,
+        "h": 341
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0014.png": {
+      "frame": {
+        "x": 864,
+        "y": 1060,
+        "w": 427,
+        "h": 340
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 361,
+        "w": 427,
+        "h": 340
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0025.png": {
+      "frame": {
+        "x": 864,
+        "y": 1400,
+        "w": 425,
+        "h": 348
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 353,
+        "w": 425,
+        "h": 348
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0015.png": {
+      "frame": {
+        "x": 1291,
+        "y": 1399,
+        "w": 425,
+        "h": 340
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 361,
+        "w": 425,
+        "h": 340
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0016.png": {
+      "frame": {
+        "x": 1291,
+        "y": 1739,
+        "w": 424,
+        "h": 341
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 360,
+        "w": 424,
+        "h": 341
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0017.png": {
+      "frame": {
+        "x": 863,
+        "y": 1748,
+        "w": 422,
+        "h": 341
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 360,
+        "w": 422,
+        "h": 341
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0024.png": {
+      "frame": {
+        "x": 429,
+        "y": 1750,
+        "w": 421,
+        "h": 347
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 354,
+        "w": 421,
+        "h": 347
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0018.png": {
+      "frame": {
+        "x": 0,
+        "y": 1752,
+        "w": 420,
+        "h": 342
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 359,
+        "w": 420,
+        "h": 342
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0019.png": {
+      "frame": {
+        "x": 0,
+        "y": 2094,
+        "w": 419,
+        "h": 342
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 359,
+        "w": 419,
+        "h": 342
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0023.png": {
+      "frame": {
+        "x": 0,
+        "y": 2436,
+        "w": 417,
+        "h": 345
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 356,
+        "w": 417,
+        "h": 345
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0022.png": {
+      "frame": {
+        "x": 417,
+        "y": 2436,
+        "w": 413,
+        "h": 344
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 357,
+        "w": 413,
+        "h": 344
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0020.png": {
+      "frame": {
+        "x": 1285,
+        "y": 2080,
+        "w": 417,
+        "h": 343
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 358,
+        "w": 417,
+        "h": 343
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0021.png": {
+      "frame": {
+        "x": 850,
+        "y": 2089,
+        "w": 415,
+        "h": 343
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 358,
+        "w": 415,
+        "h": 343
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Idol_png_0035.png": {
+      "frame": {
+        "x": 0,
         "y": 0,
-        "w": 781,
-        "h": 616
+        "w": 439,
+        "h": 355
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
+        "x": 53,
+        "y": 346,
+        "w": 439,
+        "h": 355
       },
       "sourceSize": {
         "w": 1280,
@@ -192,20 +720,20 @@
         "y": 0.5
       }
     },
-    "monkey man_010009.png": {
+    "Idol_png_0004.png": {
       "frame": {
-        "x": 781,
-        "y": 616,
-        "w": 781,
-        "h": 616
+        "x": 1317,
+        "y": 0,
+        "w": 438,
+        "h": 354
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
+        "x": 53,
+        "y": 347,
+        "w": 438,
+        "h": 354
       },
       "sourceSize": {
         "w": 1280,
@@ -216,20 +744,20 @@
         "y": 0.5
       }
     },
-    "monkey man_010010.png": {
+    "Idol_png_0007.png": {
       "frame": {
-        "x": 781,
-        "y": 1232,
-        "w": 781,
-        "h": 616
+        "x": 874,
+        "y": 355,
+        "w": 437,
+        "h": 352
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
+        "x": 53,
+        "y": 349,
+        "w": 437,
+        "h": 352
       },
       "sourceSize": {
         "w": 1280,
@@ -240,20 +768,20 @@
         "y": 0.5
       }
     },
-    "monkey man_010011.png": {
+    "Idol_png_0026.png": {
       "frame": {
-        "x": 781,
-        "y": 1848,
-        "w": 781,
-        "h": 616
+        "x": 864,
+        "y": 1400,
+        "w": 425,
+        "h": 348
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
+        "x": 53,
+        "y": 353,
+        "w": 425,
+        "h": 348
       },
       "sourceSize": {
         "w": 1280,
@@ -264,20 +792,20 @@
         "y": 0.5
       }
     },
-    "monkey man_010012.png": {
+    "Idol_png_0029.png": {
       "frame": {
-        "x": 1562,
-        "y": 616,
-        "w": 781,
-        "h": 616
+        "x": 0,
+        "y": 1057,
+        "w": 432,
+        "h": 352
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
+        "x": 53,
+        "y": 349,
+        "w": 432,
+        "h": 352
       },
       "sourceSize": {
         "w": 1280,
@@ -288,164 +816,20 @@
         "y": 0.5
       }
     },
-    "monkey man_010013.png": {
+    "Idol_png_0032.png": {
       "frame": {
-        "x": 2343,
-        "y": 616,
-        "w": 781,
-        "h": 616
+        "x": 0,
+        "y": 355,
+        "w": 437,
+        "h": 354
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_010014.png": {
-      "frame": {
-        "x": 3124,
-        "y": 616,
-        "w": 781,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_010015.png": {
-      "frame": {
-        "x": 1562,
-        "y": 1232,
-        "w": 781,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_010016.png": {
-      "frame": {
-        "x": 1562,
-        "y": 1848,
-        "w": 781,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_010017.png": {
-      "frame": {
-        "x": 2343,
-        "y": 1232,
-        "w": 781,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_010018.png": {
-      "frame": {
-        "x": 3124,
-        "y": 1232,
-        "w": 781,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
-      },
-      "sourceSize": {
-        "w": 1280,
-        "h": 720
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "monkey man_010019.png": {
-      "frame": {
-        "x": 2343,
-        "y": 1848,
-        "w": 781,
-        "h": 616
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 99,
-        "w": 781,
-        "h": 616
+        "x": 53,
+        "y": 347,
+        "w": 437,
+        "h": 354
       },
       "sourceSize": {
         "w": 1280,
@@ -463,8 +847,8 @@
     "image": "texture.png",
     "format": "RGBA8888",
     "size": {
-      "w": 3905,
-      "h": 2464
+      "w": 1755,
+      "h": 2781
     },
     "scale": 1
   }
