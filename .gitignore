@@ -102,3 +102,32 @@ dist
 
 # TernJS port file
 .tern-port
+
+# ---------------------------------------------------------------------------
+# Fighting Demo specific
+# ---------------------------------------------------------------------------
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Local environment / secrets
+.env
+.env.local
+*.local
+
+# Vite caches
+.vite/
+*.tsbuildinfo
+
+# Build output (dist/ is already ignored above, kept explicit for clarity)
+dist/
+
+# Raw art exports are intentionally not committed (recoverable from history)
+public/assets/raw/
+
+# Scratch / debug scripts
+.tmp/

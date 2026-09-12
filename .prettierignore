@@ -1,0 +1,11 @@
+# Build output and dependencies
+dist/
+node_modules/
+.tmp/
+
+# Static art: atlases must keep their exact format
+public/
+
+# Generated
+package-lock.json
+coverage/
