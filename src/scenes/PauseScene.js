@@ -69,7 +69,7 @@ export class PauseScene extends Phaser.Scene {
     this.nav = new MenuNav(this, { items: navItems });
 
     this.hint = this.add
-      .text(GAME_WIDTH / 2, GAME_HEIGHT - 120, 'Press ESC to resume', {
+      .text(GAME_WIDTH / 2, GAME_HEIGHT - 120, 'Press ESC to resume  ·  M to mute', {
         fontFamily: FONTS.PRIMARY,
         fontSize: '30px',
         color: CSS_COLORS.offWhite,

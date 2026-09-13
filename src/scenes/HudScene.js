@@ -271,12 +271,27 @@ export class HudScene extends Phaser.Scene {
       return;
     }
     const target = side === 'enemy' ? this.enemyCombo : this.playerCombo;
-    target.setText(`${count} HIT COMBO`);
+    const labels = ['', '', '2 HIT!', '3 HIT!', '4 HIT!', '5 HIT!', '6 HIT!'];
+    const label = count <= 6 ? labels[count] : `${count} HIT COMBO!`;
+    target.setText(label);
     target.setAlpha(1);
-    target.setScale(0.7);
+    target.setScale(0.5);
     this.tweens.killTweensOf(target);
-    this.tweens.add({ targets: target, scale: 1, duration: 240, ease: 'Back.easeOut' });
-    this.tweens.add({ targets: target, alpha: 0, delay: 1100, duration: 320 });
+    // Dramatic pop-in with overshoot
+    this.tweens.add({ targets: target, scale: 1, duration: 280, ease: 'Back.easeOut' });
+    // Shake for high combos
+    if (count >= 4) {
+      const intensity = Math.min(8, 3 + count);
+      this.tweens.add({
+        targets: target,
+        x: { from: target.x - intensity, to: target.x + intensity },
+        duration: 50,
+        yoyo: true,
+        repeat: 2,
+        ease: 'Sine.easeInOut',
+      });
+    }
+    this.tweens.add({ targets: target, alpha: 0, delay: 1400, duration: 400 });
   }
 
   #fadeOut() {

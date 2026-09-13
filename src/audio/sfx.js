@@ -376,6 +376,59 @@ export const SFX = {
       });
     });
   },
+
+  /** Short tick for timer countdown. */
+  tick: ({ ctx, dest, at, level }) => {
+    tone(ctx, dest, {
+      type: 'square',
+      freq: 1200,
+      at,
+      duration: 0.04,
+      peak: 0.08 * level,
+      decay: 0.03,
+    });
+  },
+
+  /** Dramatic whoosh for scene transitions. */
+  transition: ({ ctx, dest, noise: buffer, at, level }) => {
+    noise(ctx, dest, buffer, {
+      at,
+      duration: 0.45,
+      peak: 0.18 * level,
+      filter: 'bandpass',
+      freq: 200,
+      freqEnd: 3200,
+      q: 0.6,
+    });
+    tone(ctx, dest, {
+      type: 'sine',
+      freq: 120,
+      freqEnd: 60,
+      at,
+      duration: 0.3,
+      peak: 0.08 * level,
+    });
+  },
+
+  /** Muffled impact for training mode reset. */
+  softHit: ({ ctx, dest, noise: buffer, at, level }) => {
+    noise(ctx, dest, buffer, {
+      at,
+      duration: 0.08,
+      peak: 0.15 * level,
+      filter: 'lowpass',
+      freq: 1200,
+      freqEnd: 400,
+    });
+    tone(ctx, dest, {
+      type: 'sine',
+      freq: 180,
+      freqEnd: 80,
+      at,
+      duration: 0.12,
+      peak: 0.12 * level,
+    });
+  },
 };
 
 export const SFX_NAMES = Object.keys(SFX);

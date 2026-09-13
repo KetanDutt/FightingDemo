@@ -1,5 +1,10 @@
 # 🐒 Monkey Mayhem — Fighting Demo
 
+[![Phaser 3](https://img.shields.io/badge/Phaser-3.90+-blue.svg)](https://phaser.io)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF.svg)](https://vitejs.dev)
+[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/Node-%3E%3D18-green.svg)](https://nodejs.org)
+
 A polished, production-ready 2D fighting-game demo built with **Phaser 3** + **Vite**.
 One-on-one matches against a monkey opponent, three unique special attacks per fighter,
 best-of-3 rounds, an AI that adapts to your habits, and a full audiovisual layer built
@@ -9,6 +14,9 @@ from procedurally generated SFX and hand-tuned VFX.
 npm install
 npm run dev      # http://localhost:5173
 ```
+
+> 🎮 **Zero audio files, zero background art** — everything is procedurally generated.
+> The entire game ships in under 2 MB.
 
 ---
 
@@ -191,6 +199,9 @@ tap-vs-hold behaviour, and the gamepad mapping.
 | [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)   | Setup, conventions, testing, how to add attacks/scenes/characters |
 | [`docs/LEGACY.md`](docs/LEGACY.md)             | What the original bundle was, and every bug that was fixed        |
 | [`docs/CHANGELOG.md`](docs/CHANGELOG.md)       | Release history                                                   |
+| [`docs/API.md`](docs/API.md)                   | Developer API reference for all systems, entities and UI          |
+| [`docs/TESTING.md`](docs/TESTING.md)           | How to run and write tests, CI setup                              |
+| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)     | Build, deploy to static hosts, performance checklist              |
 
 ---
 
