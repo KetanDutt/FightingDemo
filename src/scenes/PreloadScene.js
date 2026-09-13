@@ -20,6 +20,11 @@ const TIPS = [
   'Chain attacks quickly to build a combo — damage scales down, style scales up.',
   'A blocked heavy attack still pushes you back. Use it to make space.',
   'The training mode never ends: perfect for learning your reach.',
+  'Hold AWAY from your opponent to auto-block — the Street Fighter way.',
+  'The Stomp knocks down on hit, but its long recovery makes it very punishable.',
+  'Check the Move Gallery (G key) to see every animation and its frame data.',
+  'Keyboard not your thing? Connect a gamepad — full support out of the box.',
+  'Best of 3 by default. Change round count in Settings for longer sessions.',
 ];
 
 /**
@@ -134,6 +139,19 @@ export class PreloadScene extends Phaser.Scene {
       repeat: -1,
       ease: 'Sine.easeInOut',
     });
+
+    // Cycle through tips
+    this.tipIndex = 0;
+    this.time.addEvent({
+      delay: 3600,
+      loop: true,
+      callback: () => {
+        this.tipIndex = (this.tipIndex + 1) % TIPS.length;
+        if (this.tipText?.scene) {
+          this.tipText.setText('Tip: ' + TIPS[this.tipIndex]);
+        }
+      },
+    });
   }
 
   #onProgress(value) {
@@ -164,6 +182,7 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create() {
+    if (this.failed) return;
     createAnimations(this);
 
     const cx = GAME_WIDTH / 2;

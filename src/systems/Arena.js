@@ -217,6 +217,8 @@ export class Arena {
         frequency: 900,
       })
       .setDepth(DEPTH.VFX_BACK);
+
+    this.layers.push(this.dust, this.leaves);
   }
 
   /* -------------------------------- animation -------------------------------- */

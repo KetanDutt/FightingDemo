@@ -66,7 +66,7 @@ export class FightScene extends Phaser.Scene {
       knockouts: 0,
       attacksThrown: 0,
       attacksLanded: 0,
-      startedAt: this.time?.now ?? 0,
+      startedAt: 0, // set properly in create() when this.time is ready
     };
   }
 
@@ -125,6 +125,7 @@ export class FightScene extends Phaser.Scene {
     };
     this.events.on(Phaser.Scenes.Events.RESUME, this.resumeHandler, this);
 
+    this.matchStats.startedAt = this.time.now;
     audio.playMusic('battle');
     this.cameras.main.fadeIn(320, 13, 18, 32);
 
@@ -235,6 +236,10 @@ export class FightScene extends Phaser.Scene {
     bus.emit(EVENTS.TIMER_CHANGED, { msLeft: this.timeLeft, seconds: ROUND_RULES.time });
 
     audio.play('roundStart');
+
+    // Dramatic camera zoom for round intro
+    this.cameraFx?.zoomTo(1.06, 200);
+    this.time.delayedCall(180, () => this.cameraFx?.zoomTo(1, 500));
 
     this.#showBanner(`ROUND ${this.roundNumber}`, 'Ready…', 1000, () => {
       this.#showBanner('FIGHT!', '', 620, () => {
@@ -519,7 +524,7 @@ export class FightScene extends Phaser.Scene {
     this.fighters.forEach((fighter) => {
       fighter.sprite.anims.timeScale = scale;
     });
-    this.time.delayedCall(duration * scale, () => {
+    this.time.delayedCall(duration, () => {
       this.timeScale = 1;
       this.tweens.timeScale = 1;
       this.fighters?.forEach((fighter) => {
@@ -527,6 +532,26 @@ export class FightScene extends Phaser.Scene {
       });
       onComplete?.();
     });
+  }
+
+  /** Red screen-edge flash when the player's health is critical. */
+  #updateHealthVignette() {
+    if (!this.player || settings.get('reducedMotion')) return;
+    const ratio = this.player.healthRatio;
+    if (ratio > 0.25 && this.vignetteOverlay) {
+      this.vignetteOverlay.setAlpha(0);
+      return;
+    }
+    if (ratio > 0.25) return;
+
+    if (!this.vignetteOverlay) {
+      this.vignetteOverlay = this.add.graphics().setDepth(DEPTH.OVERLAY - 1);
+      this.vignetteOverlay.fillStyle(0xff0000, 1);
+      this.vignetteOverlay.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+      this.vignetteOverlay.setBlendMode(Phaser.BlendModes.ADD);
+    }
+    const intensity = (1 - ratio / 0.25) * 0.12;
+    this.vignetteOverlay.setAlpha(intensity);
   }
 
   #onBlur() {
@@ -575,6 +600,9 @@ export class FightScene extends Phaser.Scene {
       const hitStop = this.combat?.resolve(this.player, this.enemy) ?? 0;
       if (hitStop > this.hitStop) this.hitStop = hitStop;
     }
+
+    // ---- health vignette (red tint when critical health) ----
+    this.#updateHealthVignette();
 
     // ---- clock ----
     if (interactive && this.matchConfig.mode !== MODE.TRAINING) {
@@ -654,6 +682,7 @@ export class FightScene extends Phaser.Scene {
     this.arena?.destroy();
     this.vfx?.destroy();
     this.floatingText?.destroy();
+    this.vignetteOverlay?.destroy();
     this.joyPad?.releaseAll?.();
     if (this.scene.isActive(SCENES.HUD)) this.scene.stop(SCENES.HUD);
   }

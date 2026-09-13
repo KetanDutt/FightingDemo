@@ -344,6 +344,8 @@ export class Fighter extends Phaser.GameObjects.Container {
         duration: def.startup + def.active,
         ease: 'Quad.easeOut',
       });
+      // Afterimage trail during lunge
+      this.vfx?.afterimage(this, this.sprite, { alpha: 0.2, duration: 220 });
     }
 
     this.onEvent?.('attack', { fighter: this, key });
@@ -442,6 +444,12 @@ export class Fighter extends Phaser.GameObjects.Container {
         this.#setState(FIGHTER_STATE.BLOCK);
         this.sprite.play({ key: ANIMS.BLOCK, repeat: -1 });
       }
+      // Block shield flash
+      this.vfx?.flash(this.x + this.facing * 80, GROUND_Y - 180, {
+        color: 0xa9e4ff,
+        scale: 0.9,
+        duration: 180,
+      });
       this.onEvent?.('blocked', { fighter: this, damage: applied });
     } else {
       this.attack = null;
@@ -450,6 +458,17 @@ export class Fighter extends Phaser.GameObjects.Container {
       this.velocityX = from.facing * def.knockback;
       this.#setState(FIGHTER_STATE.HURT);
       this.sprite.play({ key: ANIMS.HIT, repeat: 0 });
+
+      // Chromatic hit flash — brief white tint on the sprite.
+      this.sprite.setTintFill(0xffffff);
+      this.scene.time.delayedCall(60, () => {
+        if (this.sprite?.scene && this.skin?.tint) {
+          this.sprite.setTint(this.skin.tint);
+        } else if (this.sprite?.scene) {
+          this.sprite.clearTint();
+        }
+      });
+
       this.onEvent?.('hurt', { fighter: this, damage: applied });
     }
 
@@ -519,6 +538,15 @@ export class Fighter extends Phaser.GameObjects.Container {
       onComplete: () => {
         this.y = GROUND_Y;
       },
+    });
+    // Victory punch animation
+    this.scene.time.delayedCall(700, () => {
+      if (this.sprite?.scene) {
+        this.sprite.play({ key: ANIMS.PUNCH, repeat: 0 });
+        this.sprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+          if (this.sprite?.scene) this.sprite.play({ key: ANIMS.IDLE, repeat: -1 });
+        });
+      }
     });
   }
 

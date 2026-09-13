@@ -30,6 +30,7 @@ export default defineConfig({
     assetsInlineLimit: 8192,
     sourcemap: false,
     chunkSizeWarningLimit: 2048,
+    cssMinify: 'esbuild',
     rollupOptions: {
       output: {
         // Phaser is by far the biggest dependency: keep it in its own chunk so
@@ -37,6 +38,10 @@ export default defineConfig({
         manualChunks: {
           phaser: ['phaser'],
         },
+        // Consistent file naming for caching
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
   },

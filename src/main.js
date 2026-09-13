@@ -95,6 +95,15 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('blur', () => audio.suspend());
 window.addEventListener('focus', () => audio.resume());
 
+// Global mute toggle (M key) — works from any scene.
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'm' || e.key === 'M') {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    settings.toggle('muted');
+    audio.applyVolumes();
+  }
+});
+
 // Small debug surface: handy in the console and used by the smoke tests.
 window.MonkeyMayhem = {
   game,

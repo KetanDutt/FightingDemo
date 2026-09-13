@@ -20,7 +20,7 @@ export class CombatSystem {
     this.cameraFx = options.cameraFx ?? null;
     this.onHit = options.onHit ?? null;
 
-    /** fighter -> { count, timer } */
+    /** @type {Map<import('../entities/Fighter.js').Fighter, {count:number, timer:number}>} */
     this.combos = new Map();
   }
 
@@ -43,13 +43,13 @@ export class CombatSystem {
 
   /** Ages combo timers; called once per frame. */
   update(dt) {
-    this.combos.forEach((combo) => {
+    this.combos.forEach((combo, fighter) => {
       if (combo.timer > 0) {
         combo.timer = Math.max(0, combo.timer - dt);
         if (combo.timer === 0) {
           combo.count = 0;
-          bus.emit(EVENTS.COMBO_CHANGED, { count: 0, side: 'player' });
-          bus.emit(EVENTS.COMBO_CHANGED, { count: 0, side: 'enemy' });
+          const side = fighter.isPlayer ? 'player' : 'enemy';
+          bus.emit(EVENTS.COMBO_CHANGED, { count: 0, side });
         }
       }
     });

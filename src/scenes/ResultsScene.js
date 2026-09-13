@@ -183,6 +183,9 @@ export class ResultsScene extends Phaser.Scene {
       ['Match score', `${Math.round(this.score)}`],
     ];
 
+    // Animate score counter
+    this.scoreValue = 0;
+
     rows.forEach(([label, value], index) => {
       const rowY = y - 100 + index * 52;
       const left = this.add
@@ -207,6 +210,23 @@ export class ResultsScene extends Phaser.Scene {
 
       slideIn(left, { from: 20, axis: 'x', duration: 260, delay: 260 + index * 60 });
       slideIn(right, { from: 20, axis: 'x', duration: 260, delay: 280 + index * 60 });
+
+      // Animate score counting up for the last row
+      if (label === 'Match score') {
+        this.scoreDisplay = right;
+        this.tweens.add({
+          targets: this,
+          scoreValue: this.score,
+          duration: 1200,
+          delay: 300 + index * 60,
+          ease: 'Quad.easeOut',
+          onUpdate: () => {
+            if (this.scoreDisplay?.scene) {
+              this.scoreDisplay.setText(`${Math.round(this.scoreValue)}`);
+            }
+          },
+        });
+      }
     });
 
     const record = stats.values;

@@ -171,7 +171,7 @@ export class MenuScene extends Phaser.Scene {
       .text(
         GAME_WIDTH * 0.5,
         GAME_HEIGHT - 150,
-        '↑ ↓  select  ·  ENTER  confirm  ·  G  gallery  ·  S  settings\nMove  ← →  ·  Jump  ↑  ·  Block  ↓  ·  Punch  J  ·  Headbutt  K  ·  Stomp  L  ·  Pause  ESC',
+        '↑ ↓  select  ·  ENTER  confirm  ·  G  gallery  ·  S  settings  ·  M  mute\nMove  ← →  ·  Jump  ↑  ·  Block  ↓  ·  Punch  J  ·  Headbutt  K  ·  Stomp  L  ·  Pause  ESC',
         {
           fontFamily: FONTS.PRIMARY,
           fontSize: '30px',
