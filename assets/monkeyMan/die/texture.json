@@ -1,0 +1,735 @@
+{
+  "frames": {
+    "monkey man_Die_0022.png": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 548,
+        "h": 192
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 28,
+        "y": 512,
+        "w": 548,
+        "h": 192
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0024.png": {
+      "frame": {
+        "x": 548,
+        "y": 0,
+        "w": 531,
+        "h": 197
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 37,
+        "y": 508,
+        "w": 531,
+        "h": 197
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0021.png": {
+      "frame": {
+        "x": 0,
+        "y": 192,
+        "w": 446,
+        "h": 280
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 44,
+        "y": 430,
+        "w": 446,
+        "h": 280
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0001.png": {
+      "frame": {
+        "x": 1079,
+        "y": 0,
+        "w": 439,
+        "h": 355
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 346,
+        "w": 439,
+        "h": 355
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0019.png": {
+      "frame": {
+        "x": 1518,
+        "y": 197,
+        "w": 403,
+        "h": 312
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 70,
+        "y": 402,
+        "w": 403,
+        "h": 312
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0012.png": {
+      "frame": {
+        "x": 446,
+        "y": 197,
+        "w": 395,
+        "h": 324
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 64,
+        "y": 385,
+        "w": 395,
+        "h": 324
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0014.png": {
+      "frame": {
+        "x": 0,
+        "y": 472,
+        "w": 389,
+        "h": 337
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 71,
+        "y": 372,
+        "w": 389,
+        "h": 337
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0003.png": {
+      "frame": {
+        "x": 841,
+        "y": 355,
+        "w": 355,
+        "h": 371
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 330,
+        "w": 355,
+        "h": 371
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0005.png": {
+      "frame": {
+        "x": 389,
+        "y": 521,
+        "w": 324,
+        "h": 379
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 322,
+        "w": 324,
+        "h": 379
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0002.png": {
+      "frame": {
+        "x": 1079,
+        "y": 0,
+        "w": 439,
+        "h": 355
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 346,
+        "w": 439,
+        "h": 355
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0004.png": {
+      "frame": {
+        "x": 841,
+        "y": 355,
+        "w": 355,
+        "h": 371
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 330,
+        "w": 355,
+        "h": 371
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0006.png": {
+      "frame": {
+        "x": 389,
+        "y": 521,
+        "w": 324,
+        "h": 379
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 322,
+        "w": 324,
+        "h": 379
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0007.png": {
+      "frame": {
+        "x": 389,
+        "y": 521,
+        "w": 324,
+        "h": 379
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 322,
+        "w": 324,
+        "h": 379
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0008.png": {
+      "frame": {
+        "x": 389,
+        "y": 521,
+        "w": 324,
+        "h": 379
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 322,
+        "w": 324,
+        "h": 379
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0009.png": {
+      "frame": {
+        "x": 389,
+        "y": 521,
+        "w": 324,
+        "h": 379
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 322,
+        "w": 324,
+        "h": 379
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0010.png": {
+      "frame": {
+        "x": 389,
+        "y": 521,
+        "w": 324,
+        "h": 379
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 322,
+        "w": 324,
+        "h": 379
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0011.png": {
+      "frame": {
+        "x": 389,
+        "y": 521,
+        "w": 324,
+        "h": 379
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 53,
+        "y": 322,
+        "w": 324,
+        "h": 379
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0013.png": {
+      "frame": {
+        "x": 446,
+        "y": 197,
+        "w": 395,
+        "h": 324
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 64,
+        "y": 385,
+        "w": 395,
+        "h": 324
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0015.png": {
+      "frame": {
+        "x": 0,
+        "y": 472,
+        "w": 389,
+        "h": 337
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 71,
+        "y": 372,
+        "w": 389,
+        "h": 337
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0016.png": {
+      "frame": {
+        "x": 0,
+        "y": 472,
+        "w": 389,
+        "h": 337
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 71,
+        "y": 372,
+        "w": 389,
+        "h": 337
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0017.png": {
+      "frame": {
+        "x": 0,
+        "y": 472,
+        "w": 389,
+        "h": 337
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 71,
+        "y": 372,
+        "w": 389,
+        "h": 337
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0018.png": {
+      "frame": {
+        "x": 0,
+        "y": 472,
+        "w": 389,
+        "h": 337
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 71,
+        "y": 372,
+        "w": 389,
+        "h": 337
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0020.png": {
+      "frame": {
+        "x": 1518,
+        "y": 197,
+        "w": 403,
+        "h": 312
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 70,
+        "y": 402,
+        "w": 403,
+        "h": 312
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0023.png": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 548,
+        "h": 192
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 28,
+        "y": 512,
+        "w": 548,
+        "h": 192
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0025.png": {
+      "frame": {
+        "x": 548,
+        "y": 0,
+        "w": 531,
+        "h": 197
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 37,
+        "y": 508,
+        "w": 531,
+        "h": 197
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0026.png": {
+      "frame": {
+        "x": 548,
+        "y": 0,
+        "w": 531,
+        "h": 197
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 37,
+        "y": 508,
+        "w": 531,
+        "h": 197
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0027.png": {
+      "frame": {
+        "x": 548,
+        "y": 0,
+        "w": 531,
+        "h": 197
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 37,
+        "y": 508,
+        "w": 531,
+        "h": 197
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0028.png": {
+      "frame": {
+        "x": 548,
+        "y": 0,
+        "w": 531,
+        "h": 197
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 37,
+        "y": 508,
+        "w": 531,
+        "h": 197
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0029.png": {
+      "frame": {
+        "x": 548,
+        "y": 0,
+        "w": 531,
+        "h": 197
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 37,
+        "y": 508,
+        "w": 531,
+        "h": 197
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "monkey man_Die_0030.png": {
+      "frame": {
+        "x": 548,
+        "y": 0,
+        "w": 531,
+        "h": 197
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 37,
+        "y": 508,
+        "w": 531,
+        "h": 197
+      },
+      "sourceSize": {
+        "w": 1280,
+        "h": 720
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "texture.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 1921,
+      "h": 900
+    },
+    "scale": 1
+  }
+}
