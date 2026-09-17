@@ -1,0 +1,64 @@
+# Deploys the game to GitHub Pages.
+#
+# Pipeline: lint → tests → production build → publish `dist/` to the
+# `gh-pages` branch (tools/publish-gh-pages.mjs). Pages must be configured to
+# "Deploy from a branch: gh-pages / (root)" — see docs/DEPLOYMENT.md.
+#
+# The actual site is a pure static bundle, so publishing is idempotent: every
+# run replaces the whole branch contents with the fresh build.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write # required to push the gh-pages branch
+
+concurrency:
+  group: gh-pages-deploy
+  cancel-in-progress: true # only the newest build matters
+
+jobs:
+  deploy:
+    name: Build & publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true # lets the publish step push with GITHUB_TOKEN
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit + smoke tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish to the gh-pages branch
+        run: node tools/publish-gh-pages.mjs --skip-build
+
+      - name: Summary
+        run: |
+          {
+            echo "## Deployment"
+            echo ""
+            echo "- Source: \`${GITHUB_SHA::9}\`"
+            echo "- Published to the \`gh-pages\` branch"
+            echo "- Site: https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/"
+          } >> "$GITHUB_STEP_SUMMARY"

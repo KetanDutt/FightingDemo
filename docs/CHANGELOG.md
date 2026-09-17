@@ -75,6 +75,14 @@ All notable changes to this project are documented here. The project follows
   every scene (menus, gallery, fight, HUD, pause + settings, results), reports visible UI whose
   bounds fall outside the 1920×1080 design canvas and dumps a PNG of each scene to
   `.layout-audit/` for eyeballing.
+- **GitHub Pages deploy pipeline.** `Deploy to GitHub Pages` workflow (`.github/workflows/`)
+  publishes on every push to `main` (and manual dispatch): lint → unit + smoke tests →
+  `vite build` → commit `dist/` to the `gh-pages` branch → Pages serves the compiled game.
+  `npm run deploy` runs the same build + publish locally (`tools/publish-gh-pages.mjs`,
+  `--skip-build` to publish an existing `dist/`). Deploys are linear commits parented on the
+  previous `gh-pages` head and pushed with a lease, with a concurrency group so superseded
+  runs cancel. One-time repo setting: Pages → _Deploy from a branch_ → `gh-pages` / root
+  (see `docs/DEPLOYMENT.md`).
 
 - **On-screen controls for touch, keyboard legend for desktop.** Touch devices get the d-pad +
   action buttons (auto-enabled on touch hardware, on first tap, or via the `showTouchControls`
