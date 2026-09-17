@@ -47,18 +47,19 @@ there is no long-lived node graph to leak.
 
 ## 2. The sound library
 
-`src/audio/sfx.js` — 25 named recipes. Naming is deliberately gameplay-first:
+`src/audio/sfx.js` — 28 named recipes. Naming is deliberately gameplay-first:
 
-| Group           | Sounds                                                  |
-| --------------- | ------------------------------------------------------- |
-| UI              | `uiHover`, `uiClick`, `uiBack`, `uiConfirm`, `uiDenied` |
-| Swings (whiffs) | `swingLight`, `swingMedium`, `swingHeavy`               |
-| Impacts         | `hitLight`, `hitMedium`, `hitHeavy`                     |
-| Defence         | `block`                                                 |
-| Movement        | `jump`, `land`, `step`, `whoosh`                        |
-| Round flow      | `countdown`, `roundStart`, `fight`, `ko`                |
-| Result          | `roundWin`, `matchWin`, `matchLose`, `fanfare`          |
-| Feedback        | `combo` (pitch rises with the combo count)              |
+| Group           | Sounds                                                                                                    |
+| --------------- | --------------------------------------------------------------------------------------------------------- |
+| UI              | `uiHover`, `uiClick`, `uiBack`, `uiConfirm`, `uiDenied`                                                   |
+| Swings (whiffs) | `swingLight`, `swingMedium`, `swingHeavy`                                                                 |
+| Impacts         | `hitLight`, `hitMedium`, `hitHeavy`                                                                       |
+| Defence         | `block`                                                                                                   |
+| Movement        | `jump`, `land`, `step`, `whoosh`                                                                          |
+| Round flow      | `countdown`, `roundStart`, `fight`, `ko`                                                                  |
+| Result          | `roundWin`, `matchWin`, `matchLose`, `fanfare`                                                            |
+| Feedback        | `combo` (pitch rises with the combo count)                                                                |
+| Texture         | `tick` (low-HP heartbeat, score count-up), `transition` (scene-change whoosh), `softHit` (training reset) |
 
 Design rules that make the mix readable:
 
@@ -99,6 +100,8 @@ Browsers block audio until the user interacts with the page:
 - If `AudioContext` is missing or throws, `this.failed` is set and **every** audio call becomes a
   no-op. That is what makes the headless smoke test silent instead of crashing.
 - `suspend()` / `resume()` are wired to tab visibility, so the game goes quiet in the background.
+  The sequencer resyncs on resume (`nextNoteTime` is clamped forward) instead of scheduling
+  every missed step at once as a burst chord.
 
 ---
 

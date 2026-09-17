@@ -64,6 +64,9 @@ you need to ship on low-memory devices. Options, cheapest first:
 - The AI does a handful of accumulators per frame; its adaptation step only runs when a plan
   expires (every 0.2–1 s), not every frame.
 - All timers are simple countdowns.
+- Allocation discipline: slider drags un-project through a cached transform matrix plus one
+  shared scratch vector, and health-bar tweens are tracked individually instead of
+  `killTweensOf(this)` (which would also restart the danger pulse every hit).
 
 ---
 

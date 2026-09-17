@@ -31,9 +31,10 @@ All settings are persisted to `localStorage` under the key `monkey-mayhem:v1:set
 
 ## Controls
 
-| Key                 | Type    | Default | Description                                              |
-| ------------------- | ------- | ------- | -------------------------------------------------------- |
-| `showTouchControls` | boolean | false   | Force on-screen controls (auto-enabled on touch devices) |
+| Key                 | Type    | Default | Description                                                  |
+| ------------------- | ------- | ------- | ------------------------------------------------------------ |
+| `showTouchControls` | boolean | false   | Force on-screen controls (auto-enabled on touch devices)     |
+| `showControlsHint`  | boolean | true    | Keyboard legend pill during fights (H or click collapses it) |
 
 ## Cosmetic
 

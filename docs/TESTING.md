@@ -65,6 +65,8 @@ describe('my feature', () => {
 - AI can make decisions and attack
 - Event bus propagates health/combo/timer events
 - Round state machine completes
+- Blocks chip exactly the documented amount — including the heavy stomp, through both the
+  direct and the live combat path
 
 ## Continuous Integration
 
@@ -95,7 +97,11 @@ npx c8 node --test "tests/unit/*.test.mjs"
 - [ ] Settings persist across page reloads
 - [ ] Audio plays after first user interaction
 - [ ] Tab switching pauses the game
-- [ ] Training mode infinite health works
+- [ ] Training mode infinite health works (both dummy modes: spars back / stands still)
 - [ ] All 6 skin colours render correctly
 - [ ] Gallery scrubs every animation
 - [ ] FPS counter shows when enabled
+- [ ] Settings sliders land where tapped (not pinned to 100 %)
+- [ ] Match-point banner + glowing pip appear on the deciding round
+- [ ] Pause QUIT asks for confirmation before leaving
+- [ ] Blocked hits chip exactly 1 / 1.5 / 2 (punch / headbutt / stomp)

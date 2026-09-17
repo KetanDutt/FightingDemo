@@ -43,5 +43,16 @@
 
     <div id="game" aria-label="Game canvas" role="application"></div>
     <script type="module" src="./src/main.js"></script>
+    <script>
+      // Last-resort boot failure notice (the module above sets this marker).
+      window.setTimeout(function () {
+        if (!window.MonkeyMayhem) {
+          var hint = document.querySelector('.boot-splash__hint');
+          if (hint)
+            hint.textContent =
+              'The game scripts failed to load — check your connection and reload the page.';
+        }
+      }, 12000);
+    </script>
   </body>
 </html>

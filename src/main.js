@@ -71,8 +71,22 @@ function hideSplash() {
   window.setTimeout(() => splash.remove(), 500);
 }
 
+/**
+ * Safety net: if the engine never boots (blocked WebGL, ancient browser),
+ * say so on the splash screen instead of fading to a black page.
+ */
+function reportBootFailure() {
+  if (game.isRunning) return;
+  const splash = document.getElementById('boot-splash');
+  const hint = splash?.querySelector('.boot-splash__hint');
+  if (hint) {
+    hint.textContent =
+      'The game could not start — this browser may have WebGL disabled. Try Chrome, Edge, Firefox or Safari.';
+  }
+}
+
 game.events.once(Phaser.Core.Events.READY, hideSplash);
-window.setTimeout(hideSplash, 4000); // safety net if WebGL fails to initialise
+window.setTimeout(reportBootFailure, 6000);
 
 /**
  * Audio may only start after a user gesture. Any of these counts, and the

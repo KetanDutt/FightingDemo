@@ -140,6 +140,7 @@ export class Arena {
     vignette.fillStyle(0x000000, 0.18);
     vignette.fillRect(0, GROUND_Y + 120, GAME_WIDTH, GAME_HEIGHT - GROUND_Y - 120);
     this.ground = ground;
+    this.layers.push(ground, vignette);
   }
 
   #buildCanopy() {

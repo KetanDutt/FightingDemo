@@ -25,6 +25,8 @@ export const DEFAULT_SETTINGS = {
   roundCount: 'bo3',
   /** Force the on-screen controls even on desktop (useful for touch laptops). */
   showTouchControls: false,
+  /** Bottom-centre keyboard legend during fights (H or click collapses it). */
+  showControlsHint: true,
   showFps: false,
   lastSkin: 'classic',
 };

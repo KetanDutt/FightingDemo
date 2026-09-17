@@ -147,8 +147,10 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
     addToggle('Show FPS', 'showFps');
     if (!compact) {
       addToggle('Colour-blind friendly', 'colorblindMode');
-      addToggle('On-screen controls', 'showTouchControls');
     }
+    // Both apply live mid-match, so they stay available while paused.
+    addToggle('On-screen controls', 'showTouchControls');
+    addToggle('Control hints', 'showControlsHint');
 
     // Footer buttons
     const footerY = height / 2 - 76;

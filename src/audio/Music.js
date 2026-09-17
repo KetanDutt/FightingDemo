@@ -115,6 +115,11 @@ export class MusicEngine {
 
   #scheduler() {
     if (!this.config || this.ctx.state === 'closed') return;
+    // Resync after a suspend (background tab): without this the loop below
+    // would schedule every missed step at once as one giant burst chord.
+    if (this.nextNoteTime < this.ctx.currentTime - 0.25) {
+      this.nextNoteTime = this.ctx.currentTime + 0.05;
+    }
     const secondsPerStep = 60 / this.config.bpm / 4; // 16th notes
     while (this.nextNoteTime < this.ctx.currentTime + SCHEDULE_AHEAD) {
       this.#scheduleStep(this.step, this.nextNoteTime, secondsPerStep);

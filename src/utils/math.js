@@ -76,13 +76,13 @@ export function naturalCompare(a, b) {
   return 0;
 }
 
-/** Formats milliseconds as `m:ss`. */
 /** "63%" — how many of the player's attacks actually connected. */
 export function formatAccuracy(landed = 0, thrown = 0) {
   if (!thrown) return '—';
   return `${Math.round((Math.min(landed, thrown) / thrown) * 100)}%`;
 }
 
+/** Formats milliseconds as `m:ss`. */
 export function formatClock(ms) {
   const total = Math.max(0, Math.ceil(ms / 1000));
   const minutes = Math.floor(total / 60);

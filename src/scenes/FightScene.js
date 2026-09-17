@@ -25,8 +25,10 @@ import { Fighter } from '../entities/Fighter.js';
 import { AiController } from '../entities/AiController.js';
 import { JoyPad } from '../ui/JoyPad.js';
 import { ActionButtons } from '../ui/ActionButtons.js';
+import { ControlsHint } from '../ui/ControlsHint.js';
 import { pulse } from '../utils/fx.js';
-import { bus } from '../core/EventBus.js';
+import { vibrate } from '../utils/haptics.js';
+import { bus, on } from '../core/EventBus.js';
 import { audio } from '../audio/index.js';
 import { settings } from '../core/Settings.js';
 import { stats } from '../core/Stats.js';
@@ -50,7 +52,11 @@ export class FightScene extends Phaser.Scene {
       roundCount: data.roundCount ?? settings.get('roundCount') ?? 'bo3',
       playerSkin: data.playerSkin ?? settings.get('lastSkin') ?? 'classic',
       enemySkin: data.enemySkin ?? 'ember',
+      /** Training only: 'cpu' spars back, 'still' stands there for drills. */
+      dummy: data.dummy ?? 'cpu',
     };
+    this.isStillDummy =
+      this.matchConfig.mode === MODE.TRAINING && this.matchConfig.dummy === 'still';
     this.roundRules = ROUND_RULES.forSelector(this.matchConfig.roundCount);
     this.roundNumber = 0;
     this.roundWins = { player: 0, enemy: 0 };
@@ -61,6 +67,13 @@ export class FightScene extends Phaser.Scene {
     this.isPaused = false;
     this.matchOver = false;
     this.pendingAction = null;
+    // On-screen controls: touch buttons for touch devices, keyboard legend
+    // for everyone else. `touchDetected` latches the first touch tap so
+    // hybrid laptops switch over as soon as the screen is actually touched.
+    this.touchDetected = false;
+    this.touchIntroShown = false;
+    this.lastTouchMode = null;
+    this.settingsUnsub = null;
     this.matchStats = {
       damageDealt: 0,
       damageTaken: 0,
@@ -108,6 +121,21 @@ export class FightScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-R', () => {
       if (this.matchConfig.mode === MODE.TRAINING) this.#resetPositions();
     });
+    this.input.keyboard?.on('keydown-H', () => {
+      if (!this.controlsHint?.visible) return;
+      audio.play('uiClick', { volume: 0.6 });
+      this.controlsHint.toggle();
+    });
+
+    // A first touch tap switches hybrid devices over to the touch controls.
+    this.firstTouchHandler = (pointer) => {
+      if (pointer?.wasTouch && !this.touchDetected) {
+        this.touchDetected = true;
+        this.#updateControlVisibility();
+      }
+    };
+    this.input.on('pointerdown', this.firstTouchHandler);
+    this.settingsUnsub = on(EVENTS.SETTINGS_CHANGED, () => this.#updateControlVisibility());
 
     // Auto pause when the tab loses focus.
     this.game.events.on(Phaser.Core.Events.BLUR, this.#onBlur, this);
@@ -171,10 +199,9 @@ export class FightScene extends Phaser.Scene {
   }
 
   #createTouchControls() {
-    const wantsTouch = settings.get('showTouchControls') || this.sys.game.device.input.touch;
-    this.touchControls = null;
-    if (!wantsTouch) return;
-
+    // Touch devices get the d-pad + action buttons; keyboard devices get the
+    // controls legend instead. Both are built up front and toggled live so
+    // the settings panel (and a first touch tap) can switch mid-match.
     this.joyPad = new JoyPad(this, {
       x: 280,
       y: GAME_HEIGHT - 190,
@@ -188,7 +215,75 @@ export class FightScene extends Phaser.Scene {
       onAction: (action, isDown) => this.inputManager?.setTouchAction(action, isDown),
     }).setDepth(DEPTH.UI + 10);
 
+    this.controlsHint = new ControlsHint(this, {
+      x: GAME_WIDTH / 2,
+      y: GAME_HEIGHT - 70,
+      training: this.matchConfig.mode === MODE.TRAINING,
+      onToggle: () => audio.play('uiClick', { volume: 0.5 }),
+    }).setDepth(DEPTH.UI + 5);
+
     this.touchControls = [this.joyPad, this.actionButtons];
+    this.#updateControlVisibility();
+  }
+
+  /** Touch mode: forced setting, touch-capable hardware, or a first tap. */
+  #isTouchMode() {
+    return (
+      settings.get('showTouchControls') || this.sys.game.device.input.touch || this.touchDetected
+    );
+  }
+
+  #updateControlVisibility() {
+    const touchMode = this.#isTouchMode();
+    this.joyPad?.setVisible(touchMode);
+    this.actionButtons?.setVisible(touchMode);
+    if (!touchMode) {
+      // Never leave a held direction behind when the buttons hide.
+      this.joyPad?.releaseAll();
+      this.actionButtons?.releaseAll();
+    }
+
+    const showHint = settings.get('showControlsHint');
+    this.controlsHint?.setVisible(showHint);
+    // Collapse the legend while the touch buttons own the screen; expand it
+    // for keyboards. Only auto-switch when the mode itself changed, so a
+    // manual collapse (H / click) survives unrelated setting changes.
+    if (showHint && this.controlsHint && touchMode !== this.lastTouchMode) {
+      this.controlsHint.setExpanded(!touchMode, { silent: true });
+    }
+    this.lastTouchMode = touchMode;
+
+    if (touchMode) this.#showTouchIntro();
+  }
+
+  /** One short toast so first-time touch players learn the layout. */
+  #showTouchIntro() {
+    if (this.touchIntroShown) return;
+    this.touchIntroShown = true;
+    const tip = this.add
+      .text(
+        GAME_WIDTH / 2,
+        300,
+        '◀ ▶ move · ▲ jump · ▼ block · tap PUNCH / HEAD / STOMP to attack',
+        {
+          fontFamily: FONTS.PRIMARY,
+          fontSize: '30px',
+          color: CSS_COLORS.offWhite,
+          stroke: '#0b0f1a',
+          strokeThickness: 6,
+        },
+      )
+      .setOrigin(0.5)
+      .setAlpha(0)
+      .setDepth(DEPTH.UI + 5);
+    this.tweens.add({ targets: tip, alpha: 0.9, duration: 400, delay: 900 });
+    this.tweens.add({
+      targets: tip,
+      alpha: 0,
+      duration: 800,
+      delay: 6000,
+      onComplete: () => tip.destroy(),
+    });
   }
 
   #createDebug() {
@@ -239,18 +334,30 @@ export class FightScene extends Phaser.Scene {
     bus.emit(EVENTS.TIMER_CHANGED, { msLeft: this.timeLeft, seconds: ROUND_RULES.time });
 
     audio.play('roundStart');
+    audio.play('transition', { volume: 0.35 });
 
     this.#revealFighters();
 
-    this.#showBanner(`ROUND ${this.roundNumber}`, 'Ready…', 1000, () => {
-      this.#showBanner('FIGHT!', '', 620, () => {
-        this.roundState = ROUND_STATE.FIGHT;
-        this.player.unlock();
-        this.enemy.unlock();
-        audio.play('fight');
-        this.cameraFx?.flash(0xffffff, 120, 0.25);
-      });
-    });
+    const matchPoint =
+      this.matchConfig.mode !== MODE.TRAINING &&
+      (this.roundWins.player + 1 >= this.roundRules.roundsToWin ||
+        this.roundWins.enemy + 1 >= this.roundRules.roundsToWin);
+
+    this.#showBanner(
+      `ROUND ${this.roundNumber}`,
+      matchPoint ? 'MATCH POINT' : 'Ready…',
+      1000,
+      () => {
+        this.#showBanner('FIGHT!', '', 620, () => {
+          this.roundState = ROUND_STATE.FIGHT;
+          this.player.unlock();
+          this.enemy.unlock();
+          audio.play('fight');
+          this.cameraFx?.flash(0xffffff, 120, 0.25);
+          this.cameraFx?.zoomPunch(1.03, 300);
+        });
+      },
+    );
   }
 
   #endRound(winner, reason = 'ko') {
@@ -349,7 +456,7 @@ export class FightScene extends Phaser.Scene {
     const score = this.#calculateScore(winner);
     const playTime = ((this.time?.now ?? 0) - (this.matchStats.startedAt ?? 0)) / 1000;
     stats.recordMatch({
-      won: winner === 'player',
+      won: winner === 'player' ? true : winner === 'draw' ? null : false,
       roundsWon: this.roundWins.player,
       knockouts: this.matchStats.knockouts,
       bestCombo: this.matchStats.maxCombo,
@@ -359,6 +466,7 @@ export class FightScene extends Phaser.Scene {
     });
 
     audio.stopMusic(0.6);
+    audio.play('transition', { volume: 0.35 });
     bus.emit('hud:fadeOut');
 
     this.cameras.main.fadeOut(520, 13, 18, 32);
@@ -480,7 +588,11 @@ export class FightScene extends Phaser.Scene {
   }
 
   #showBanner(main, sub = '', hold = 1000, onComplete = null) {
-    this.bannerContainer?.destroy();
+    if (this.bannerContainer) {
+      this.tweens.killTweensOf(this.bannerContainer);
+      this.bannerContainer.destroy();
+      this.bannerContainer = null;
+    }
 
     const container = this.add.container(GAME_WIDTH / 2, GAME_HEIGHT * 0.38).setDepth(DEPTH.BANNER);
 
@@ -591,6 +703,7 @@ export class FightScene extends Phaser.Scene {
   #onKnockOut(side) {
     audio.play('ko');
     audio.duckMusic(0.2);
+    vibrate([60, 40, 90]);
     this.matchStats.knockouts += side === 'enemy' ? 1 : 0;
 
     // Dramatic slow motion + zoom on the KO.
@@ -665,15 +778,17 @@ export class FightScene extends Phaser.Scene {
     });
   }
 
-  /** Red screen-edge flash when the player's health is critical. */
+  /**
+   * Red pulsing vignette + heartbeat tick when the player's health is
+   * critical. Reduced motion skips it entirely (no flashing, no pulsing).
+   */
   #updateHealthVignette() {
     if (!this.player || settings.get('reducedMotion')) return;
     const ratio = this.player.healthRatio;
-    if (ratio > 0.25 && this.vignetteOverlay) {
-      this.vignetteOverlay.setAlpha(0);
+    if (ratio > 0.25 || ratio <= 0 || this.roundState !== ROUND_STATE.FIGHT) {
+      this.vignetteOverlay?.setAlpha(0);
       return;
     }
-    if (ratio > 0.25) return;
 
     if (!this.vignetteOverlay) {
       this.vignetteOverlay = this.add.graphics().setDepth(DEPTH.OVERLAY - 1);
@@ -682,7 +797,15 @@ export class FightScene extends Phaser.Scene {
       this.vignetteOverlay.setBlendMode(Phaser.BlendModes.ADD);
     }
     const intensity = (1 - ratio / 0.25) * 0.12;
-    this.vignetteOverlay.setAlpha(intensity);
+    const pulseWave = 0.75 + 0.25 * Math.sin((this.time?.now ?? 0) / 300);
+    this.vignetteOverlay.setAlpha(intensity * pulseWave);
+
+    // One soft tick per second while critical.
+    const now = this.time?.now ?? 0;
+    if (now - (this.lastHeartbeat ?? -Infinity) >= 1000) {
+      this.lastHeartbeat = now;
+      audio.play('tick', { volume: 0.45 });
+    }
   }
 
   #onBlur() {
@@ -714,7 +837,12 @@ export class FightScene extends Phaser.Scene {
         attack: null,
       };
       this.player.intent = intent;
-      this.ai?.update(dt);
+      if (this.isStillDummy) {
+        // Training dummy: plant feet, take notes, take punches.
+        this.enemy.intent = { moveX: 0, jump: false, block: false, attack: null };
+      } else {
+        this.ai?.update(dt);
+      }
     } else {
       this.player.intent = { moveX: 0, jump: false, block: false, attack: null };
       this.enemy.intent = { moveX: 0, jump: false, block: false, attack: null };
@@ -775,8 +903,10 @@ export class FightScene extends Phaser.Scene {
     this.player.reset(centerX - half, 1);
     this.enemy.reset(centerX + half, -1);
     this.timeLeft = ROUND_RULES.time * 1000;
-    audio.play('uiConfirm');
+    audio.play('softHit', { volume: 0.9 });
+    audio.play('uiConfirm', { volume: 0.7 });
     pulse(this.player, { amount: 1.02, duration: 150, baseScale: 1 });
+    pulse(this.enemy, { amount: 1.02, duration: 150, baseScale: 1 });
   }
 
   /* ---------------------------------- pause --------------------------------- */
@@ -791,12 +921,14 @@ export class FightScene extends Phaser.Scene {
 
   restartMatch() {
     audio.play('uiConfirm');
+    audio.play('transition', { volume: 0.4 });
     this.scene.stop(SCENES.HUD);
     this.scene.start(SCENES.FIGHT, this.matchConfig);
   }
 
   quitToMenu() {
     audio.play('uiBack');
+    audio.play('transition', { volume: 0.4 });
     audio.stopMusic(0.4);
     this.scene.stop(SCENES.HUD);
     this.cameras.main.fadeOut(240, 13, 18, 32);
@@ -806,6 +938,12 @@ export class FightScene extends Phaser.Scene {
   }
 
   #cleanup() {
+    this.settingsUnsub?.();
+    this.settingsUnsub = null;
+    if (this.firstTouchHandler) {
+      this.input?.off('pointerdown', this.firstTouchHandler);
+      this.firstTouchHandler = null;
+    }
     this.game.events.off(Phaser.Core.Events.BLUR, this.#onBlur, this);
     if (this.resumeHandler) this.events.off(Phaser.Scenes.Events.RESUME, this.resumeHandler, this);
     this.inputManager?.dispose();

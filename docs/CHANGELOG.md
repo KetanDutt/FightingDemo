@@ -5,6 +5,69 @@ All notable changes to this project are documented here. The project follows
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+- **Blocked hits barely chipped.** Chip damage was scaled twice (once in `chipDamage()`, again in
+  `Fighter#receiveHit`), so a blocked punch dealt ~0.3 instead of 1. Chip is now exactly the
+  documented 1 / 1.5 / 2 (`BLOCK.chipScale` / `minHoldTime` removed as dead weight) and the smoke
+  test asserts it through both the direct and the live combat path.
+- **The stomp was secretly unblockable.** The block check excluded knock-down attacks, which
+  contradicted the docs, the AI (it picks the heavy _for its chip_ vs turtles) and the loading
+  tips. Every attack is blockable again.
+- **Disabling hit-stop killed all hit feedback.** The early return skipped VFX, SFX, combo events
+  and accuracy stats — now it only skips the freeze frames.
+- **Fighters teleported when touching.** The separation push multiplied the overlap by the push
+  speed (~11× over-correction per frame); steps are now capped by speed × dt.
+- **Settings sliders jumped to 100 %.** Pointer math ignored the panel container transform; drags
+  now un-project through the world matrix (with a cached matrix + scratch vector, no per-move
+  allocation).
+- **Health bars snapped instead of draining**, and every update killed the low-HP danger pulse
+  (`killTweensOf(this)`). Bar tweens are tracked individually and animate from the current value.
+- **Music burst after a backgrounded tab.** The sequencer scheduled every missed step on resume;
+  it now resyncs instead.
+- **Camera zoom drift.** An interrupted zoom punch settled at a mid-zoom value; punches now always
+  return to a tracked baseline owned by `zoomTo()`.
+- **Lunge carried through hitstun.** Getting hit mid-lunge no longer slides the victim forward.
+- **Landing cut the hurt animation.** Being hit out of the air keeps the stun pose now.
+- **Hit reactions snapped.** The 0.83 s hurt clip is time-scaled to fit each stun window.
+- **Celebration could bleed into the next round.** Round resets kill fighter tweens and cancel the
+  delayed victory punch via a token.
+- **Gallery "next" art shrank on hover.** Hover tweens scale around the display size, not 1.
+- **Results screen**: the last stats row overflowed its panel, draws played the lose jingle with
+  the enemy portrait, and the winner portrait hid behind the panel. Panel resized, draws get a
+  fanfare + your fighter, portrait moved to the side.
+- **Draws counted as career losses.** Match stats are now win / loss / neither.
+- **Buttons clicked on stray pointer-ups.** Clicks need a press that started on the button;
+  sliding off cancels, touch no longer double-tweens hover.
+- **Gallery UP/DOWN and loop keys** added (`L` toggles loop); dead `autoAdvance` removed.
+- **Dead event constants** (`FIGHTER_STATE`, `MODE_STARTED`) removed; `BLOCKED` and `KNOCKOUT`
+  are now actually emitted per the documented bus contract. `InputManager` disposal removes all
+  listeners and fully resets pad edge state.
+- **Boot failures explain themselves** instead of fading to black (in-game splash message +
+  a last-resort loader notice in `index.html`).
+- Docs: README gamepad jump cell (`A` is punch, not jump), gallery keys, SFX count (28, not 25),
+  event table payloads/consumers, camera description (no look-ahead), curtain-transition wording.
+
+### Added
+
+- **On-screen controls for touch, keyboard legend for desktop.** Touch devices get the d-pad +
+  action buttons (auto-enabled on touch hardware, on first tap, or via the `showTouchControls`
+  setting) plus a short layout toast; keyboard players get a legend pill at the bottom of the
+  arena (`src/ui/ControlsHint.js`) that dims itself, collapses with `H` or a click, and hides
+  via the new `showControlsHint` setting. Both toggles apply live mid-match from the pause
+  settings. The menu footer and pause screen also recap the controls for the current device.
+- **Training dummy modes** — the setup screen offers SPARS BACK or STANDS STILL for training.
+- **Match point** — deciding rounds get a `MATCH POINT` banner sub plus a glowing round pip.
+- **Low-HP heartbeat** — critical health pulses the red vignette with a soft tick each second.
+- **Haptics** — touch devices vibrate on hits (light/heavy/block/KO patterns), skipped under
+  reduced motion (`src/utils/haptics.js`).
+- **Scene-transition whooshes**, a score count-up tick on results, a training-reset thump, a
+  zoom punch on `FIGHT!`, and a two-step QUIT confirm on the pause screen. Every SFX in the
+  library is now wired to something.
+- **Accessibility doc** (`docs/ACCESSIBILITY.md`) covering motion, colour, hearing and input.
+
 ## [1.1.0] — 2026-09-17
 
 ### Fixed
@@ -118,7 +181,7 @@ original (unchanged) sprite library; see [LEGACY.md](LEGACY.md) for what was her
 
 ---
 
-## [Unreleased]
+## Roadmap
 
 Planned, in rough priority order:
 

@@ -167,11 +167,16 @@ export class MenuScene extends Phaser.Scene {
   }
 
   #buildFooter() {
+    // Touch players get the touch layout; everyone else gets the keys.
+    const touchMode = settings.get('showTouchControls') || this.sys.game.device.input.touch;
+    const controlsLine = touchMode
+      ? 'D-pad  move · ▲  jump · ▼ / BLOCK  guard · PUNCH · HEAD · STOMP  attack · ⏸  pause'
+      : 'Move  ← →  ·  Jump  ↑  ·  Block  ↓  ·  Punch  J  ·  Headbutt  K  ·  Stomp  L  ·  Pause  ESC';
     const hints = this.add
       .text(
         GAME_WIDTH * 0.5,
         GAME_HEIGHT - 150,
-        '↑ ↓  select  ·  ENTER  confirm  ·  G  gallery  ·  S  settings  ·  M  mute\nMove  ← →  ·  Jump  ↑  ·  Block  ↓  ·  Punch  J  ·  Headbutt  K  ·  Stomp  L  ·  Pause  ESC',
+        `↑ ↓  select  ·  ENTER  confirm  ·  G  gallery  ·  S  settings  ·  M  mute\n${controlsLine}`,
         {
           fontFamily: FONTS.PRIMARY,
           fontSize: '30px',
@@ -211,6 +216,7 @@ export class MenuScene extends Phaser.Scene {
     if (this.transitioning) return;
     this.transitioning = true;
     audio.play('uiConfirm');
+    audio.play('transition', { volume: 0.4 });
     this.cameras.main.fadeOut(260, 13, 18, 32);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(SCENES.SETUP, { mode });
@@ -221,6 +227,7 @@ export class MenuScene extends Phaser.Scene {
     if (this.transitioning) return;
     this.transitioning = true;
     audio.play('uiClick');
+    audio.play('transition', { volume: 0.35 });
     this.cameras.main.fadeOut(240, 13, 18, 32);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(SCENES.GALLERY);

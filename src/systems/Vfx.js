@@ -257,7 +257,9 @@ export class Vfx {
       .setTint(tint)
       .setAlpha(alpha)
       .setBlendMode(Phaser.BlendModes.ADD);
-    container.addAt(ghost, 0);
+    // Above the shadow (index 0) but below the sprite: a ghost buried under the
+    // shadow would be all but invisible.
+    container.addAt(ghost, Math.min(1, container.length));
     this.scene.tweens.add({
       targets: ghost,
       alpha: 0,

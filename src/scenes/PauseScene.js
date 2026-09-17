@@ -6,6 +6,7 @@ import { MenuNav } from '../ui/MenuNav.js';
 import { SettingsPanel } from '../ui/SettingsPanel.js';
 import { popIn, slideIn } from '../utils/fx.js';
 import { audio } from '../audio/index.js';
+import { settings } from '../core/Settings.js';
 
 /**
  * Pause overlay.
@@ -47,7 +48,7 @@ export class PauseScene extends Phaser.Scene {
       { label: 'RESUME', icon: '▶️', variant: 'primary', action: () => this.#resume() },
       { label: 'RESTART', icon: '🔄', variant: 'ghost', action: () => this.#request('restart') },
       { label: 'SETTINGS', icon: '⚙️', variant: 'ghost', action: () => this.#openSettings() },
-      { label: 'QUIT', icon: '🚪', variant: 'danger', action: () => this.#request('quit') },
+      { label: 'QUIT', icon: '🚪', variant: 'danger', action: () => this.#confirmQuit() },
     ];
 
     const navItems = buttons.map((definition, index) =>
@@ -65,19 +66,45 @@ export class PauseScene extends Phaser.Scene {
         .setDepth(DEPTH.UI)
         .appear(60 + index * 60),
     );
+    this.quitButton = navItems[navItems.length - 1];
 
     this.nav = new MenuNav(this, { items: navItems });
 
+    const touchMode = settings.get('showTouchControls') || this.sys.game.device.input.touch;
     this.hint = this.add
-      .text(GAME_WIDTH / 2, GAME_HEIGHT - 120, 'Press ESC to resume  ·  M to mute', {
-        fontFamily: FONTS.PRIMARY,
-        fontSize: '30px',
-        color: CSS_COLORS.offWhite,
-      })
+      .text(
+        GAME_WIDTH / 2,
+        GAME_HEIGHT - 130,
+        touchMode ? 'Tap RESUME to continue' : 'Press ESC to resume  ·  M to mute',
+        {
+          fontFamily: FONTS.PRIMARY,
+          fontSize: '30px',
+          color: CSS_COLORS.offWhite,
+        },
+      )
       .setOrigin(0.5)
       .setAlpha(0.7)
       .setDepth(DEPTH.UI);
     slideIn(this.hint, { from: 30, duration: 260, delay: 300 });
+
+    // Quick controls recap while the match is stopped.
+    this.controlsLine = this.add
+      .text(
+        GAME_WIDTH / 2,
+        GAME_HEIGHT - 72,
+        touchMode
+          ? 'D-pad move · ▲ jump · ▼ / BLOCK guard · PUNCH / HEAD / STOMP attack'
+          : '← → move · ↑ / Space jump · ↓ block · J punch · K headbutt · L stomp',
+        {
+          fontFamily: FONTS.PRIMARY,
+          fontSize: '26px',
+          color: CSS_COLORS.muted,
+        },
+      )
+      .setOrigin(0.5)
+      .setAlpha(0.75)
+      .setDepth(DEPTH.UI);
+    slideIn(this.controlsLine, { from: 30, duration: 260, delay: 360 });
 
     this.settingsPanel = new SettingsPanel(this, {
       x: GAME_WIDTH / 2,
@@ -105,6 +132,24 @@ export class PauseScene extends Phaser.Scene {
     audio.play('uiBack');
     this.scene.stop();
     this.scene.resume(this.from);
+  }
+
+  /**
+   * Quitting drops the whole match, so the first click arms the button
+   * ("SURE?") and only a second click within 3 seconds follows through.
+   */
+  #confirmQuit() {
+    if (!this.quitArmed) {
+      this.quitArmed = true;
+      this.quitButton?.setLabel('SURE?');
+      audio.play('uiDenied', { volume: 0.8 });
+      this.time.delayedCall(3000, () => {
+        this.quitArmed = false;
+        this.quitButton?.setLabel('QUIT');
+      });
+      return;
+    }
+    this.#request('quit');
   }
 
   /**

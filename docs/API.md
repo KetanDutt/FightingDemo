@@ -79,7 +79,7 @@ audio.suspend(); // Tab hidden
 audio.resume(); // Tab visible
 ```
 
-**SFX names:** `uiHover`, `uiClick`, `uiBack`, `uiConfirm`, `uiDenied`, `swingLight`, `swingMedium`, `swingHeavy`, `hitLight`, `hitMedium`, `hitHeavy`, `block`, `jump`, `land`, `step`, `whoosh`, `countdown`, `roundStart`, `fight`, `ko`, `roundWin`, `matchWin`, `matchLose`, `combo`
+**SFX names (28):** `uiHover`, `uiClick`, `uiBack`, `uiConfirm`, `uiDenied`, `swingLight`, `swingMedium`, `swingHeavy`, `hitLight`, `hitMedium`, `hitHeavy`, `block`, `jump`, `land`, `step`, `whoosh`, `countdown`, `roundStart`, `fight`, `ko`, `roundWin`, `matchWin`, `matchLose`, `combo`, `fanfare`, `tick`, `transition`, `softHit`
 
 ---
 

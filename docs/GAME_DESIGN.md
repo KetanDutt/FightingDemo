@@ -113,7 +113,7 @@ combos are worth doing, but they are not free, and a raw stomp (17) is still a b
 | KO slow-motion | 0.25× for 1.1 s, eased back to full speed afterwards                                                     |
 | Call-outs      | "K.O." on every knockout, "TIME" on timeouts, "PERFECT!" for an untouched round                          |
 | Timeout        | Higher health **fraction** wins; exactly level is a **draw** and the round replays with no round awarded |
-| Training mode  | No clock, no round wins, health refills — KO just resets positions                                       |
+| Training mode  | No clock, no round wins, health refills — KO just resets positions; dummy spars back or stands still     |
 
 The timeout rule uses the health _fraction_, not the raw number, so if both fighters were given
 different max health the judging stays fair.
@@ -220,11 +220,11 @@ moves and fights back):
 
 ## 8. Modes
 
-| Mode         | Description                                                                                         |
-| ------------ | --------------------------------------------------------------------------------------------------- |
-| **Arcade**   | The default: best of 3 against the AI at the chosen difficulty.                                     |
-| **Training** | Infinite health, no clock, KO just resets. The HUD shows real damage numbers so you can lab combos. |
-| **Gallery**  | Scrub every animation in the library frame by frame, with the frame data on screen.                 |
+| Mode         | Description                                                                                                                                                 |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Arcade**   | The default: best of 3 against the AI at the chosen difficulty.                                                                                             |
+| **Training** | Infinite health, no clock, KO just resets. The HUD shows real damage numbers so you can lab combos; the dummy either spars back or stands still for drills. |
+| **Gallery**  | Scrub every animation in the library frame by frame, with the frame data on screen.                                                                         |
 
 ---
 
@@ -240,4 +240,6 @@ moves and fights back):
 | Volume (master / SFX / music) | Independent buses, live-applied                 |
 | Show FPS                      | Debug + performance triage                      |
 
-All of these persist in `localStorage` and are applied live from the pause menu.
+All of these persist in `localStorage` and are applied live from the pause menu. See
+[ACCESSIBILITY.md](ACCESSIBILITY.md) for the full rundown, including keyboard-only play and
+haptics.

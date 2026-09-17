@@ -15,6 +15,7 @@ export class CameraFx {
     this.camera = scene.cameras.main;
     this.lastShake = -Infinity;
     this.zoomTween = null;
+    this.baseZoom = 1;
   }
 
   get shakeEnabled() {
@@ -36,11 +37,12 @@ export class CameraFx {
     this.arena?.reactToShake(Math.min(2, scaled * 120));
   }
 
-  /** Quick push-in then back out. */
+  /** Quick push-in then back out. Always settles on `baseZoom`. */
   zoomPunch(amount = 1.02, duration = 240) {
     if (settings.get('reducedMotion')) return;
-    const base = this.camera.zoom;
+    const base = this.baseZoom;
     this.zoomTween?.stop();
+    this.zoomTween = null;
     this.camera.zoom = base;
     this.zoomTween = this.scene.tweens.add({
       targets: this.camera,
@@ -55,8 +57,11 @@ export class CameraFx {
     });
   }
 
-  /** Smoothly holds a zoom level (KO replays). */
+  /** Smoothly holds a zoom level (KO replays). Sets the punch baseline. */
   zoomTo(value, duration = 600) {
+    this.baseZoom = value;
+    this.zoomTween?.stop();
+    this.zoomTween = null;
     this.scene.tweens.add({ targets: this.camera, zoom: value, duration, ease: 'Sine.easeInOut' });
   }
 

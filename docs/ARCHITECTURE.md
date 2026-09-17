@@ -115,20 +115,18 @@ the **event bus** (`src/core/EventBus.js`, event names in `EVENTS`).
 
 ### Events
 
-| Event              | Payload                             | Emitted by                       | Consumed by                 |
-| ------------------ | ----------------------------------- | -------------------------------- | --------------------------- |
-| `HEALTH_CHANGED`   | `{ side, ratio, hp }`               | Fighter / CombatSystem           | Hud                         |
-| `TIMER_CHANGED`    | `{ msLeft, seconds }`               | FightScene                       | Hud                         |
-| `ROUND_START`      | `{ round }`                         | FightScene                       | Hud                         |
-| `ROUND_END`        | `{ winner, round, … }`              | FightScene                       | Hud                         |
-| `COMBO_CHANGED`    | `{ count, side }`                   | CombatSystem                     | Hud                         |
-| `HIT`              | `{ attacker, defender, damage, … }` | CombatSystem                     | Hud / Vfx / sfx             |
-| `BLOCKED`          | `{ defender, … }`                   | CombatSystem                     | Vfx / sfx                   |
-| `KNOCKOUT`         | `{ loser }`                         | CombatSystem                     | Fight / Music               |
-| `FIGHTER_STATE`    | `{ side, state }`                   | Fighter                          | Hud                         |
-| `SETTINGS_CHANGED` | `{ settings, changed }`             | SettingsManager                  | Hud / Fight / Pause / audio |
-| `MODE_STARTED`     | `{ mode, … }`                       | FightScene                       | Hud / Music                 |
-| `hud:fadeOut`      | —                                   | FightScene → Hud (ad-hoc string) |
+| Event              | Payload                                      | Emitted by                       | Consumed by                       |
+| ------------------ | -------------------------------------------- | -------------------------------- | --------------------------------- |
+| `HEALTH_CHANGED`   | `{ side, ratio, hp }`                        | Fighter (via scene)              | Hud                               |
+| `TIMER_CHANGED`    | `{ msLeft, seconds }`                        | FightScene                       | Hud                               |
+| `ROUND_START`      | `{ round, playerWins, enemyWins }`           | FightScene                       | Hud                               |
+| `ROUND_END`        | `{ winner, reason, round, … }`               | FightScene                       | Hud                               |
+| `COMBO_CHANGED`    | `{ count, side }`                            | CombatSystem                     | Hud                               |
+| `HIT`              | `{ attacker, defender, damage, blocked, … }` | CombatSystem                     | Fight (via `onHit`; bus reserved) |
+| `BLOCKED`          | `{ attacker, defender, damage }`             | CombatSystem                     | — (reserved for tooling)          |
+| `KNOCKOUT`         | `{ attacker, loser }`                        | CombatSystem                     | — (reserved for tooling)          |
+| `SETTINGS_CHANGED` | `{ settings, changed }`                      | SettingsManager                  | Hud / Fight / Pause / audio       |
+| `hud:fadeOut`      | —                                            | FightScene → Hud (ad-hoc string) |                                   |
 
 The last one is the single ad-hoc channel: `FightScene` tells the HUD to fade out before it
 transitions away. Everything else is declared in `EVENTS`.

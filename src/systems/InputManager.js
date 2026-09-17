@@ -31,7 +31,6 @@ export class InputManager {
     this.padY = false;
     // Start (9) / Select (8) under the standard gamepad mapping.
     this.padStart = false;
-    this.padSelect = false;
 
     const keyboard = scene.input.keyboard;
     if (keyboard) {
@@ -53,19 +52,28 @@ export class InputManager {
         c: Phaser.Input.Keyboard.KeyCodes.C,
       });
 
-      keyboard.on('keydown-W', this.#queueJump, this);
-      keyboard.on('keydown-UP', this.#queueJump, this);
-      keyboard.on('keydown-SPACE', this.#queueJump, this);
+      // Named handlers (not inline arrows) so `dispose()` can remove them all.
+      this.jumpHandler = this.#queueJump.bind(this);
+      this.pauseHandler = this.#requestPause.bind(this);
+      this.attackHandlers = {
+        punch: () => this.queueAttack('punch'),
+        headbutt: () => this.queueAttack('headbutt'),
+        stomp: () => this.queueAttack('stomp'),
+      };
 
-      keyboard.on('keydown-J', () => this.queueAttack('punch'));
-      keyboard.on('keydown-Z', () => this.queueAttack('punch'));
-      keyboard.on('keydown-K', () => this.queueAttack('headbutt'));
-      keyboard.on('keydown-X', () => this.queueAttack('headbutt'));
-      keyboard.on('keydown-L', () => this.queueAttack('stomp'));
-      keyboard.on('keydown-C', () => this.queueAttack('stomp'));
+      keyboard.on('keydown-W', this.jumpHandler);
+      keyboard.on('keydown-UP', this.jumpHandler);
+      keyboard.on('keydown-SPACE', this.jumpHandler);
 
-      keyboard.on('keydown-ESC', this.#requestPause, this);
-      keyboard.on('keydown-P', this.#requestPause, this);
+      keyboard.on('keydown-J', this.attackHandlers.punch);
+      keyboard.on('keydown-Z', this.attackHandlers.punch);
+      keyboard.on('keydown-K', this.attackHandlers.headbutt);
+      keyboard.on('keydown-X', this.attackHandlers.headbutt);
+      keyboard.on('keydown-L', this.attackHandlers.stomp);
+      keyboard.on('keydown-C', this.attackHandlers.stomp);
+
+      keyboard.on('keydown-ESC', this.pauseHandler);
+      keyboard.on('keydown-P', this.pauseHandler);
     }
 
     this.onDestroy = () => this.dispose();
@@ -120,7 +128,7 @@ export class InputManager {
 
     // Pause on a freshly pressed Start/Select (button indices 9 and 8).
     const startDown = pad.isButtonDown(9) || pad.isButtonDown(8);
-    if ((startDown && !this.padStart) || (pad.isButtonDown(8) && !this.padSelect)) {
+    if (startDown && !this.padStart) {
       this.onPause?.();
     }
 
@@ -129,7 +137,6 @@ export class InputManager {
     this.padX = Boolean(pad.X);
     this.padY = Boolean(pad.Y);
     this.padStart = startDown;
-    this.padSelect = pad.isButtonDown(8);
   }
 
   /** Reads and consumes the current intent. Call once per frame. */
@@ -168,16 +175,33 @@ export class InputManager {
     this.padLeft = false;
     this.padRight = false;
     this.padBlock = false;
+    this.padUp = false;
+    this.padA = false;
+    this.padX = false;
+    this.padY = false;
+    this.padStart = false;
   }
 
   dispose() {
     const keyboard = this.scene?.input?.keyboard;
     if (keyboard) {
-      keyboard.off('keydown-W', this.#queueJump, this);
-      keyboard.off('keydown-UP', this.#queueJump, this);
-      keyboard.off('keydown-SPACE', this.#queueJump, this);
-      keyboard.off('keydown-ESC', this.#requestPause, this);
-      keyboard.off('keydown-P', this.#requestPause, this);
+      if (this.jumpHandler) {
+        keyboard.off('keydown-W', this.jumpHandler);
+        keyboard.off('keydown-UP', this.jumpHandler);
+        keyboard.off('keydown-SPACE', this.jumpHandler);
+      }
+      if (this.attackHandlers) {
+        keyboard.off('keydown-J', this.attackHandlers.punch);
+        keyboard.off('keydown-Z', this.attackHandlers.punch);
+        keyboard.off('keydown-K', this.attackHandlers.headbutt);
+        keyboard.off('keydown-X', this.attackHandlers.headbutt);
+        keyboard.off('keydown-L', this.attackHandlers.stomp);
+        keyboard.off('keydown-C', this.attackHandlers.stomp);
+      }
+      if (this.pauseHandler) {
+        keyboard.off('keydown-ESC', this.pauseHandler);
+        keyboard.off('keydown-P', this.pauseHandler);
+      }
     }
     if (this.scene?.events)
       this.scene.events.off(Phaser.Scenes.Events.SHUTDOWN, this.onDestroy, this);

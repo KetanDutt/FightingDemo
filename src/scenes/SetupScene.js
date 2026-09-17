@@ -34,6 +34,7 @@ export class SetupScene extends Phaser.Scene {
     this.mode = data.mode ?? MODE.ARCADE;
     this.difficulty = settings.get('difficulty');
     this.roundCount = settings.get('roundCount') ?? 'bo3';
+    this.dummy = 'cpu';
     this.playerSkinId = settings.get('lastSkin');
     this.enemySkinId = this.#contrastingSkin(this.playerSkinId);
   }
@@ -51,6 +52,7 @@ export class SetupScene extends Phaser.Scene {
     this.#buildPreviews();
     this.#buildSkinPicker();
     this.#buildDifficultyPicker();
+    this.#buildDummyPicker();
     this.#buildRoundPicker();
     this.#buildFooter();
 
@@ -356,6 +358,69 @@ export class SetupScene extends Phaser.Scene {
     this.#paintDifficulty();
   }
 
+  #buildDummyPicker() {
+    if (this.mode !== MODE.TRAINING) return;
+
+    const label = this.add
+      .text(GAME_WIDTH / 2, 640, 'TRAINING DUMMY', {
+        fontFamily: FONTS.PRIMARY,
+        fontSize: '36px',
+        color: CSS_COLORS.gold,
+      })
+      .setOrigin(0.5)
+      .setDepth(DEPTH.UI);
+    fadeIn(label, { duration: 300, delay: 200 });
+
+    this.dummyButtons = [
+      { id: 'cpu', label: 'SPARS BACK', hint: 'The dummy fights back — practise under pressure.' },
+      {
+        id: 'still',
+        label: 'STANDS STILL',
+        hint: 'The dummy plants its feet — drill combos freely.',
+      },
+    ].map((option, index) => {
+      const button = new Button(this, {
+        x: GAME_WIDTH / 2 + (index - 0.5) * 340,
+        y: 700,
+        width: 310,
+        height: 104,
+        label: option.label,
+        fontSize: 30,
+        variant: 'ghost',
+        onClick: () => this.#selectDummy(option.id),
+      }).setDepth(DEPTH.UI);
+      button.appear(200 + index * 70);
+      return { id: option.id, hint: option.hint, button };
+    });
+
+    this.dummyHint = this.add
+      .text(GAME_WIDTH / 2, 780, '', {
+        fontFamily: FONTS.PRIMARY,
+        fontSize: '28px',
+        color: CSS_COLORS.offWhite,
+      })
+      .setOrigin(0.5)
+      .setAlpha(0.75)
+      .setDepth(DEPTH.UI);
+
+    this.#paintDummy();
+    if (this.dummyHint) slideIn(this.dummyHint, { from: 24, duration: 300, delay: 340 });
+  }
+
+  #paintDummy() {
+    this.dummyButtons?.forEach(({ id, button }) => {
+      button.setAlpha(id === this.dummy ? 1 : 0.45);
+    });
+    const current = this.dummyButtons?.find((entry) => entry.id === this.dummy);
+    if (this.dummyHint && current) this.dummyHint.setText(current.hint);
+  }
+
+  #selectDummy(id) {
+    this.dummy = id;
+    audio.play('uiClick', { volume: 0.8 });
+    this.#paintDummy();
+  }
+
   #buildFooter() {
     const back = new Button(this, {
       x: GAME_WIDTH / 2 - 200,
@@ -384,10 +449,11 @@ export class SetupScene extends Phaser.Scene {
       .setDepth(DEPTH.UI)
       .appear(480);
 
-    // One navigation list: difficulty, round count, then the footer.
+    // One navigation list: difficulty/dummy, round count, then the footer.
     this.nav = new MenuNav(this, {
       items: [
         ...(this.difficultyButtons ?? []).map((entry) => entry.button),
+        ...(this.dummyButtons ?? []).map((entry) => entry.button),
         ...(this.roundButtons ?? []).map((entry) => entry.button),
         back,
         fight,
@@ -408,6 +474,7 @@ export class SetupScene extends Phaser.Scene {
     if (this.transitioning) return;
     this.transitioning = true;
     audio.play('uiConfirm');
+    audio.play('transition', { volume: 0.45 });
     this.cameras.main.fadeOut(280, 13, 18, 32);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(SCENES.FIGHT, {
@@ -416,6 +483,7 @@ export class SetupScene extends Phaser.Scene {
         roundCount: this.roundCount,
         playerSkin: this.playerSkinId,
         enemySkin: this.enemySkinId,
+        dummy: this.dummy,
       });
     });
   }
