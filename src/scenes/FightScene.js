@@ -47,9 +47,11 @@ export class FightScene extends Phaser.Scene {
     this.matchConfig = {
       mode: data.mode ?? MODE.ARCADE,
       difficulty: data.difficulty ?? settings.get('difficulty') ?? DIFFICULTY.NORMAL,
+      roundCount: data.roundCount ?? settings.get('roundCount') ?? 'bo3',
       playerSkin: data.playerSkin ?? settings.get('lastSkin') ?? 'classic',
       enemySkin: data.enemySkin ?? 'ember',
     };
+    this.roundRules = ROUND_RULES.forSelector(this.matchConfig.roundCount);
     this.roundNumber = 0;
     this.roundWins = { player: 0, enemy: 0 };
     this.roundState = ROUND_STATE.INTRO;
@@ -100,6 +102,7 @@ export class FightScene extends Phaser.Scene {
       enemyName: this.ai?.profile?.label?.toUpperCase() ?? 'RIVAL',
       playerSkin: this.matchConfig.playerSkin,
       enemySkin: this.matchConfig.enemySkin,
+      roundsToWin: this.roundRules.roundsToWin,
     });
 
     this.input.keyboard?.on('keydown-R', () => {
@@ -237,9 +240,7 @@ export class FightScene extends Phaser.Scene {
 
     audio.play('roundStart');
 
-    // Dramatic camera zoom for round intro
-    this.cameraFx?.zoomTo(1.06, 200);
-    this.time.delayedCall(180, () => this.cameraFx?.zoomTo(1, 500));
+    this.#revealFighters();
 
     this.#showBanner(`ROUND ${this.roundNumber}`, 'Ready…', 1000, () => {
       this.#showBanner('FIGHT!', '', 620, () => {
@@ -275,13 +276,22 @@ export class FightScene extends Phaser.Scene {
       victor.celebrate();
       this.vfx?.burst(victor.x, GROUND_Y - 200, { count: 26, tint: COLORS.gold });
       audio.play(playerWon ? 'roundWin' : 'matchLose', { volume: 0.9 });
+
+      // Perfect round: the victor went untouched. Worth shouting about.
+      if (reason === 'ko' && victor.healthRatio >= 1) {
+        this.time.delayedCall(300, () => this.#spawnCallout('PERFECT!', { y: GAME_HEIGHT * 0.5 }));
+        this.vfx?.burst(GAME_WIDTH / 2, GROUND_Y - 300, { count: 42, tint: COLORS.gold });
+        audio.play('fanfare', { volume: 0.9 });
+      }
     }
+
+    if (reason === 'time') this.time.delayedCall(240, () => this.#spawnCallout('TIME'));
 
     const matchOver =
       this.matchConfig.mode !== MODE.TRAINING &&
-      (this.roundWins.player >= ROUND_RULES.roundsToWin ||
-        this.roundWins.enemy >= ROUND_RULES.roundsToWin ||
-        this.roundNumber >= ROUND_RULES.maxRounds);
+      (this.roundWins.player >= this.roundRules.roundsToWin ||
+        this.roundWins.enemy >= this.roundRules.roundsToWin ||
+        this.roundNumber >= this.roundRules.maxRounds);
 
     // A KO that ends the match is a "finish" — same beat, bigger call.
     const isFinish =
@@ -378,6 +388,96 @@ export class FightScene extends Phaser.Scene {
   }
 
   /* --------------------------------- banners -------------------------------- */
+
+  /**
+   * Golden floating call-out for match beats ("KO!", "TIME", "PERFECT") that
+   * lands just above the fighters and fades without stealing the whole
+   * screen the way the round banners do.
+   */
+  #spawnCallout(text, options = {}) {
+    if (settings.get('reducedMotion'))
+      return this.floatingText?.spawn(GAME_WIDTH / 2, GAME_HEIGHT * 0.34, text, {
+        color: options.color ?? CSS_COLORS.gold,
+        fontSize: 92,
+        rise: 90,
+        duration: 900,
+      });
+
+    const { color = CSS_COLORS.gold, x = GAME_WIDTH / 2, y = GAME_HEIGHT * 0.34 } = options;
+
+    this.vfx?.ring(x, y, { color: 0xfff3a8, endScale: 3.2, duration: 540, alpha: 0.8 });
+    this.vfx?.flash(x, y, { color: 0xffffff, scale: 2.2, duration: 220, alpha: 0.6 });
+
+    const callout = this.add
+      .text(x, y, text, {
+        fontFamily: FONTS.DISPLAY,
+        fontSize: '150px',
+        fontStyle: 'bold',
+        color,
+        stroke: '#1a0f00',
+        strokeThickness: 18,
+        shadow: { offsetX: 0, offsetY: 10, color: '#000000', blur: 22, fill: true },
+      })
+      .setOrigin(0.5)
+      .setDepth(DEPTH.BANNER)
+      .setAlpha(0)
+      .setScale(2.6);
+
+    this.tweens.add({
+      targets: callout,
+      alpha: 1,
+      scale: 1,
+      duration: 260,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        this.tweens.add({
+          targets: callout,
+          scale: 1.06,
+          duration: 620,
+          yoyo: true,
+          ease: 'Sine.easeInOut',
+          onComplete: () => {
+            this.tweens.add({
+              targets: callout,
+              alpha: 0,
+              y: y - 60,
+              duration: 340,
+              ease: 'Quad.easeIn',
+              onComplete: () => callout.destroy(),
+            });
+          },
+        });
+      },
+    });
+    return callout;
+  }
+
+  /**
+   * Round-intro reveal: fighters pin in from their corners, the camera settles
+   * from a tight push-in, and the round pitch is laid over the top.
+   */
+  #revealFighters() {
+    const introDelay = 340;
+    const reveal = (fighter, delay) => {
+      const fromX = fighter.x + fighter.facing * 70;
+      fighter.setAlpha(0);
+      fighter.x = fromX;
+      this.tweens.add({
+        targets: fighter,
+        x: fighter.startX,
+        alpha: 1,
+        duration: 520,
+        delay,
+        ease: 'Cubic.easeOut',
+      });
+    };
+    reveal(this.player, introDelay);
+    reveal(this.enemy, introDelay + 90);
+
+    // Settle from a tight push-in for a little drama behind the banner.
+    this.cameraFx?.zoomTo(1.14, 1);
+    this.time.delayedCall(introDelay, () => this.cameraFx?.zoomTo(1, 620));
+  }
 
   #showBanner(main, sub = '', hold = 1000, onComplete = null) {
     this.bannerContainer?.destroy();
@@ -505,6 +605,9 @@ export class FightScene extends Phaser.Scene {
     this.vfx?.burst(loser.x, GROUND_Y - 180, { count: 30, tint: COLORS.red });
     this.time.delayedCall(300, () => this.cameraFx?.zoomTo(1, 420));
 
+    // Big KO call-out lands just as the slow-motion starts to breathe.
+    this.time.delayedCall(180, () => this.#spawnCallout('K.O.', { color: CSS_COLORS.gold }));
+
     if (this.matchConfig.mode === MODE.TRAINING) {
       // Training never ends: stand back up and keep going.
       this.time.delayedCall(1600, () => {
@@ -525,12 +628,40 @@ export class FightScene extends Phaser.Scene {
       fighter.sprite.anims.timeScale = scale;
     });
     this.time.delayedCall(duration, () => {
-      this.timeScale = 1;
-      this.tweens.timeScale = 1;
+      this.#restoreTimeScale(260);
       this.fighters?.forEach((fighter) => {
         if (fighter?.sprite?.anims) fighter.sprite.anims.timeScale = 1;
       });
       onComplete?.();
+    });
+  }
+
+  /**
+   * Eases `tweens.timeScale` back up to 1 after slow-motion so a KO sequence
+   * never snaps from 0.25× to full speed. Stepped with the scene clock
+   * (`time` is not scaled by the tween manager), so it always finishes even
+   * if the scene transitions away mid-restore.
+   */
+  #restoreTimeScale(duration = 260) {
+    const running = () => this.scene?.sys?.isActive?.() && this.tweens;
+    if (!running()) {
+      this.timeScale = 1;
+      this.tweens.timeScale = 1;
+      return;
+    }
+    this.timeScale = 1;
+    const from = this.tweens.timeScale;
+    const steps = 6;
+    for (let i = 1; i <= steps; i += 1) {
+      const t = i / steps;
+      this.time.delayedCall(duration * t, () => {
+        if (!running()) return;
+        const eased = 1 - Math.pow(1 - t, 3); // cubic ease-out
+        this.tweens.timeScale = from + (1 - from) * eased;
+      });
+    }
+    this.time.delayedCall(duration + 16, () => {
+      if (running()) this.tweens.timeScale = 1;
     });
   }
 

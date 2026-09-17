@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
 import { DEPTH, EVENTS, FONTS, GAME_WIDTH, MODE, SCENES } from '../config/constants.js';
-import { COLORS, CSS_COLORS, getSkin } from '../config/palette.js';
+import { COLORS, CSS_COLORS, colorblindFill, getSkin } from '../config/palette.js';
 import { ROUND_RULES } from '../config/balance.js';
 import { Bar } from '../ui/Bar.js';
 import { pulse, shakeObject, slideIn } from '../utils/fx.js';
 import { bus, on } from '../core/EventBus.js';
 import { audio } from '../audio/index.js';
+import { settings } from '../core/Settings.js';
 
 /**
  * Heads up display.
@@ -24,6 +25,7 @@ export class HudScene extends Phaser.Scene {
     this.enemyName = data.enemyName ?? 'RIVAL';
     this.playerSkin = getSkin(data.playerSkin);
     this.enemySkin = getSkin(data.enemySkin);
+    this.roundsToWin = data.roundsToWin ?? ROUND_RULES.roundsToWin;
     this.round = 1;
     this.wins = { player: 0, enemy: 0 };
   }
@@ -57,6 +59,7 @@ export class HudScene extends Phaser.Scene {
 
   #buildBars() {
     const barY = 96;
+    const colorblind = settings.get('colorblindMode');
 
     this.playerGroup = this.add.container(0, 0).setDepth(DEPTH.UI);
     this.enemyGroup = this.add.container(0, 0).setDepth(DEPTH.UI);
@@ -66,7 +69,7 @@ export class HudScene extends Phaser.Scene {
       y: barY,
       width: 700,
       height: 46,
-      fillColor: COLORS.green,
+      fillColor: colorblindFill(COLORS.green, colorblind),
       lagColor: COLORS.gold,
       flip: false,
     });
@@ -76,7 +79,7 @@ export class HudScene extends Phaser.Scene {
       y: barY,
       width: 700,
       height: 46,
-      fillColor: COLORS.red,
+      fillColor: colorblindFill(COLORS.red, colorblind),
       lagColor: COLORS.gold,
       flip: true,
     });
@@ -164,7 +167,7 @@ export class HudScene extends Phaser.Scene {
 
   #buildPips() {
     this.pips = { player: [], enemy: [] };
-    for (let i = 0; i < ROUND_RULES.roundsToWin; i += 1) {
+    for (let i = 0; i < this.roundsToWin; i += 1) {
       const playerPip = this.add
         .circle(180 + i * 46, 78, 16, 0x000000, 0.5)
         .setStrokeStyle(4, COLORS.gold, 0.7)
@@ -241,8 +244,22 @@ export class HudScene extends Phaser.Scene {
     pulse(this.roundText, { amount: 1.15, duration: 180, baseScale: 1 });
   }
 
-  #onRoundEnd() {
+  #onRoundEnd({ winner, playerWins, enemyWins }) {
+    this.wins.player = playerWins ?? this.wins.player;
+    this.wins.enemy = enemyWins ?? this.wins.enemy;
     this.#refreshPips();
+    // Pop the freshly-filled pip for the round's winner.
+    const pip = winner === 'draw' ? null : this.pips?.[winner]?.[this.wins[winner] - 1];
+    if (pip?.scene) {
+      pip.setScale(0.4).setAlpha(0.2);
+      this.tweens.add({
+        targets: pip,
+        scale: 1,
+        alpha: 1,
+        duration: 320,
+        ease: 'Back.easeOut',
+      });
+    }
   }
 
   #refreshPips() {

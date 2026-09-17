@@ -45,6 +45,23 @@ export function createAnimations(scene) {
       repeat: definition.loop ? -1 : 0,
       repeatDelay: definition.repeatDelay ?? 0,
     });
+
+    // The free-tex-packer atlases export a `pivot` of (0.5, 0.5) — the centre
+    // of the 1280x720 art board. Phaser treats that as a custom pivot and
+    // re-applies it as the sprite origin every time a frame changes, clobbering
+    // the `SPRITE_ORIGIN` anchor the game relies on to keep feet on the floor
+    // (fighters otherwise render roughly half a body below the ground line).
+    //
+    // The game always sets `SPRITE_ORIGIN` explicitly on monkey sprites, so the
+    // packer pivot is never wanted: clear it here, once, and every scene that
+    // plays these animations (fight, menu, setup, gallery) stays grounded.
+    const texture = scene.textures.get(textureKey);
+    const pivotFrames = texture ? texture.getFramesFromTextureSource(0) : [];
+    pivotFrames.forEach((frame) => {
+      frame.customPivot = false;
+      frame.pivotX = 0;
+      frame.pivotY = 0;
+    });
   });
 }
 

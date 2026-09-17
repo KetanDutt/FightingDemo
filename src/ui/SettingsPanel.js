@@ -20,8 +20,8 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
     const {
       x = GAME_WIDTH / 2,
       y = GAME_HEIGHT / 2,
-      width = 900,
-      height = 820,
+      width = 1160,
+      height = 780,
       onClose = null,
       /** Hide controls that make no sense mid-match. */
       compact = false,
@@ -54,7 +54,7 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
     this.add(panel);
 
     const title = scene.add
-      .text(0, -height / 2 + 62, 'SETTINGS', {
+      .text(0, -height / 2 + 60, 'SETTINGS', {
         fontFamily: FONTS.DISPLAY,
         fontSize: '54px',
         fontStyle: 'bold',
@@ -63,48 +63,42 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
       .setOrigin(0.5);
     this.add(title);
 
-    let rowY = -height / 2 + 170;
-    const rowGap = 108;
-    const left = -width / 2 + 70;
+    this.controls = [];
+
+    /* ------------------------- two-column layout ------------------------- */
+
+    const divider = scene.add.graphics();
+    divider.lineStyle(2, COLORS.gold, 0.15);
+    divider.lineBetween(0, -height / 2 + 120, 0, height / 2 - 120);
+    this.add(divider);
+
+    // Left column: volume / shake sliders.
+    const leftX = -width / 2 + 60;
+    let leftY = -height / 2 + 180;
 
     const addSlider = (label, key) => {
       const slider = new Slider(scene, {
-        x: left,
-        y: rowY,
-        width: width - 260,
+        x: leftX,
+        y: leftY,
+        width: width * 0.42,
         value: settings.get(key),
         label,
         onChange: (value) => settings.set(key, value),
       });
       this.add(slider);
       this.controls.push(() => slider.setValue(settings.get(key), { silent: true }));
-      rowY += rowGap;
+      leftY += 96;
       return slider;
     };
-
-    this.controls = [];
 
     addSlider('Master volume', 'masterVolume');
     addSlider('Sound effects', 'sfxVolume');
     addSlider('Music', 'musicVolume');
     addSlider('Screen shake', 'screenShake');
 
-    const motionToggle = new Toggle(scene, {
-      x: left,
-      y: rowY - 10,
-      label: 'Reduced motion',
-      value: settings.get('reducedMotion'),
-      onChange: (value) => settings.set('reducedMotion', value),
-    });
-    this.add(motionToggle);
-    this.controls.push(() =>
-      motionToggle.setValue(settings.get('reducedMotion'), { silent: true }),
-    );
-    rowY += rowGap * 0.78;
-
-    // Particle quality: Off / Normal / High
+    // Particle quality lives under the sliders.
     const qualityLabel = scene.add
-      .text(left, rowY - 10, 'Particles', {
+      .text(leftX, leftY - 6, 'Particles', {
         fontFamily: FONTS.PRIMARY,
         fontSize: '30px',
         color: CSS_COLORS.offWhite,
@@ -114,12 +108,12 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
 
     this.qualityButtons = QUALITY_LABELS.map((label, index) => {
       const button = new Button(scene, {
-        x: left + 220 + index * 180,
-        y: rowY - 10,
-        width: 160,
-        height: 62,
+        x: leftX + 150 + index * 130,
+        y: leftY - 6,
+        width: 116,
+        height: 56,
         label,
-        fontSize: 28,
+        fontSize: 24,
         variant: 'ghost',
         onClick: () => {
           settings.set('particleQuality', index);
@@ -129,38 +123,37 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
       this.add(button);
       return button;
     });
-    rowY += rowGap * 0.8;
 
-    const fpsToggle = new Toggle(scene, {
-      x: left,
-      y: rowY - 10,
-      label: 'Show FPS',
-      value: settings.get('showFps'),
-      onChange: (value) => settings.set('showFps', value),
-    });
-    this.add(fpsToggle);
-    this.controls.push(() => fpsToggle.setValue(settings.get('showFps'), { silent: true }));
+    // Right column: toggles.
+    const rightX = 60;
+    let rightY = -height / 2 + 176;
 
-    rowY += rowGap * 0.78;
-
-    if (!compact) {
-      const touchToggle = new Toggle(scene, {
-        x: left,
-        y: rowY - 10,
-        label: 'On-screen controls',
-        value: settings.get('showTouchControls'),
-        onChange: (value) => settings.set('showTouchControls', value),
+    const addToggle = (label, key) => {
+      const toggle = new Toggle(scene, {
+        x: rightX,
+        y: rightY,
+        label,
+        value: settings.get(key),
+        onChange: (value) => settings.set(key, value),
       });
-      this.add(touchToggle);
-      this.controls.push(() =>
-        touchToggle.setValue(settings.get('showTouchControls'), { silent: true }),
-      );
+      this.add(toggle);
+      this.controls.push(() => toggle.setValue(settings.get(key), { silent: true }));
+      rightY += 82;
+      return toggle;
+    };
+
+    addToggle('Reduced motion', 'reducedMotion');
+    addToggle('Hit-stop (freeze frames)', 'hitStop');
+    addToggle('Show FPS', 'showFps');
+    if (!compact) {
+      addToggle('Colour-blind friendly', 'colorblindMode');
+      addToggle('On-screen controls', 'showTouchControls');
     }
 
     // Footer buttons
-    const footerY = height / 2 - 86;
+    const footerY = height / 2 - 76;
     this.resetButton = new Button(scene, {
-      x: -170,
+      x: -180,
       y: footerY,
       width: 300,
       height: 84,

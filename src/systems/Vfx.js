@@ -56,7 +56,9 @@ export class Vfx {
       .particles(0, 0, FX_TEXTURES.dust, {
         lifespan: { min: 320, max: 700 },
         speed: { min: 40, max: 210 },
-        angle: { min: 180, max: 360 },
+        // Mostly sideways-up sprays, like dirt kicked along the arena floor;
+        // a narrow band points up so footstep puffs still read as a small cloud.
+        angle: { min: 180, max: 250 },
         scale: { start: 0.5, end: 1.4 },
         alpha: { start: 0.55, end: 0 },
         gravityY: -40,

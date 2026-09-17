@@ -61,6 +61,15 @@ test('blocking turns a full hit into chip damage', () => {
   assert.ok(chip < ATTACKS.stomp.damage * 0.5, 'but far less than a clean hit');
 });
 
+test('chipDamage never returns negative or NaN for degenerate input', () => {
+  assert.equal(chipDamage(null), 0);
+  assert.equal(chipDamage(undefined), 0);
+  // Zero-damage + zero-chip data must resolve to zero, not a negative
+  // `|| 0` artifact.
+  const zeroed = { damage: 0, chipDamage: 0 };
+  assert.equal(chipDamage(zeroed), 0);
+});
+
 test('time outs are judged by remaining health', () => {
   assert.equal(judgeTimeout(0.5, 0.2), 'player');
   assert.equal(judgeTimeout(0.1, 0.4), 'enemy');

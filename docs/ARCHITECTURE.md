@@ -22,14 +22,14 @@ ui      ← reusable widgets
 
 | #   | Scene          | Key       | Role                                                          |
 | --- | -------------- | --------- | ------------------------------------------------------------- |
-| 1   | `PreloadScene` | `Preload` | Generates runtime textures, shows the animated loader         |
-| 2   | `BootScene`    | `Boot`    | Loads the 10 sprite atlases + UI art with a live progress bar |
+| 1   | `BootScene`    | `Boot`    | Paints procedural textures, applies globals, adds pointers    |
+| 2   | `PreloadScene` | `Preload` | Loads the 10 sprite atlases + UI art with a live progress bar |
 | 3   | `MenuScene`    | `Menu`    | Title, menu list, animated monkey idle                        |
-| 4   | `SetupScene`   | `Setup`   | Mode / difficulty / rounds selection                          |
+| 4   | `SetupScene`   | `Setup`   | Mode / difficulty / round-count / skin selection              |
 | 5   | `FightScene`   | `Fight`   | The match itself (arena, fighters, combat, rounds)            |
-| 6   | `HudScene`     | `Hud`     | Overlay: health bars, timer, combo counter, banners           |
+| 6   | `HudScene`     | `Hud`     | Overlay: health bars, timer, pips, combo counter              |
 | 7   | `PauseScene`   | `Pause`   | Overlay: pause menu + live settings panel                     |
-| 8   | `ResultsScene` | `Results` | Match summary, score, rematch / change setup / menu           |
+| 8   | `ResultsScene` | `Results` | Match summary, score, rematch / menu                          |
 | 9   | `GalleryScene` | `Gallery` | Animation viewer — scrub every sprite in the library          |
 
 `Hud` and `Pause` run **in parallel** with `Fight` (launched/slept by `FightScene`), which keeps
@@ -38,11 +38,11 @@ stopping Phaser's render loop.
 
 ```
         ┌──────────┐
-        │ Preload  │
+        │   Boot   │
         └────┬─────┘
              ▼
         ┌──────────┐   ┌────────┐
-        │   Boot   ├─► │  Menu  │◄──────────────┐
+        │ Preload  ├─► │  Menu  │◄──────────────┐
         └──────────┘   └───┬────┘               │
                            ▼                    │
                       ┌─────────┐               │
@@ -212,11 +212,20 @@ frameOffsetX = SPRITE_ANCHOR.x - spriteSourceSize.x
 frameOffsetY = SPRITE_ANCHOR.y - spriteSourceSize.y
 ```
 
-The anchor is applied as `(frameOffsetX / frameWidth, frameOffsetY / frameHeight)` so that:
+The anchor is applied as a **sprite origin**, not per-frame offsets: every monkey sprite is
+created with `setOrigin(SPRITE_ORIGIN.x, SPRITE_ORIGIN.y)` where `SPRITE_ORIGIN` is the anchor
+normalised against the 1280 × 720 art board. That keeps:
 
-- the **feet** of every animation sit on the same ground line (no bobbing between idle/jump/die),
-- the **body centre** is stable, so hitboxes stay aligned when the animation changes,
-- flipping the sprite for the facing direction is a mirror around the body, not the crop.
+- the **feet** of every animation on the same ground line (no bobbing between idle/jump/die),
+- the **body centre** stable, so hitboxes stay aligned when the animation changes,
+- flipping the sprite for the facing direction a mirror around the body, not the crop.
+
+> ⚠️ **The `pivot` hazard.** Every atlas also exports `"pivot": { "x": 0.5, "y": 0.5 }` — the
+> centre of the art board. Phaser's atlas parser records that as a _custom pivot_ and re-applies
+> it as the sprite origin on **every frame change**, silently clobbering `SPRITE_ORIGIN` and
+> dropping the fighter roughly half a body below the ground line. `createAnimations()` therefore
+> clears the packer pivot once at load time (`frame.customPivot = false`); every scene sets the
+> origin explicitly, so this is always safe.
 
 `src/utils/frames.js` builds and caches those anchors; `src/data/animations.js` holds the
 manifest. `tests/unit/assets.test.mjs` asserts the invariant on disk, so a bad re-export fails CI.
@@ -230,7 +239,7 @@ manifest. `tests/unit/assets.test.mjs` asserts the invariant on disk, so a bad r
 | Helper                                | Job                                                                                                                                                                               |
 | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `sortedFrameNames(scene, textureKey)` | Reads the atlas frame list and sorts it with `naturalCompare` — the JSON order in the atlases is _not_ sorted, so `Idol_png_0002.png` would otherwise precede `Idol_png_0001.png` |
-| `createAnimations(scene)`             | Registers one Phaser animation per entry of `ANIMATION_DATA`                                                                                                                      |
+| `createAnimations(scene)`             | Registers one Phaser animation per entry of `ANIMATION_DATA` **and clears the packer `pivot`** so the feet stay anchored                                                          |
 | `getFrameBody(sprite)`                | Returns the current frame's trimmed rect so VFX can be anchored to the body, not the crop                                                                                         |
 
 `Fighter` then drives playback by **state, never by clip name** (`#setState()` calls

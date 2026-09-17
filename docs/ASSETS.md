@@ -67,13 +67,18 @@ Each animation is a **JSON hash atlas** (Free Tex Packer 0.6.7) with one PNG:
 }
 ```
 
-Two things matter:
+Three things matter:
 
 1. **`sourceSize` is always 1280 × 720** and is _always kept_ (trimming is enabled, but the source
    size is not stripped). That is what makes the anchor maths possible.
 2. **Frame order in the JSON is not the play order.** Frames are always re-sorted with
    `naturalCompare` (`src/utils/math.js`) before an animation is registered, because
    `Idol_png_0010.png` sorts after `Idol_png_0002.png` only with a natural sort.
+3. **The `pivot` field is ignored on purpose.** Every frame exports `"pivot": { "x": 0.5, "y": 0.5 }`,
+   which Phaser would otherwise treat as a custom pivot and re-apply as the sprite origin on each
+   frame change, dropping the fighter below the ground line. `createAnimations()` clears it at
+   load time — if you re-export the atlases, keep the pivot at 0.5 or the game will happily use
+   your value instead of the feet anchor.
    `tests/unit/assets.test.mjs` fails if a re-export ever breaks either of these.
 
 ---

@@ -24,12 +24,12 @@ npm run test:smoke
 
 Located in `tests/unit/`. Each file is a self-contained Node test module:
 
-| File | What it tests |
-|------|---------------|
-| `math.test.mjs` | clamp, lerp, weightedPick, naturalCompare, formatAccuracy, formatClock |
-| `balance.test.mjs` | damageScale, scaledDamage, chipDamage, boxesOverlap, judgeTimeout |
-| `ai.test.mjs` | AI profile validation, weightedPick against all profiles |
-| `assets.test.mjs` | Animation data integrity, texture keys exist, all atlas folders referenced |
+| File               | What it tests                                                              |
+| ------------------ | -------------------------------------------------------------------------- |
+| `math.test.mjs`    | clamp, lerp, weightedPick, naturalCompare, formatAccuracy, formatClock     |
+| `balance.test.mjs` | damageScale, scaledDamage, chipDamage, boxesOverlap, judgeTimeout          |
+| `ai.test.mjs`      | AI profile validation, weightedPick against all profiles                   |
+| `assets.test.mjs`  | Animation data integrity, texture keys exist, all atlas folders referenced |
 
 ### Writing a New Unit Test
 

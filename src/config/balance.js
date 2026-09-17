@@ -143,6 +143,16 @@ export const ROUND_RULES = {
   endDuration: 2600,
   /** Slow motion scale + duration used for KOs. */
   koSlowMotion: { scale: 0.25, duration: 1100 },
+  /** Selectable round counts ("best of N"): the win target and match cap. */
+  roundOptions: [
+    { id: 'first', label: 'FIRST TO 1', roundsToWin: 1, maxRounds: 1 },
+    { id: 'bo3', label: 'FIRST TO 2', roundsToWin: 2, maxRounds: 3 },
+    { id: 'bo5', label: 'FIRST TO 3', roundsToWin: 3, maxRounds: 5 },
+  ],
+  /** Turn a stored selector ('first'|'bo3'|'bo5') into concrete rules. */
+  forSelector: (selector) =>
+    ROUND_RULES.roundOptions.find((option) => option.id === selector) ??
+    ROUND_RULES.roundOptions[1],
 };
 
 export const CAMERA_FX = {

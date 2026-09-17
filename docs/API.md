@@ -21,15 +21,15 @@ unsub();
 
 **Events:**
 
-| Event | Payload | When |
-|-------|---------|------|
-| `health-changed` | `{ side, ratio, hp }` | Fighter takes damage or heals |
-| `round-start` | `{ round, playerWins, enemyWins }` | New round begins |
-| `round-end` | `{ winner, reason, round, ... }` | Round concludes |
-| `timer-changed` | `{ msLeft, seconds }` | Clock ticks |
-| `combo-changed` | `{ count, side }` | Combo increases or expires |
-| `hit` | `{ attacker, defender, damage, blocked, combo, killed }` | Hit resolves |
-| `settings-changed` | `{ settings, changed }` | User changes a setting |
+| Event              | Payload                                                  | When                          |
+| ------------------ | -------------------------------------------------------- | ----------------------------- |
+| `health-changed`   | `{ side, ratio, hp }`                                    | Fighter takes damage or heals |
+| `round-start`      | `{ round, playerWins, enemyWins }`                       | New round begins              |
+| `round-end`        | `{ winner, reason, round, ... }`                         | Round concludes               |
+| `timer-changed`    | `{ msLeft, seconds }`                                    | Clock ticks                   |
+| `combo-changed`    | `{ count, side }`                                        | Combo increases or expires    |
+| `hit`              | `{ attacker, defender, damage, blocked, combo, killed }` | Hit resolves                  |
+| `settings-changed` | `{ settings, changed }`                                  | User changes a setting        |
 
 ---
 
@@ -38,12 +38,12 @@ unsub();
 ```js
 import { settings } from './core/Settings.js';
 
-settings.get('difficulty');    // 'easy' | 'normal' | 'hard'
+settings.get('difficulty'); // 'easy' | 'normal' | 'hard'
 settings.set('difficulty', 'hard');
 settings.toggle('showFps');
-settings.sfxVolume;            // 0..1 (computed: master × sfx × mute)
-settings.musicVolume;          // 0..1
-settings.reset();              // Restore defaults
+settings.sfxVolume; // 0..1 (computed: master × sfx × mute)
+settings.musicVolume; // 0..1
+settings.reset(); // Restore defaults
 ```
 
 ---
@@ -69,14 +69,14 @@ stats.reset();
 ```js
 import { audio } from './audio/index.js';
 
-audio.unlock();                // Call after user gesture
-audio.play('hitHeavy');        // Play named SFX
-audio.playMusic('battle');     // Start music track
-audio.stopMusic(0.6);          // Fade out music
-audio.duckMusic(0.25);         // Lower volume temporarily
-audio.unduckMusic();           // Restore volume
-audio.suspend();               // Tab hidden
-audio.resume();                // Tab visible
+audio.unlock(); // Call after user gesture
+audio.play('hitHeavy'); // Play named SFX
+audio.playMusic('battle'); // Start music track
+audio.stopMusic(0.6); // Fade out music
+audio.duckMusic(0.25); // Lower volume temporarily
+audio.unduckMusic(); // Restore volume
+audio.suspend(); // Tab hidden
+audio.resume(); // Tab visible
 ```
 
 **SFX names:** `uiHover`, `uiClick`, `uiBack`, `uiConfirm`, `uiDenied`, `swingLight`, `swingMedium`, `swingHeavy`, `hitLight`, `hitMedium`, `hitHeavy`, `block`, `jump`, `land`, `step`, `whoosh`, `countdown`, `roundStart`, `fight`, `ko`, `roundWin`, `matchWin`, `matchLose`, `combo`
@@ -110,6 +110,7 @@ fighter.push(direction, dt);
 ```
 
 **Properties:**
+
 - `hp`, `maxHealth`, `healthRatio`
 - `state`, `facing`, `isKO`, `isDown`, `isStunned`
 - `isBlocking`, `isGuarding`, `isAttacking`, `isRecovering`
@@ -125,11 +126,11 @@ const ai = new AiController(enemyFighter, playerFighter, {
   difficulty: 'normal',
 });
 
-ai.update(dt);           // Call each frame
-ai.reset();              // New round
+ai.update(dt); // Call each frame
+ai.reset(); // New round
 ai.setDifficulty('hard'); // Change difficulty
-ai.profile;              // Current AI profile
-ai.live;                 // Adapted profile (after reads)
+ai.profile; // Current AI profile
+ai.live; // Adapted profile (after reads)
 ```
 
 ---
@@ -193,10 +194,10 @@ text.spawn(x, y, 'BLOCK', {
 ```js
 const input = new InputManager(scene, { onPause: () => pause() });
 
-input.update();           // Poll gamepad
+input.update(); // Poll gamepad
 const intent = input.read(); // { moveX, jump, block, attack }
-input.clear();            // On pause/blur
-input.dispose();          // Cleanup
+input.clear(); // On pause/blur
+input.dispose(); // Cleanup
 ```
 
 ---
@@ -223,10 +224,13 @@ btn.setLabel('NEW TEXT');
 
 ```js
 const bar = new Bar(scene, {
-  x, y, width, height,
+  x,
+  y,
+  width,
+  height,
   fillColor: COLORS.green,
   lagColor: COLORS.gold,
-  flip: false,          // true = drain right
+  flip: false, // true = drain right
 });
 
 bar.setValue(0.75, { animate: true });
@@ -250,12 +254,12 @@ nav.dispose();
 
 All gameplay numbers live here:
 
-| Constant | Purpose |
-|----------|---------|
-| `FIGHTER_STATS` | Health, speeds, jump timing, hurtbox |
-| `ATTACKS` | Frame data for punch, headbutt, stomp |
-| `BLOCK` | Chip damage fraction, pushback |
-| `COMBO` | Combo window, scaling |
-| `ROUND_RULES` | Timer, rounds, intro/end durations |
-| `AI_PROFILES` | Per-difficulty AI tuning |
-| `SCORING` | Score formula weights |
+| Constant        | Purpose                               |
+| --------------- | ------------------------------------- |
+| `FIGHTER_STATS` | Health, speeds, jump timing, hurtbox  |
+| `ATTACKS`       | Frame data for punch, headbutt, stomp |
+| `BLOCK`         | Chip damage fraction, pushback        |
+| `COMBO`         | Combo window, scaling                 |
+| `ROUND_RULES`   | Timer, rounds, intro/end durations    |
+| `AI_PROFILES`   | Per-difficulty AI tuning              |
+| `SCORING`       | Score formula weights                 |

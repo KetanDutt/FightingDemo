@@ -55,12 +55,12 @@ Serves `dist/` on `http://localhost:4173` (or the next available port).
 
 ## Build Output
 
-| Path | Size (gzip) | Contents |
-|------|-------------|----------|
-| `index.html` | ~1 KB | Shell with meta tags, splash screen |
-| `assets/` | ~1.8 MB | Sprite atlases (PNG + JSON) |
-| `index-*.js` | ~37 KB | Game code |
-| `phaser-*.js` | ~340 KB | Phaser engine (cached separately) |
+| Path          | Size (gzip) | Contents                            |
+| ------------- | ----------- | ----------------------------------- |
+| `index.html`  | ~1 KB       | Shell with meta tags, splash screen |
+| `assets/`     | ~1.8 MB     | Sprite atlases (PNG + JSON)         |
+| `index-*.js`  | ~37 KB      | Game code                           |
+| `phaser-*.js` | ~340 KB     | Phaser engine (cached separately)   |
 
 ## Configuration
 
@@ -69,6 +69,7 @@ Serves `dist/` on `http://localhost:4173` (or the next available port).
 If deploying to a subdirectory (e.g. `username.github.io/FightingDemo/`):
 
 1. Edit `vite.config.js`:
+
    ```js
    base: '/FightingDemo/',
    ```
@@ -102,7 +103,7 @@ Referrer-Policy: strict-origin-when-cross-origin
 The game exposes a debug surface in the console:
 
 ```js
-window.MonkeyMayhem.game   // Phaser.Game instance
-window.MonkeyMayhem.settings // Current settings
-window.MonkeyMayhem.scene  // Active scene
+window.MonkeyMayhem.game; // Phaser.Game instance
+window.MonkeyMayhem.settings; // Current settings
+window.MonkeyMayhem.scene; // Active scene
 ```

@@ -52,6 +52,25 @@ export const CSS_COLORS = {
 };
 
 /**
+ * Deuteranopia-safe replacement for the red/green fill colours. Health reads
+ * as blue-vs-orange instead of red-vs-green.
+ */
+export const COLORBLIND_FILLS = {
+  /** Replaces `COLORS.red` (enemy health). */
+  red: 0x3f7dff,
+  /** Replaces `COLORS.green` (player health). */
+  green: 0xff9d3f,
+};
+
+/** Picks the accessible fill for a side given the mode flag. */
+export function colorblindFill(hex, enabled) {
+  if (!enabled) return hex;
+  if (hex === COLORS.red) return COLORBLIND_FILLS.red;
+  if (hex === COLORS.green) return COLORBLIND_FILLS.green;
+  return hex;
+}
+
+/**
  * Fighter skins. `tint` is multiplied with the sprite art, so neutral is
  * 0xffffff. `accent` is used for the HUD bar + name plate.
  */

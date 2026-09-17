@@ -297,8 +297,16 @@ export class Arena {
   }
 
   destroy() {
-    this.dust?.destroy();
-    this.leaves?.destroy();
+    // `dust` / `leaves` are also kept in `layers`, so destroy them explicitly
+    // first and then skip them in the sweep to avoid a double destroy.
+    for (const emitter of [this.dust, this.leaves]) {
+      if (!emitter) continue;
+      const index = this.layers.indexOf(emitter);
+      if (index !== -1) this.layers.splice(index, 1);
+      emitter.destroy();
+    }
+    this.dust = null;
+    this.leaves = null;
     this.layers.forEach((layer) => layer?.destroy());
     this.layers.length = 0;
   }

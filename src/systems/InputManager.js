@@ -29,6 +29,9 @@ export class InputManager {
     this.padA = false;
     this.padX = false;
     this.padY = false;
+    // Start (9) / Select (8) under the standard gamepad mapping.
+    this.padStart = false;
+    this.padSelect = false;
 
     const keyboard = scene.input.keyboard;
     if (keyboard) {
@@ -115,10 +118,18 @@ export class InputManager {
     if (pad.X && !this.padX) this.queueAttack('headbutt');
     if (pad.Y && !this.padY) this.queueAttack('stomp');
 
+    // Pause on a freshly pressed Start/Select (button indices 9 and 8).
+    const startDown = pad.isButtonDown(9) || pad.isButtonDown(8);
+    if ((startDown && !this.padStart) || (pad.isButtonDown(8) && !this.padSelect)) {
+      this.onPause?.();
+    }
+
     this.padUp = Boolean(pad.up);
     this.padA = Boolean(pad.A);
     this.padX = Boolean(pad.X);
     this.padY = Boolean(pad.Y);
+    this.padStart = startDown;
+    this.padSelect = pad.isButtonDown(8);
   }
 
   /** Reads and consumes the current intent. Call once per frame. */
@@ -142,7 +153,8 @@ export class InputManager {
     };
 
     this.jumpQueued = false;
-    this.attackQueue.length = 0;
+    // Never truncate the queue here: keeping unconsumed attacks lets the
+    // fighter's own input buffer hold them until it can act again.
     return intent;
   }
 
