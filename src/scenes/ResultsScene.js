@@ -17,7 +17,7 @@ import { Vfx } from '../systems/Vfx.js';
 import { Button } from '../ui/Button.js';
 import { MenuNav } from '../ui/MenuNav.js';
 import { FX_TEXTURES } from '../utils/textures.js';
-import { bob, fadeIn, popIn, slideIn } from '../utils/fx.js';
+import { bob, fadeIn, popIn, slideIn, tweenNumber } from '../utils/fx.js';
 import { formatAccuracy } from '../utils/math.js';
 import { audio } from '../audio/index.js';
 import { settings } from '../core/Settings.js';
@@ -64,14 +64,17 @@ export class ResultsScene extends Phaser.Scene {
     this.#buildButtons();
 
     audio.playMusic('menu');
-    audio.play(this.winner === 'player' ? 'matchWin' : 'matchLose', { volume: 0.9 });
+    audio.play(
+      this.winner === 'player' ? 'matchWin' : this.winner === 'draw' ? 'fanfare' : 'matchLose',
+      { volume: 0.9 },
+    );
 
     if (this.winner === 'player') {
       this.time.addEvent({
         delay: 420,
         loop: true,
         callback: () => {
-          if (!this.scene) return;
+          if (!this.scene?.sys?.isActive()) return;
           this.vfx.celebrate(Phaser.Math.Between(300, GAME_WIDTH - 300), 200, 14);
         },
       });
@@ -109,15 +112,16 @@ export class ResultsScene extends Phaser.Scene {
     popIn(titleText, { from: 0.6, to: 1, duration: 520, ease: 'Back.easeOut' });
     bob(titleText, { offset: -12, duration: 2400 });
 
-    // Portrait of the winning fighter.
-    const skin = getSkin(victory ? this.config.playerSkin : this.config.enemySkin);
+    // Portrait of the winning fighter, off to the side where the stats panel
+    // doesn't bury it. Draws show your own fighter.
+    const skin = getSkin(this.winner === 'enemy' ? this.config.enemySkin : this.config.playerSkin);
     const portrait = this.add
-      .sprite(GAME_WIDTH / 2, GROUND_Y + 40, `${TEXTURE_KEYS.MONKEY}-${ANIMS.IDLE}`)
+      .sprite(300, GROUND_Y + 40, `${TEXTURE_KEYS.MONKEY}-${ANIMS.IDLE}`)
       .setOrigin(SPRITE_ORIGIN.x, SPRITE_ORIGIN.y)
-      .setScale(1.5)
+      .setScale(1.15)
       .setTint(skin.tint)
       .setDepth(DEPTH.FIGHTER)
-      .setAlpha(0.92);
+      .setAlpha(0.95);
     portrait.play({ key: ANIMS.IDLE, repeat: -1 });
     if (victory) {
       this.time.delayedCall(700, () => {
@@ -131,9 +135,9 @@ export class ResultsScene extends Phaser.Scene {
     }
 
     const shadow = this.add
-      .image(GAME_WIDTH / 2, GROUND_Y, FX_TEXTURES.shadow)
+      .image(300, GROUND_Y, FX_TEXTURES.shadow)
       .setAlpha(0.4)
-      .setDisplaySize(520, 120)
+      .setDisplaySize(400, 96)
       .setDepth(DEPTH.SHADOW);
     fadeIn(shadow, { duration: 400 });
 
@@ -141,7 +145,11 @@ export class ResultsScene extends Phaser.Scene {
       .text(
         GAME_WIDTH / 2,
         268,
-        victory ? `${skin.name} takes the crown` : 'Better luck next round',
+        victory
+          ? `${skin.name} takes the crown`
+          : this.winner === 'draw'
+            ? 'Dead even — run it back'
+            : 'Better luck next round',
         {
           fontFamily: FONTS.PRIMARY,
           fontSize: '40px',
@@ -155,9 +163,9 @@ export class ResultsScene extends Phaser.Scene {
 
   #buildStats() {
     const panelWidth = 760;
-    const panelHeight = 300;
+    const panelHeight = 340;
     const x = GAME_WIDTH / 2;
-    const y = 470;
+    const y = 480;
 
     const panel = this.add.graphics().setDepth(DEPTH.UI);
     panel.fillStyle(0x000000, 0.4);
@@ -183,11 +191,8 @@ export class ResultsScene extends Phaser.Scene {
       ['Match score', `${Math.round(this.score)}`],
     ];
 
-    // Animate score counter
-    this.scoreValue = 0;
-
     rows.forEach(([label, value], index) => {
-      const rowY = y - 100 + index * 52;
+      const rowY = y - 112 + index * 46;
       const left = this.add
         .text(x - panelWidth / 2 + 48, rowY, label, {
           fontFamily: FONTS.PRIMARY,
@@ -211,18 +216,23 @@ export class ResultsScene extends Phaser.Scene {
       slideIn(left, { from: 20, axis: 'x', duration: 260, delay: 260 + index * 60 });
       slideIn(right, { from: 20, axis: 'x', duration: 260, delay: 280 + index * 60 });
 
-      // Animate score counting up for the last row
+      // Animate score counting up for the last row, ticking as it climbs.
       if (label === 'Match score') {
         this.scoreDisplay = right;
-        this.tweens.add({
-          targets: this,
-          scoreValue: this.score,
+        right.setText('0');
+        let lastTick = 0;
+        tweenNumber(this, {
+          from: 0,
+          to: this.score,
           duration: 1200,
           delay: 300 + index * 60,
           ease: 'Quad.easeOut',
-          onUpdate: () => {
-            if (this.scoreDisplay?.scene) {
-              this.scoreDisplay.setText(`${Math.round(this.scoreValue)}`);
+          onUpdate: (value) => {
+            if (!this.scoreDisplay?.scene) return;
+            this.scoreDisplay.setText(`${Math.round(value)}`);
+            if (value - lastTick >= 250) {
+              lastTick = value;
+              audio.play('tick', { volume: 0.5 });
             }
           },
         });
@@ -279,6 +289,7 @@ export class ResultsScene extends Phaser.Scene {
 
   #rematch() {
     audio.play('uiConfirm');
+    audio.play('transition', { volume: 0.4 });
     this.cameras.main.fadeOut(260, 13, 18, 32);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(SCENES.FIGHT, this.config);
@@ -287,6 +298,7 @@ export class ResultsScene extends Phaser.Scene {
 
   #toMenu() {
     audio.play('uiBack');
+    audio.play('transition', { volume: 0.35 });
     this.cameras.main.fadeOut(260, 13, 18, 32);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(SCENES.MENU);

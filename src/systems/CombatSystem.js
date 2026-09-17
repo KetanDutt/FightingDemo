@@ -5,6 +5,7 @@ import { bus } from '../core/EventBus.js';
 import { audio } from '../audio/index.js';
 import { settings } from '../core/Settings.js';
 import { boxesOverlap, chipDamage, scaledDamage } from './combatMath.js';
+import { vibrate } from '../utils/haptics.js';
 
 const POWER_BY_KEY = { punch: 'light', headbutt: 'medium', stomp: 'heavy' };
 
@@ -88,16 +89,14 @@ export class CombatSystem {
       Math.sign(attacker.x - defender.x) === defender.facing ||
       Math.abs(attacker.x - defender.x) < 40;
     // A guard is either the block button or holding away from the attacker.
+    // Every attack in the game is blockable — including the knock-down heavy.
     const guarded = defender.isBlocking || defender.isGuarding;
-    const blocked = guarded && comesFromFront && !def.knockDown;
+    const blocked = guarded && comesFromFront;
 
     const comboCount = blocked ? 0 : this.#advanceCombo(attacker);
     const damage = blocked ? chipDamage(def) : scaledDamage(def.damage, comboCount);
 
     const result = defender.receiveHit({ def, damage, from: attacker, blocked });
-
-    // Accessibility: hit-stop can be turned off entirely in settings.
-    if (settings.get('hitStop') === false) return 0;
 
     this.#feedback({
       attacker,
@@ -118,6 +117,12 @@ export class CombatSystem {
       combo: comboCount,
       killed: result.killed,
     });
+    if (blocked) {
+      bus.emit(EVENTS.BLOCKED, { attacker, defender, damage: result.damage });
+    }
+    if (result.killed) {
+      bus.emit(EVENTS.KNOCKOUT, { attacker, loser: defender });
+    }
     this.onHit?.({
       attacker,
       defender,
@@ -127,6 +132,9 @@ export class CombatSystem {
       killed: result.killed,
     });
 
+    // Accessibility: hit-stop can be turned off in settings. That only skips
+    // the freeze frames — feedback and stats above always run.
+    if (settings.get('hitStop') === false) return 0;
     return blocked ? Math.round(def.hitStop * 0.4) : def.hitStop;
   }
 
@@ -156,6 +164,9 @@ export class CombatSystem {
 
     // --- SFX ---
     audio.play(blocked ? 'block' : def.sfx.hit, { volume: blocked ? 0.85 : 1 });
+
+    // --- Haptics (touch devices only; no-op everywhere else) ---
+    vibrate(blocked ? 8 : power === 'heavy' ? 45 : 20);
 
     // --- Floating text ---
     if (this.text) {

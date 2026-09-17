@@ -28,6 +28,7 @@ export class HudScene extends Phaser.Scene {
     this.roundsToWin = data.roundsToWin ?? ROUND_RULES.roundsToWin;
     this.round = 1;
     this.wins = { player: 0, enemy: 0 };
+    this.lastCriticalSecond = null;
   }
 
   create() {
@@ -263,18 +264,20 @@ export class HudScene extends Phaser.Scene {
   }
 
   #refreshPips() {
-    this.pips?.player?.forEach((pip, index) => {
-      pip.setFillStyle(
-        index < this.wins.player ? COLORS.gold : 0x000000,
-        index < this.wins.player ? 1 : 0.5,
-      );
-    });
-    this.pips?.enemy?.forEach((pip, index) => {
-      pip.setFillStyle(
-        index < this.wins.enemy ? COLORS.gold : 0x000000,
-        index < this.wins.enemy ? 1 : 0.5,
-      );
-    });
+    // Won pips are solid gold; the deciding pip glows faintly on match point.
+    const paint = (pips, wins) => {
+      pips?.forEach((pip, index) => {
+        if (index < wins) {
+          pip.setFillStyle(COLORS.gold, 1);
+        } else if (index === wins && wins + 1 >= this.roundsToWin) {
+          pip.setFillStyle(COLORS.gold, 0.35);
+        } else {
+          pip.setFillStyle(0x000000, 0.5);
+        }
+      });
+    };
+    paint(this.pips?.player, this.wins.player);
+    paint(this.pips?.enemy, this.wins.enemy);
   }
 
   #onCombo({ count, side = 'player' }) {

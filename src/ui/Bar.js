@@ -40,6 +40,8 @@ export class Bar extends Phaser.GameObjects.Container {
     this.value = 1;
     this.lagValue = 1;
     this.lagDelay = 280;
+    this.valueTween = null;
+    this.lagTween = null;
 
     this.track = scene.add.graphics();
     this.lag = scene.add.graphics();
@@ -129,30 +131,42 @@ export class Bar extends Phaser.GameObjects.Container {
     const { animate = true, duration = 220, delayLag = this.lagDelay } = options;
     const next = clamp01(ratio);
     const previous = this.value;
-    this.value = next;
+
+    // Only our own tweens are restarted — `killTweensOf(this)` would also eat
+    // the danger pulse and the damage flash running on the same container.
+    this.valueTween?.stop();
+    this.lagTween?.stop();
+    this.valueTween = null;
+    this.lagTween = null;
 
     if (!animate) {
+      this.value = next;
       this.lagValue = next;
       this.render();
       return this;
     }
 
-    this.scene.tweens.killTweensOf(this);
-    this.scene.tweens.add({
+    this.valueTween = this.scene.tweens.add({
       targets: this,
       value: next,
       duration: previous > next ? duration : Math.round(duration * 0.6),
       ease: 'Quad.easeOut',
       onUpdate: () => this.render(),
+      onComplete: () => {
+        this.valueTween = null;
+      },
     });
 
-    this.scene.tweens.add({
+    this.lagTween = this.scene.tweens.add({
       targets: this,
       lagValue: next,
       delay: previous > next ? delayLag : 0,
       duration: 460,
       ease: 'Cubic.easeOut',
       onUpdate: () => this.render(),
+      onComplete: () => {
+        this.lagTween = null;
+      },
     });
     return this;
   }

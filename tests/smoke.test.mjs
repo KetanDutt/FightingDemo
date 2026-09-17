@@ -12,6 +12,7 @@
 import assert from 'node:assert/strict';
 import { createHeadlessEnvironment, wait, waitFor } from './helpers/headless.mjs';
 import { ATTACKS } from '../src/config/balance.js';
+import { chipDamage } from '../src/systems/combatMath.js';
 
 const { cleanup, errors } = await createHeadlessEnvironment();
 
@@ -114,14 +115,37 @@ try {
   assert.equal(fight.enemy.isBlocking, true, 'holding block enters the block state');
 
   const hpBeforeBlocked = fight.enemy.hp;
+  // CombatSystem pre-computes final damage (chip or combo-scaled) before
+  // calling receiveHit, so the test mirrors that contract.
   fight.enemy.receiveHit({
     def: ATTACKS.stomp,
-    damage: ATTACKS.stomp.damage,
+    damage: chipDamage(ATTACKS.stomp),
     from: fight.player,
     blocked: true,
   });
   const chip = hpBeforeBlocked - fight.enemy.hp;
-  assert.ok(chip > 0 && chip < ATTACKS.stomp.damage * 0.5, `blocked stomp only chips (${chip})`);
+  assert.equal(chip, ATTACKS.stomp.chipDamage, `blocked stomp chips exactly (${chip})`);
+
+  // Same thing through the live combat path: a held block must stop a stomp.
+  // (Drain the punch loop's buffered attacks first so the stomp is what lands.)
+  fight.inputManager.clear();
+  await waitFor(() => !fight.player.attack && fight.player.canAct, {
+    label: 'player finishes buffered punches',
+    timeout: 8000,
+  });
+  fight.enemy.hp = 100;
+  await waitFor(() => fight.enemy.canAct, { label: 'blockstun expires', timeout: 8000 });
+  let liveChip = null;
+  for (let i = 0; i < 30 && liveChip === null; i += 1) {
+    fight.inputManager.queueAttack('stomp');
+    await wait(150);
+    if (fight.enemy.hp < 100) liveChip = 100 - fight.enemy.hp;
+  }
+  assert.equal(
+    liveChip,
+    ATTACKS.stomp.chipDamage,
+    `live blocked stomp chips exactly (${liveChip})`,
+  );
   fight.enemy.intent = { moveX: 0, jump: false, block: false, attack: null };
 
   // --- Knockout, round flow ------------------------------------------------

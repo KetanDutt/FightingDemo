@@ -139,9 +139,7 @@ export const EVENTS = {
   HIT: 'hit',
   BLOCKED: 'blocked',
   KNOCKOUT: 'knockout',
-  FIGHTER_STATE: 'fighter-state',
   SETTINGS_CHANGED: 'settings-changed',
-  MODE_STARTED: 'mode-started',
 };
 
 /* ------------------------------------------------------------------ *

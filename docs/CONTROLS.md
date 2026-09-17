@@ -36,14 +36,15 @@ Setup screen:
 
 Menus:
 
-| Action            | Keys                                                        |
-| ----------------- | ----------------------------------------------------------- |
-| Move selection    | `↑` `↓` `←` `→` (nearest button in that direction)          |
-| Confirm           | `Enter` / `Space`                                           |
-| Back              | `Esc`                                                       |
-| Menu shortcuts    | `G` = move gallery, `S` = settings (from the main menu)     |
-| Results shortcuts | `Esc` = main menu (`Enter` confirms the highlighted button) |
-| Gallery           | `←` `→` change animation, `Space` play/pause, `Esc` back    |
+| Action            | Keys                                                                          |
+| ----------------- | ----------------------------------------------------------------------------- |
+| Move selection    | `↑` `↓` `←` `→` (nearest button in that direction)                            |
+| Confirm           | `Enter` / `Space`                                                             |
+| Back              | `Esc`                                                                         |
+| Menu shortcuts    | `G` = move gallery, `S` = settings (from the main menu)                       |
+| Results shortcuts | `Esc` = main menu (`Enter` confirms the highlighted button)                   |
+| Gallery           | `←` `→` / `↑` `↓` change animation, `Space` play/pause, `L` loop, `Esc` back  |
+| Fight extras      | `H` = collapse / expand the controls legend, `R` = reset positions (training) |
 
 ### How blocking works
 
@@ -98,7 +99,8 @@ Notes:
 
 Touch controls appear automatically when the game detects a touch-capable device
 (`src/ui/JoyPad.js`, `src/ui/ActionButtons.js`), and the layout is mirrored so it sits under
-your thumbs.
+your thumbs. They also switch on the moment the screen is first tapped (handy for hybrid
+laptops), and can be forced on any device with the **On-screen controls** setting.
 
 | Control            | Action       |
 | ------------------ | ------------ |
@@ -112,6 +114,19 @@ your thumbs.
 
 Press-and-hold is supported for the block button, and the d-pad does not steal the swipe — the
 page shell (`src/style.css`) disables browser scroll/zoom so the canvas fills the screen.
+
+---
+
+## On-screen help
+
+- **Keyboard players** get a legend pill at the bottom of the arena during fights
+  (`src/ui/ControlsHint.js`): primary keys as chips on the main row, alternates underneath.
+  Click it or press `H` to collapse it to a chip; the **Control hints** setting hides it
+  entirely. It dims itself after a few seconds so it never steals attention mid-match.
+- **Touch players** get the d-pad + action buttons (see above) plus one short toast
+  summarising the layout at the start of the match.
+- The main-menu footer and the pause screen both show a controls recap matching the
+  current device (keys on desktop, touch layout on mobile).
 
 ---
 

@@ -36,7 +36,6 @@ export class GalleryScene extends Phaser.Scene {
     this.index = 0;
     this.loop = true;
     this.speedIndex = 2;
-    this.autoAdvance = false;
 
     this.arena = new Arena(this, { reducedMotion: settings.get('reducedMotion') });
     this.cameras.main.fadeIn(260, 13, 18, 32);
@@ -51,7 +50,10 @@ export class GalleryScene extends Phaser.Scene {
 
     this.input.keyboard?.on('keydown-LEFT', () => this.#step(-1));
     this.input.keyboard?.on('keydown-RIGHT', () => this.#step(1));
+    this.input.keyboard?.on('keydown-UP', () => this.#step(-1));
+    this.input.keyboard?.on('keydown-DOWN', () => this.#step(1));
     this.input.keyboard?.on('keydown-SPACE', () => this.#togglePlay());
+    this.input.keyboard?.on('keydown-L', () => this.#toggleLoop());
     this.input.keyboard?.on('keydown-ESC', () => this.#goBack());
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.input.keyboard?.removeAllListeners();
@@ -103,12 +105,6 @@ export class GalleryScene extends Phaser.Scene {
       .setOrigin(SPRITE_ORIGIN.x, SPRITE_ORIGIN.y)
       .setScale(1.3)
       .setDepth(DEPTH.FIGHTER);
-
-    this.sprite.on(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
-      if (this.autoAdvance && this.sprite.anims.currentAnim) {
-        this.time.delayedCall(320, () => this.#step(1));
-      }
-    });
   }
 
   #buildInfo() {
@@ -181,7 +177,9 @@ export class GalleryScene extends Phaser.Scene {
       .setOrigin(0, 0.5)
       .setDepth(DEPTH.UI);
 
-    slideIn(this.listEntries[0], { from: 20, duration: 200 });
+    this.listEntries.forEach((entry, index) => {
+      slideIn(entry, { from: 20, axis: 'x', duration: 200, delay: index * 35 });
+    });
   }
 
   #buildControls() {
@@ -204,13 +202,26 @@ export class GalleryScene extends Phaser.Scene {
       .setDisplaySize(300, 90)
       .setDepth(DEPTH.UI)
       .setInteractive({ useHandCursor: true });
+    // The art is 257x77, so hover tweens scale around the display size —
+    // tweening to 1 would shrink it back to its native pixels.
+    const nextBase = { x: nextImage.scaleX, y: nextImage.scaleY };
     nextImage.on('pointerup', () => this.#step(1));
     nextImage.on('pointerover', () => {
-      this.tweens.add({ targets: nextImage, scaleX: 1.06, scaleY: 1.06, duration: 120 });
+      this.tweens.add({
+        targets: nextImage,
+        scaleX: nextBase.x * 1.06,
+        scaleY: nextBase.y * 1.06,
+        duration: 120,
+      });
       audio.play('uiHover', { throttleMs: 60 });
     });
     nextImage.on('pointerout', () => {
-      this.tweens.add({ targets: nextImage, scaleX: 1, scaleY: 1, duration: 120 });
+      this.tweens.add({
+        targets: nextImage,
+        scaleX: nextBase.x,
+        scaleY: nextBase.y,
+        duration: 120,
+      });
     });
 
     this.playButton = new Button(this, {
@@ -258,6 +269,21 @@ export class GalleryScene extends Phaser.Scene {
     })
       .setDepth(DEPTH.UI)
       .appear(200);
+
+    this.add
+      .text(
+        GAME_WIDTH / 2 + 130,
+        GAME_HEIGHT - 26,
+        '↑ ↓ / ← →  browse  ·  SPACE  play / pause  ·  L  loop  ·  ESC  back',
+        {
+          fontFamily: FONTS.PRIMARY,
+          fontSize: '24px',
+          color: CSS_COLORS.muted,
+        },
+      )
+      .setOrigin(0.5)
+      .setAlpha(0.8)
+      .setDepth(DEPTH.UI);
   }
 
   /* --------------------------------- logic --------------------------------- */
@@ -328,6 +354,7 @@ export class GalleryScene extends Phaser.Scene {
 
   #goBack() {
     audio.play('uiBack');
+    audio.play('transition', { volume: 0.3 });
     this.cameras.main.fadeOut(220, 13, 18, 32);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(SCENES.MENU);

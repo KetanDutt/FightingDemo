@@ -13,7 +13,7 @@ import {
 import { ATTACKS, BLOCK, FIGHTER_STATS } from '../config/balance.js';
 import { FX_TEXTURES } from '../utils/textures.js';
 import { getFrameBody } from '../utils/frames.js';
-import { clamp } from '../utils/math.js';
+import { approach, clamp } from '../utils/math.js';
 import { audio } from '../audio/index.js';
 
 const WALK_STEP_INTERVAL = 340;
@@ -69,6 +69,7 @@ export class Fighter extends Phaser.GameObjects.Container {
     this.stepTimer = 0;
     this.attack = null;
     this.pendingKnockDown = false;
+    this.actionToken = 0;
     this.velocityX = 0;
     this.isKO = false;
     this.intent = { moveX: 0, jump: false, block: false, attack: null };
@@ -335,14 +336,14 @@ export class Fighter extends Phaser.GameObjects.Container {
     if (block && this.canAct) {
       if (this.state !== FIGHTER_STATE.BLOCK) {
         this.#setState(FIGHTER_STATE.BLOCK);
-        this.sprite.play({ key: ANIMS.BLOCK, repeat: -1 });
+        this.#playAnim(ANIMS.BLOCK, -1);
       }
       return;
     }
 
     if (this.state === FIGHTER_STATE.BLOCK && !block) {
       this.#setState(FIGHTER_STATE.IDLE);
-      this.sprite.play({ key: ANIMS.IDLE, repeat: -1 });
+      this.#playAnim(ANIMS.IDLE, -1);
       return;
     }
 
@@ -352,7 +353,7 @@ export class Fighter extends Phaser.GameObjects.Container {
       const speed = forward ? FIGHTER_STATS.walkForwardSpeed : FIGHTER_STATS.walkBackSpeed;
       if (this.state !== state) {
         this.#setState(state);
-        this.sprite.play({ key: forward ? ANIMS.MOVE_FORWARD : ANIMS.MOVE_BACK, repeat: -1 });
+        this.#playAnim(forward ? ANIMS.MOVE_FORWARD : ANIMS.MOVE_BACK, -1);
       }
       this.x += moveX * speed * (dt / 1000);
       this.x = clamp(this.x, ARENA.left, ARENA.right);
@@ -371,7 +372,7 @@ export class Fighter extends Phaser.GameObjects.Container {
 
     if (this.state !== FIGHTER_STATE.IDLE) {
       this.#setState(FIGHTER_STATE.IDLE);
-      this.sprite.play({ key: ANIMS.IDLE, repeat: -1 });
+      this.#playAnim(ANIMS.IDLE, -1);
     }
   }
 
@@ -398,6 +399,17 @@ export class Fighter extends Phaser.GameObjects.Container {
     this.onEvent?.('state', { fighter: this, state });
   }
 
+  /**
+   * Plays a gameplay animation, resetting any per-hit playback rate first.
+   *
+   * Round-flow animations (KO, celebration, lock/unlock) deliberately bypass
+   * this: they run under slow motion, which owns `anims.timeScale` there.
+   */
+  #playAnim(key, repeat = 0) {
+    this.sprite.anims.timeScale = 1;
+    this.sprite.play({ key, repeat });
+  }
+
   /** Turns to face a world X position. */
   faceTowards(x) {
     const desired = x >= this.x ? 1 : -1;
@@ -413,7 +425,7 @@ export class Fighter extends Phaser.GameObjects.Container {
 
     this.attack = { def, elapsed: 0, phase: 'startup', hasHit: false, key };
     this.#setState(key);
-    this.sprite.play({ key: def.anim, repeat: 0 });
+    this.#playAnim(def.anim, 0);
     audio.play(def.sfx.swing, { volume: 0.9 });
 
     if (def.lunge > 0) {
@@ -448,7 +460,7 @@ export class Fighter extends Phaser.GameObjects.Container {
     } else if (attack.phase === 'recovery' && attack.elapsed >= totalEnd) {
       this.attack = null;
       this.#setState(FIGHTER_STATE.IDLE);
-      this.sprite.play({ key: ANIMS.IDLE, repeat: -1 });
+      this.#playAnim(ANIMS.IDLE, -1);
     }
   }
 
@@ -491,7 +503,7 @@ export class Fighter extends Phaser.GameObjects.Container {
     if (this.state === FIGHTER_STATE.JUMP || !this.canAct) return false;
     this.#setState(FIGHTER_STATE.JUMP);
     this.jumpTimer = FIGHTER_STATS.jumpDuration;
-    this.sprite.play({ key: ANIMS.JUMP, repeat: 0 });
+    this.#playAnim(ANIMS.JUMP, 0);
     audio.play('jump');
     this.vfx?.dustPuff(this.x, GROUND_Y + 4, { amount: 5, scale: 1.2 });
     this.onEvent?.('jump', { fighter: this });
@@ -499,11 +511,14 @@ export class Fighter extends Phaser.GameObjects.Container {
   }
 
   #land() {
-    this.landRecovery = FIGHTER_STATS.landRecovery;
-    this.state = FIGHTER_STATE.IDLE;
-    this.sprite.play({ key: ANIMS.IDLE, repeat: -1 });
     audio.play('land', { volume: 0.8 });
     this.vfx?.dustPuff(this.x, GROUND_Y + 6, { amount: 8, scale: 1.5 });
+    // Hit out of the air? The stun (or knock down) owns the pose now — don't
+    // clobber it back to idle, just take the landing recovery.
+    if (this.isStunned || this.isDown || this.isKO) return;
+    this.landRecovery = FIGHTER_STATS.landRecovery;
+    this.state = FIGHTER_STATE.IDLE;
+    this.#playAnim(ANIMS.IDLE, -1);
   }
 
   /* ---------------------------------- damage -------------------------------- */
@@ -513,7 +528,8 @@ export class Fighter extends Phaser.GameObjects.Container {
    * @returns {{damage:number, blocked:boolean, killed:boolean}}
    */
   receiveHit({ def, damage, from, blocked }) {
-    const applied = blocked ? damage * BLOCK.chipScale : damage;
+    // `damage` arrives final (chip or combo-scaled) from CombatSystem.
+    const applied = damage;
     this.hp = Math.max(0, this.hp - applied);
 
     if (blocked) {
@@ -522,7 +538,7 @@ export class Fighter extends Phaser.GameObjects.Container {
       // Guarding by holding away? Snap into the guard pose so the block reads.
       if (this.state !== FIGHTER_STATE.BLOCK && !this.isKO) {
         this.#setState(FIGHTER_STATE.BLOCK);
-        this.sprite.play({ key: ANIMS.BLOCK, repeat: -1 });
+        this.#playAnim(ANIMS.BLOCK, -1);
       }
       // Block shield flash
       this.vfx?.flash(this.x + this.facing * 80, GROUND_Y - 180, {
@@ -533,11 +549,19 @@ export class Fighter extends Phaser.GameObjects.Container {
       this.onEvent?.('blocked', { fighter: this, damage: applied });
     } else {
       this.attack = null;
+      // Stop a lunge dead: without this the victim slides forward through
+      // their own hitstun on the interrupted attack's tween.
+      this.scene.tweens.killTweensOf(this);
       this.pendingKnockDown = def.knockDown || this.hp <= 0;
       this.hitstunTimer = def.hitstun;
       this.velocityX = from.facing * def.knockback;
       this.#setState(FIGHTER_STATE.HURT);
-      this.sprite.play({ key: ANIMS.HIT, repeat: 0 });
+      this.#playAnim(ANIMS.HIT, 0);
+      // Fit the reaction into the stun so it reads instead of snapping.
+      const duration = this.sprite.anims.currentAnim?.duration ?? 0;
+      if (duration > 0 && def.hitstun > 0) {
+        this.sprite.anims.timeScale = clamp(duration / def.hitstun, 0.8, 2.5);
+      }
 
       // Chromatic hit flash — brief white tint on the sprite.
       this.sprite.setTintFill(0xffffff);
@@ -586,23 +610,24 @@ export class Fighter extends Phaser.GameObjects.Container {
       this.pendingKnockDown = false;
       this.#setState(FIGHTER_STATE.DOWN);
       this.downTimer = FIGHTER_STATS.downDuration;
-      this.sprite.play({ key: ANIMS.DIE, repeat: 0 });
+      this.#playAnim(ANIMS.DIE, 0);
       return;
     }
     this.#setState(FIGHTER_STATE.IDLE);
-    this.sprite.play({ key: ANIMS.IDLE, repeat: -1 });
+    this.#playAnim(ANIMS.IDLE, -1);
   }
 
   #startGetUp() {
     this.#setState(FIGHTER_STATE.GETUP);
     this.getUpTimer = 1000;
     // Reversing the defeat animation gives a convincing get-up.
+    this.sprite.anims.timeScale = 1;
     this.sprite.playReverse({ key: ANIMS.DIE, repeat: 0 }, false);
   }
 
   #finishGetUp() {
     this.#setState(FIGHTER_STATE.IDLE);
-    this.sprite.play({ key: ANIMS.IDLE, repeat: -1 });
+    this.#playAnim(ANIMS.IDLE, -1);
   }
 
   /** Plays the little celebration hop after winning a round. */
@@ -621,12 +646,16 @@ export class Fighter extends Phaser.GameObjects.Container {
         if (this.scene) this.y = GROUND_Y;
       },
     });
-    // Victory punch animation
+    // Victory punch animation (cancelled by a round reset via the token).
+    const token = this.actionToken;
     this.scene.time.delayedCall(700, () => {
+      if (token !== this.actionToken) return;
       if (this.sprite?.scene) {
         this.sprite.play({ key: ANIMS.PUNCH, repeat: 0 });
         this.sprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
-          if (this.sprite?.scene) this.sprite.play({ key: ANIMS.IDLE, repeat: -1 });
+          if (this.sprite?.scene && token === this.actionToken) {
+            this.sprite.play({ key: ANIMS.IDLE, repeat: -1 });
+          }
         });
       }
     });
@@ -651,6 +680,10 @@ export class Fighter extends Phaser.GameObjects.Container {
 
   /** Full reset for a new round. */
   reset(x = this.startX, facing = this.startFacing) {
+    // Bump the token so a delayed celebration from the last round can't fire.
+    this.actionToken = (this.actionToken ?? 0) + 1;
+    this.scene?.tweens?.killTweensOf(this);
+    this.sprite.anims.timeScale = 1;
     this.hp = this.maxHealth;
     this.isKO = false;
     this.attack = null;
@@ -675,10 +708,15 @@ export class Fighter extends Phaser.GameObjects.Container {
     this.onEvent?.('reset', { fighter: this });
   }
 
-  /** Weak push used to keep fighters from overlapping. */
-  push(direction, dt) {
-    this.x += direction * FIGHTER_STATS.pushSpeed * (dt / 1000);
-    this.x = clamp(this.x, ARENA.left, ARENA.right);
+  /**
+   * Gentle separation push used to keep fighters from overlapping.
+   *
+   * `offset` is the desired separation in pixels; the step is capped by
+   * push speed so close contact resolves smoothly instead of teleporting.
+   */
+  push(offset, dt) {
+    const maxStep = FIGHTER_STATS.pushSpeed * (dt / 1000);
+    this.x = clamp(approach(this.x, this.x + offset, maxStep), ARENA.left, ARENA.right);
   }
 
   destroy(fromScene) {

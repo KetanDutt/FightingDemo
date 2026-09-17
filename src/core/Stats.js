@@ -44,7 +44,11 @@ class StatsManager {
     return this.values[key];
   }
 
-  /** Records the outcome of a completed match and returns the updated stats. */
+  /**
+   * Records the outcome of a completed match and returns the updated stats.
+   * `won` is tri-state: `true` win, `false` loss, `null`/draw counts as
+   * neither (but still bumps the match counter).
+   */
   recordMatch({
     won,
     roundsWon = 0,
@@ -55,8 +59,8 @@ class StatsManager {
     playTime = 0,
   }) {
     this.add('matches', 1);
-    if (won) this.add('wins', 1);
-    else this.add('losses', 1);
+    if (won === true) this.add('wins', 1);
+    else if (won === false) this.add('losses', 1);
     this.add('roundsWon', roundsWon);
     this.add('knockouts', knockouts);
     this.add('totalDamage', Math.round(damage));

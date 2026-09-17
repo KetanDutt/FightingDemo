@@ -111,12 +111,8 @@ export const ATTACKS = {
 export const ATTACK_ORDER = ['punch', 'headbutt', 'stomp'];
 
 export const BLOCK = {
-  /** Fraction of damage that gets through a successful block. */
-  chipScale: 0.15,
   /** Pushback applied to the defender on a blocked hit. */
   pushback: 130,
-  /** Minimum time a block must be held to be effective after being hit. */
-  minHoldTime: 0,
 };
 
 export const COMBO = {

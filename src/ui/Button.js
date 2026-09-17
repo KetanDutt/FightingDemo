@@ -148,8 +148,11 @@ export class Button extends Phaser.GameObjects.Container {
     this.border.strokeRoundedRect(-width / 2, -height / 2, width, height, radius);
   }
 
-  #onOver() {
+  #onOver(pointer) {
     if (!this.isEnabled) return;
+    // Touch pointers fire over+out around every tap; only re-arm hover visuals
+    // for the mouse so taps don't double-tween the scale.
+    if (pointer?.wasTouch) return;
     this.#draw(1);
     this.onHover?.(this);
     this.scene?.input?.setDefaultCursor?.('pointer');
@@ -164,6 +167,8 @@ export class Button extends Phaser.GameObjects.Container {
   }
 
   #onOut() {
+    // Sliding off mid-press cancels the click.
+    this.pressed = false;
     if (!this.isEnabled) return;
     this.#draw(0);
     this.scene?.input?.setDefaultCursor?.('default');
@@ -181,6 +186,7 @@ export class Button extends Phaser.GameObjects.Container {
       audio.play('uiDenied', { throttleMs: 120 });
       return;
     }
+    this.pressed = true;
     this.scene.tweens.add({
       targets: this,
       scaleX: this.pressScale,
@@ -190,12 +196,16 @@ export class Button extends Phaser.GameObjects.Container {
     });
   }
 
-  #onUp() {
-    if (!this.isEnabled) return;
+  #onUp(pointer) {
+    const wasPressed = this.pressed;
+    this.pressed = false;
+    // Only a press that started on the button counts as a click; a release
+    // after dragging in from elsewhere just restores the hover state.
+    if (!this.isEnabled || !wasPressed) return;
     this.scene.tweens.add({
       targets: this,
-      scaleX: this.hoverScale,
-      scaleY: this.hoverScale,
+      scaleX: pointer?.wasTouch ? 1 : this.hoverScale,
+      scaleY: pointer?.wasTouch ? 1 : this.hoverScale,
       duration: 110,
       ease: 'Back.easeOut',
     });
@@ -213,8 +223,9 @@ export class Button extends Phaser.GameObjects.Container {
 
   setEnabled(value) {
     this.isEnabled = Boolean(value);
+    this.pressed = false;
     this.setAlpha(this.isEnabled ? 1 : 0.45);
-    this.#draw(this.isEnabled ? 0 : 0);
+    this.#draw(0);
     return this;
   }
 

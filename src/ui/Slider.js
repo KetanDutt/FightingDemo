@@ -3,6 +3,9 @@ import { COLORS, CSS_COLORS } from '../config/palette.js';
 import { FONTS } from '../config/constants.js';
 import { clamp01 } from '../utils/math.js';
 
+// Scratch vector so pointer drags never allocate.
+const scratchPoint = { x: 0, y: 0 };
+
 /**
  * Horizontal slider with drag support.
  *
@@ -86,8 +89,13 @@ export class Slider extends Phaser.GameObjects.Container {
   }
 
   #updateFromPointer(pointer) {
-    const localX = pointer.worldX - this.x;
-    this.setValue(clamp01(localX / this.sliderWidth));
+    // The slider usually lives inside a panel container, so world coordinates
+    // have to be un-projected through the full transform — subtracting the
+    // local `x` would pin every drag to 100%.
+    this.worldMatrix = this.worldMatrix ?? new Phaser.GameObjects.Components.TransformMatrix();
+    this.getWorldTransformMatrix(this.worldMatrix);
+    this.worldMatrix.applyInverse(pointer.worldX, pointer.worldY, scratchPoint);
+    this.setValue(clamp01(scratchPoint.x / this.sliderWidth));
   }
 
   #redraw() {

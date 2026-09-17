@@ -1,4 +1,4 @@
-import { BLOCK, COMBO } from '../config/balance.js';
+import { COMBO } from '../config/balance.js';
 
 /**
  * Pure combat maths, kept free of Phaser so it can be unit tested (and reused
@@ -21,10 +21,16 @@ export function scaledDamage(baseDamage, comboCount) {
   return Math.round(baseDamage * damageScale(comboCount) * 10) / 10;
 }
 
-/** Damage that leaks through a block. */
+/**
+ * Damage that leaks through a block.
+ *
+ * This is the whole chip pipeline: `CombatSystem` calls it once and
+ * `Fighter#receiveHit` applies the result as-is. (An earlier revision scaled
+ * the value twice — here *and* on receipt — which made blocking nearly free.)
+ */
 export function chipDamage(attack) {
   if (!attack) return 0;
-  const raw = attack.chipDamage + (attack.damage - attack.chipDamage) * BLOCK.chipScale;
+  const raw = Number(attack.chipDamage) || 0;
   return raw > 0 ? raw : 0;
 }
 
