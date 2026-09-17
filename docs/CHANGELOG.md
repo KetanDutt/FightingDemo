@@ -5,6 +5,51 @@ All notable changes to this project are documented here. The project follows
 
 ---
 
+## [1.1.0] — 2026-09-17
+
+### Fixed
+
+- **Fighters rendered below the ground.** Every atlas ships a `pivot` of `(0.5, 0.5)` (the art-
+  board centre); Phaser treats that as a custom pivot and re-applies it as the sprite origin on
+  every frame change, silently clobbering the `SPRITE_ORIGIN` feet anchor. `createAnimations()`
+  now clears the packer pivot once at load time, so fighters (and the menu/setup/gallery monkey)
+  stay grounded through every animation.
+- **Input buffering never worked.** `InputManager#read()` discarded the whole attack queue every
+  frame and jumps could not be latched during hitstun, so presses during recovery were dropped.
+  The queue is no longer truncated, and `Fighter` now latches jump/attack inputs for up to 700 ms
+  (`INPUT_BUFFER_MS`) — including during hitstun, attack recovery, knockdown and landing.
+- Locked fighters no longer snap to face the opponent during round intro / pause (`Fighter`).
+- `chipDamage()` no longer returns spurious values for degenerate (zero/null) attack data; the
+  fragile `|| 0` precedence chain is gone and covered by a unit test.
+- `Arena#destroy()` double-destroyed its ambient particle emitters (they also lived in `layers`).
+- Dust particles no longer spray straight down through the floor (emission band narrowed).
+- Victory celebration tween could optionally target a destroyed fighter's `y`; it is now
+  defensive.
+
+### Added
+
+- **Round-count selector** on the setup screen (FIRST TO 1 / 2 / 3 = bo1 / bo3 / bo5), persisted
+  as the `roundCount` setting and honoured by the round state machine, HUD pips and match rules.
+- **Round intro reveal**: fighters pin in from their corners with a camera push-in (a dedicated
+  `FightScene#revealFighters()`). Removed the close-then-pull camera double-zoom it replaced.
+- **Call-outs**: golden "K.O." on every knockout, "TIME" on timeouts, and a "PERFECT!" fanfare +
+  burst when a fighter wins a round untouched.
+- **Eased slow-motion recovery**: `FightScene#restoreTimeScale()` ramps time back to 1× instead
+  of snapping after a KO.
+- **Colour-blind mode** (`colorblindMode`): health bars switch from red/green to blue/orange.
+- **Hit-stop toggle** (`hitStop`): freeze frames on hit can be disabled for accessibility.
+- **HUD round-pip flourish**: the newly-earned pip pops in when a round is awarded.
+- Settings panel redesigned into a two-column layout to fit the new toggles.
+
+### Changed
+
+- `ROUND_RULES` grew `roundOptions` + `forSelector()`; `FightScene` reads `roundRules` from the
+  selected option instead of hard-coded bo3 constants.
+- Docs now describe the features that were actually shipped (round count, buffering, call-outs,
+  accessibility) — see README, GAME_DESIGN, CONTROLS, SETTINGS, ARCHITECTURE.
+
+---
+
 ## [1.0.0] — 2026-09-12
 
 First release of the rebuilt project. The game was re-implemented from scratch around the

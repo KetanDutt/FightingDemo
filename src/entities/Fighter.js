@@ -17,6 +17,8 @@ import { clamp } from '../utils/math.js';
 import { audio } from '../audio/index.js';
 
 const WALK_STEP_INTERVAL = 340;
+/** How long an input pressed mid-stun / mid-attack is buffered before it drops. */
+const INPUT_BUFFER_MS = 700;
 
 /**
  * A fighter.
@@ -70,12 +72,18 @@ export class Fighter extends Phaser.GameObjects.Container {
     this.velocityX = 0;
     this.isKO = false;
     this.intent = { moveX: 0, jump: false, block: false, attack: null };
+    /** Edge-triggered inputs pressed while unable to act, aged out over time. */
+    this.jumpBuffered = false;
+    this.jumpBufferedTimer = 0;
+    this.attackBuffered = null;
+    this.attackBufferedTimer = 0;
     this.frameBody = {
       offsetX: 0,
       feetOffsetY: 0,
       halfWidth: SPRITE_ANCHOR.halfWidth,
       height: SPRITE_ANCHOR.height,
     };
+    this.frameBodyKey = null;
 
     this.sprite = scene.add
       .sprite(0, 0, `${TEXTURE_KEYS.MONKEY}-${ANIMS.IDLE}`)
@@ -199,7 +207,38 @@ export class Fighter extends Phaser.GameObjects.Container {
       if (this.downTimer === 0) this.#startGetUp();
     }
     if (this.attack) this.#updateAttack(dt);
+    if (this.attackBuffered) {
+      this.attackBufferedTimer = Math.max(0, this.attackBufferedTimer - dt);
+      if (this.attackBufferedTimer === 0) this.attackBuffered = null;
+    }
+    if (this.jumpBuffered) {
+      this.jumpBufferedTimer = Math.max(0, this.jumpBufferedTimer - dt);
+      if (this.jumpBufferedTimer === 0) this.jumpBuffered = false;
+    }
     this.stateElapsed += dt;
+  }
+
+  /**
+   * Latch edge-triggered input for a short window so it fires the moment the
+   * fighter can act again (the input buffer). Level inputs (move/block) are
+   * not buffered — they are re-read every frame.
+   */
+  #absorbIntent(intent) {
+    if (!intent) return;
+    // Jump is a one-frame latch: absorb it so it fires the frame we are free.
+    if (intent.jump && !this.jumpBuffered) {
+      this.jumpBuffered = true;
+      this.jumpBufferedTimer = INPUT_BUFFER_MS;
+    }
+    if (intent.attack && !this.attackBuffered) {
+      this.attackBuffered = intent.attack;
+      this.attackBufferedTimer = INPUT_BUFFER_MS;
+    } else if (intent.attack && this.attackBufferedTimer > INPUT_BUFFER_MS - 120) {
+      // Only the newest buffered attack wins, but never overwrite a move that
+      // is about to fire (first frame of freedom), so normals can chain.
+      this.attackBuffered = intent.attack;
+      this.attackBufferedTimer = INPUT_BUFFER_MS;
+    }
   }
 
   #updatePhysics(dt) {
@@ -217,7 +256,10 @@ export class Fighter extends Phaser.GameObjects.Container {
 
   #updateState(dt, ctx) {
     if (this.state === FIGHTER_STATE.LOCKED) {
+      // Intro / pause / results: freeze everything but keep visuals alive.
       this.intent = { moveX: 0, jump: false, block: false, attack: null };
+      this.jumpBuffered = false;
+      this.attackBuffered = null;
       return;
     }
 
@@ -229,12 +271,22 @@ export class Fighter extends Phaser.GameObjects.Container {
     if (this.isStunned) {
       if (this.state !== FIGHTER_STATE.HURT && this.hitstunTimer > 0)
         this.#setState(FIGHTER_STATE.HURT);
+      // Buffer edge-triggered inputs pressed during hit stun.
+      this.#absorbIntent(this.intent);
       return;
     }
 
-    if (this.isDown) return;
+    if (this.isDown) {
+      this.#absorbIntent(this.intent);
+      return;
+    }
 
-    if (this.attack) return;
+    if (this.attack) {
+      // Buffering here is what makes chained normals work: hit the next button
+      // during recovery and it fires the instant the recovery ends.
+      this.#absorbIntent(this.intent);
+      return;
+    }
 
     if (this.state === FIGHTER_STATE.JUMP) {
       // Air control at reduced speed.
@@ -244,7 +296,29 @@ export class Fighter extends Phaser.GameObjects.Container {
       return;
     }
 
-    if (this.landRecovery > 0) return;
+    if (this.landRecovery > 0) {
+      this.#absorbIntent(this.intent);
+      return;
+    }
+
+    // Edge-triggered inputs take priority: a buffered jump/attack fires the
+    // frame the fighter is free, before any re-read level input matters.
+    if (!this.canAct) return;
+
+    if (this.jumpBuffered) {
+      this.jumpBuffered = false;
+      if (this.startJump()) {
+        this.x += this.intent.moveX * FIGHTER_STATS.walkForwardSpeed * 0.55 * (dt / 1000);
+        this.x = clamp(this.x, ARENA.left, ARENA.right);
+        return;
+      }
+    }
+
+    if (this.attackBuffered) {
+      const key = this.attackBuffered;
+      this.attackBuffered = null;
+      if (this.startAttack(key)) return;
+    }
 
     const { moveX, jump, block, attack } = this.intent;
 
@@ -302,7 +376,13 @@ export class Fighter extends Phaser.GameObjects.Container {
   }
 
   #updateVisual() {
-    this.frameBody = getFrameBody(this.sprite);
+    // Frame body metrics only change when the frame changes — most frames the
+    // cached values are still valid and we can skip the read-back.
+    const frameKey = this.sprite.frame?.name;
+    if (frameKey !== this.frameBodyKey) {
+      this.frameBody = getFrameBody(this.sprite);
+      this.frameBodyKey = frameKey;
+    }
     const lift = this.airborneHeight;
     const shrink = clamp(1 - lift / 900, 0.35, 1);
     this.shadow.setAlpha(0.45 * shrink);
@@ -485,6 +565,8 @@ export class Fighter extends Phaser.GameObjects.Container {
     this.hitstunTimer = 0;
     this.blockstunTimer = 0;
     this.attack = null;
+    this.jumpBuffered = false;
+    this.attackBuffered = null;
     this.velocityX = 0;
     this.#setState(FIGHTER_STATE.KO);
     this.sprite.play({ key: ANIMS.DIE, repeat: 0 });
@@ -530,13 +612,13 @@ export class Fighter extends Phaser.GameObjects.Container {
     this.sprite.play({ key: ANIMS.IDLE, repeat: -1 });
     this.scene.tweens.add({
       targets: this,
-      y: GROUND_Y - 70,
+      y: { from: GROUND_Y, to: GROUND_Y - 70 },
       duration: 320,
       yoyo: true,
       repeat: 2,
       ease: 'Sine.easeInOut',
       onComplete: () => {
-        this.y = GROUND_Y;
+        if (this.scene) this.y = GROUND_Y;
       },
     });
     // Victory punch animation
@@ -580,6 +662,9 @@ export class Fighter extends Phaser.GameObjects.Container {
     this.landRecovery = 0;
     this.velocityX = 0;
     this.pendingKnockDown = false;
+    this.jumpBuffered = false;
+    this.attackBuffered = null;
+    this.frameBodyKey = null;
     this.x = x;
     this.y = GROUND_Y;
     this.facing = facing;

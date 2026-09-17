@@ -12,7 +12,7 @@ import {
   SPRITE_ORIGIN,
   TEXTURE_KEYS,
 } from '../config/constants.js';
-import { AI_PROFILES } from '../config/balance.js';
+import { AI_PROFILES, ROUND_RULES } from '../config/balance.js';
 import { COLORS, CSS_COLORS, SKINS, getSkin } from '../config/palette.js';
 import { Arena } from '../systems/Arena.js';
 import { Button } from '../ui/Button.js';
@@ -33,6 +33,7 @@ export class SetupScene extends Phaser.Scene {
   init(data = {}) {
     this.mode = data.mode ?? MODE.ARCADE;
     this.difficulty = settings.get('difficulty');
+    this.roundCount = settings.get('roundCount') ?? 'bo3';
     this.playerSkinId = settings.get('lastSkin');
     this.enemySkinId = this.#contrastingSkin(this.playerSkinId);
   }
@@ -50,6 +51,7 @@ export class SetupScene extends Phaser.Scene {
     this.#buildPreviews();
     this.#buildSkinPicker();
     this.#buildDifficultyPicker();
+    this.#buildRoundPicker();
     this.#buildFooter();
 
     this.input.keyboard?.on('keydown-ENTER', () => this.#startFight());
@@ -85,7 +87,7 @@ export class SetupScene extends Phaser.Scene {
         212,
         this.mode === MODE.TRAINING
           ? 'No timer, no knockouts — practise freely.'
-          : 'Best of 3 rounds · 60 seconds per round',
+          : 'First to win the round count below · 60 seconds per round',
         {
           fontFamily: FONTS.PRIMARY,
           fontSize: '34px',
@@ -262,7 +264,7 @@ export class SetupScene extends Phaser.Scene {
         const profile = AI_PROFILES[key];
         const button = new Button(this, {
           x: GAME_WIDTH / 2 + (index - 1) * 340,
-          y: 730,
+          y: 700,
           width: 310,
           height: 104,
           label: profile.label.toUpperCase(),
@@ -270,13 +272,13 @@ export class SetupScene extends Phaser.Scene {
           variant: 'ghost',
           onClick: () => this.#selectDifficulty(key),
         }).setDepth(DEPTH.UI);
-        button.appear(260 + index * 70);
+        button.appear(200 + index * 70);
         return { key, button };
       },
     );
 
     this.difficultyHint = this.add
-      .text(GAME_WIDTH / 2, 810, '', {
+      .text(GAME_WIDTH / 2, 780, '', {
         fontFamily: FONTS.PRIMARY,
         fontSize: '28px',
         color: CSS_COLORS.offWhite,
@@ -286,7 +288,51 @@ export class SetupScene extends Phaser.Scene {
       .setDepth(DEPTH.UI);
 
     this.#paintDifficulty();
-    if (this.difficultyHint) slideIn(this.difficultyHint, { from: 24, duration: 300, delay: 380 });
+    if (this.difficultyHint) slideIn(this.difficultyHint, { from: 24, duration: 300, delay: 340 });
+  }
+
+  #buildRoundPicker() {
+    if (this.mode === MODE.TRAINING) return;
+
+    const label = this.add
+      .text(GAME_WIDTH / 2, 862, 'ROUNDS', {
+        fontFamily: FONTS.PRIMARY,
+        fontSize: '30px',
+        color: CSS_COLORS.gold,
+      })
+      .setOrigin(0.5)
+      .setDepth(DEPTH.UI);
+    fadeIn(label, { duration: 300, delay: 260 });
+
+    this.roundButtons = ROUND_RULES.roundOptions.map((option, index) => {
+      const button = new Button(this, {
+        x: GAME_WIDTH / 2 + (index - 1) * 200,
+        y: 922,
+        width: 180,
+        height: 64,
+        label: option.label,
+        fontSize: 24,
+        variant: 'ghost',
+        onClick: () => this.#selectRoundCount(option.id),
+      }).setDepth(DEPTH.UI);
+      button.appear(320 + index * 60);
+      return { id: option.id, button };
+    });
+
+    this.#paintRoundPicker();
+  }
+
+  #paintRoundPicker() {
+    this.roundButtons?.forEach(({ id, button }) => {
+      button.setAlpha(id === this.roundCount ? 1 : 0.45);
+    });
+  }
+
+  #selectRoundCount(id) {
+    this.roundCount = id;
+    settings.set('roundCount', id);
+    audio.play('uiClick', { volume: 0.8 });
+    this.#paintRoundPicker();
   }
 
   #paintDifficulty() {
@@ -313,7 +359,7 @@ export class SetupScene extends Phaser.Scene {
   #buildFooter() {
     const back = new Button(this, {
       x: GAME_WIDTH / 2 - 200,
-      y: GAME_HEIGHT - 110,
+      y: GAME_HEIGHT - 70,
       width: 300,
       height: 92,
       label: 'BACK',
@@ -326,7 +372,7 @@ export class SetupScene extends Phaser.Scene {
 
     const fight = new Button(this, {
       x: GAME_WIDTH / 2 + 200,
-      y: GAME_HEIGHT - 110,
+      y: GAME_HEIGHT - 70,
       width: 380,
       height: 92,
       label: 'FIGHT!',
@@ -338,9 +384,14 @@ export class SetupScene extends Phaser.Scene {
       .setDepth(DEPTH.UI)
       .appear(480);
 
-    // One navigation list: the three difficulty buttons, then the footer.
+    // One navigation list: difficulty, round count, then the footer.
     this.nav = new MenuNav(this, {
-      items: [...(this.difficultyButtons ?? []).map((entry) => entry.button), back, fight],
+      items: [
+        ...(this.difficultyButtons ?? []).map((entry) => entry.button),
+        ...(this.roundButtons ?? []).map((entry) => entry.button),
+        back,
+        fight,
+      ],
       startIndex: this.difficultyButtons?.findIndex((entry) => entry.key === this.difficulty) ?? 0,
     });
   }
@@ -362,6 +413,7 @@ export class SetupScene extends Phaser.Scene {
       this.scene.start(SCENES.FIGHT, {
         mode: this.mode,
         difficulty: this.difficulty,
+        roundCount: this.roundCount,
         playerSkin: this.playerSkinId,
         enemySkin: this.enemySkinId,
       });

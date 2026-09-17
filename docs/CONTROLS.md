@@ -25,6 +25,15 @@ presses the same buttons you do.
 | Stomp        | `L` / `C`           |
 | Pause        | `Esc` / `P`         |
 
+Setup screen:
+
+| Action      | Keys                                                   |
+| ----------- | ------------------------------------------------------ |
+| Choose skin | cycle the skin row with `←` `→` focus                  |
+| Difficulty  | arrow-key focus + `Enter`/`Space`                      |
+| Rounds      | select FIRST TO 1 / 2 / 3 with focus + `Enter`/`Space` |
+| Start match | `Enter` (with FIGHT! focused) or `Enter` shortcut      |
+
 Menus:
 
 | Action            | Keys                                                        |
@@ -46,11 +55,17 @@ Menus:
 
 ### Input buffering
 
-- Attacks are queued (up to 2 deep) and fire the instant the fighter can act, so pressing punch
-  a few frames early during recovery still works.
-- Jump is a one-frame latch: tapping it during hitstun still jumps on the first frame you are free.
-- Buffered inputs expire if they sit too long — the buffer is a convenience, not a queue you can
-  preload.
+- Attacks pressed during **recovery, hitstun, knockdown, landing or a locked round** are buffered
+  for up to 700 ms (`INPUT_BUFFER_MS` in `src/entities/Fighter.js`) and fire the instant the
+  fighter can act. Chaining a punch → punch → stomp works by pressing the next button as the
+  previous attack recovers.
+- Jump is a one-frame latch with the same 700 ms window: tapping it during hitstun still jumps
+  on the first free frame.
+- The newest attack in the buffer wins, but nothing overwrites a move about to fire on the first
+  free frame, so committed links always come out.
+- Level inputs (move/block) are never buffered — they are re-read every frame.
+- The low-level `InputManager` queue holds up to two attacks; stale entries expire once they have
+  sat in the buffer too long — the buffer is a convenience, not a queue you can preload.
 
 ---
 
@@ -58,14 +73,15 @@ Menus:
 
 Phaser's gamepad plugin, polled every frame in `InputManager#update()`.
 
-| Action   | Button                                             |
-| -------- | -------------------------------------------------- |
-| Move     | D-pad left/right **or** left stick (deadzone 0.35) |
-| Jump     | D-pad up (edge-triggered)                          |
-| Block    | D-pad down, `B`, `R1` or `R2`                      |
-| Punch    | `A` (bottom face button)                           |
-| Headbutt | `X` (left face button)                             |
-| Stomp    | `Y` (top face button)                              |
+| Action   | Button                                              |
+| -------- | --------------------------------------------------- |
+| Move     | D-pad left/right **or** left stick (deadzone 0.35)  |
+| Jump     | D-pad up (edge-triggered)                           |
+| Block    | D-pad down, `B`, `R1` or `R2`                       |
+| Punch    | `A` (bottom face button)                            |
+| Headbutt | `X` (left face button)                              |
+| Stomp    | `Y` (top face button)                               |
+| Pause    | `Start` or `Select` (standard-mapped indices 9 / 8) |
 
 Face-button names follow the Xbox layout; Phaser maps them onto PlayStation/DualShock pads too,
 so `A`/`X`/`Y` are the same physical positions (bottom / left / top).

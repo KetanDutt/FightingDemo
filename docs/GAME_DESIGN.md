@@ -106,11 +106,12 @@ combos are worth doing, but they are not free, and a raw stomp (17) is still a b
 | Rule           | Value                                                                                                    |
 | -------------- | -------------------------------------------------------------------------------------------------------- |
 | Clock          | 60 s                                                                                                     |
-| Rounds to win  | 2 (best of 3)                                                                                            |
-| Hard cap       | 3 rounds — the match can never exceed this                                                               |
-| Round intro    | 2.1 s ("Round N / Ready… / FIGHT!")                                                                      |
+| Rounds to win  | Selectable: FIRST TO 1 / 2 / 3 (bo1 / bo3 / bo5), default FIRST TO 2                                     |
+| Hard cap       | bo3 caps at 3 rounds, bo5 at 5 — a match can never exceed its option's cap                               |
+| Round intro    | ~2.5 s (fighter reveal + "Round N / Ready… / FIGHT!")                                                    |
 | Round outro    | 2.6 s                                                                                                    |
-| KO slow-motion | 0.25× for 1.1 s                                                                                          |
+| KO slow-motion | 0.25× for 1.1 s, eased back to full speed afterwards                                                     |
+| Call-outs      | "K.O." on every knockout, "TIME" on timeouts, "PERFECT!" for an untouched round                          |
 | Timeout        | Higher health **fraction** wins; exactly level is a **draw** and the round replays with no round awarded |
 | Training mode  | No clock, no round wins, health refills — KO just resets positions                                       |
 

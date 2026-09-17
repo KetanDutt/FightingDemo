@@ -4,38 +4,41 @@ All settings are persisted to `localStorage` under the key `monkey-mayhem:v1:set
 
 ## Audio
 
-| Key | Type | Default | Range | Description |
-|-----|------|---------|-------|-------------|
-| `masterVolume` | number | 0.8 | 0..1 | Global volume multiplier |
-| `sfxVolume` | number | 0.85 | 0..1 | Sound effects volume |
-| `musicVolume` | number | 0.45 | 0..1 | Music volume |
-| `muted` | boolean | false | — | Mute all audio (toggle with M key) |
+| Key            | Type    | Default | Range | Description                        |
+| -------------- | ------- | ------- | ----- | ---------------------------------- |
+| `masterVolume` | number  | 0.8     | 0..1  | Global volume multiplier           |
+| `sfxVolume`    | number  | 0.85    | 0..1  | Sound effects volume               |
+| `musicVolume`  | number  | 0.45    | 0..1  | Music volume                       |
+| `muted`        | boolean | false   | —     | Mute all audio (toggle with M key) |
 
 ## Visuals
 
-| Key | Type | Default | Options | Description |
-|-----|------|---------|---------|-------------|
-| `screenShake` | number | 1 | 0..1 | Camera shake intensity multiplier |
-| `reducedMotion` | boolean | false | — | Disables flashing, reduces particles and shake |
-| `particleQuality` | number | 1 | 0, 1, 2 | Particle count (Off / Normal / High) |
-| `showFps` | boolean | false | — | Show FPS counter during matches |
+| Key               | Type    | Default | Options | Description                                    |
+| ----------------- | ------- | ------- | ------- | ---------------------------------------------- |
+| `screenShake`     | number  | 1       | 0..1    | Camera shake intensity multiplier              |
+| `reducedMotion`   | boolean | false   | —       | Disables flashing, reduces particles and shake |
+| `hitStop`         | boolean | true    | —       | Freeze frames on hit for extra impact          |
+| `colorblindMode`  | boolean | false   | —       | Blue/orange health bars (deuteranopia-safe)    |
+| `particleQuality` | number  | 1       | 0, 1, 2 | Particle count (Off / Normal / High)           |
+| `showFps`         | boolean | false   | —       | Show FPS counter during matches                |
 
 ## Gameplay
 
-| Key | Type | Default | Options | Description |
-|-----|------|---------|---------|-------------|
-| `difficulty` | string | 'normal' | 'easy', 'normal', 'hard' | AI difficulty for arcade mode |
+| Key          | Type   | Default  | Options                  | Description                               |
+| ------------ | ------ | -------- | ------------------------ | ----------------------------------------- |
+| `difficulty` | string | 'normal' | 'easy', 'normal', 'hard' | AI difficulty for arcade mode             |
+| `roundCount` | string | 'bo3'    | 'first', 'bo3', 'bo5'    | Round count selector (FIRST TO 1 / 2 / 3) |
 
 ## Controls
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| `showTouchControls` | boolean | false | Force on-screen controls (auto-enabled on touch devices) |
+| Key                 | Type    | Default | Description                                              |
+| ------------------- | ------- | ------- | -------------------------------------------------------- |
+| `showTouchControls` | boolean | false   | Force on-screen controls (auto-enabled on touch devices) |
 
 ## Cosmetic
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
+| Key        | Type   | Default   | Description                |
+| ---------- | ------ | --------- | -------------------------- |
 | `lastSkin` | string | 'classic' | Last selected fighter skin |
 
 ## Modifying Settings
@@ -74,7 +77,7 @@ on(EVENTS.SETTINGS_CHANGED, ({ settings, changed }) => {
 
 ## Keyboard Shortcuts
 
-| Key | Action |
-|-----|--------|
-| `M` | Toggle mute |
+| Key | Action                         |
+| --- | ------------------------------ |
+| `M` | Toggle mute                    |
 | `S` | Open settings (from main menu) |

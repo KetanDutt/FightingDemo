@@ -23,7 +23,9 @@ export function scaledDamage(baseDamage, comboCount) {
 
 /** Damage that leaks through a block. */
 export function chipDamage(attack) {
-  return attack.chipDamage + (attack.damage - attack.chipDamage) * BLOCK.chipScale || 0;
+  if (!attack) return 0;
+  const raw = attack.chipDamage + (attack.damage - attack.chipDamage) * BLOCK.chipScale;
+  return raw > 0 ? raw : 0;
 }
 
 /** Axis aligned overlap test between an attack box and a body box. */

@@ -40,11 +40,14 @@ npm run dev      # http://localhost:5173
 
 **Gameplay**
 
-- Best-of-3 rounds (1 / 3 / 5 selectable), 60 s round clock, timeout judged on remaining health,
-  draw rounds replayed.
+- **First-to-N rounds** — FIRST TO 1 / 2 / 3 selectable on the setup screen (bo1 / bo3 / bo5),
+  60 s round clock, timeout judged on remaining health, draw rounds replayed.
 - Three attacks with real fighting-game properties — startup / active / recovery frames,
   hitboxes, chip damage through block, knockback, hitstun, blockstun.
-- Scaling combo damage, hitstop, screen shake, KO slow-motion, and a "Finish" call.
+- **Working input buffering** — attacks pressed during recovery land the moment you are free,
+  and a jump latch has never been easier to hit.
+- Scaling combo damage, hitstop, screen shake, KO slow-motion, "K.O." / "TIME" / "PERFECT!"
+  call-outs and a "FINISH!" round-ending banner.
 - Directional blocking (hold **away**), jumping with air drift, walk-forward/back footwork.
 - Three difficulties — the AI telegraphs less, punishes more, blocks smarter and attacks
   more often as you go up.
@@ -53,19 +56,20 @@ npm run dev      # http://localhost:5173
   turtling opponent with heavy chip, guard against a rushdown player, and keep space against a
   jumper.
 - Extras: **Training mode** (infinite health, no clock), an **Animation Gallery** to scrub
-  every sprite in the library, and a results screen with score, accuracy and per-round history.
+  every sprite in the library, and a results screen with score, accuracy and career stats.
 
 **Presentation**
 
 - Curtain-style scene transitions, staggered menu reveals, spring/ease tweens on everything
-  that moves.
-- VFX: impact sparks, radial speed lines, dust puffs, ground cracks, block shields, KO flash,
-  chromatic "damage" flash, screen shake, and a direction-aware hit-veil.
-- Fully procedurally generated audio — a WebAudio synth for SFX plus a small music engine
+  that moves, round-intro fighter reveals and easing in/out of slow motion.
+- VFX: impact sparks, radial speed lines, dust puffs, block shields, KO flash, chromatic
+  "damage" flash, screen shake, and floating damage/combo numbers.
+- Fully procedurally generated audio — a WebAudio synth for 25 SFX plus a small music engine
   (no binary audio assets, so the whole game ships in a couple of megabytes).
 - Smart camera: framing, zoom, look-ahead and shake, all smoothed.
-- Persistent settings (volume, difficulty, rounds, screen shake, hitstop, show FPS, colour-blind
-  palette, control scheme) stored in `localStorage`.
+- Persistent settings (volume, difficulty, round count, screen shake, hit-stop, reduced motion,
+  particle quality, colour-blind bars, show FPS, on-screen controls, skin) stored in
+  `localStorage`, with a two-column settings panel.
 
 **Engineering**
 
@@ -73,9 +77,9 @@ npm run dev      # http://localhost:5173
   same match as a 60 Hz one; large deltas are clamped instead of simulated, so a backgrounded tab
   cannot teleport fighters or resolve a burst of hits.
 - Pure, Phaser-free maths modules → unit-testable without a browser.
-- 31 unit tests + a headless end-to-end smoke test that plays a whole match.
+- 32 unit tests + a headless end-to-end smoke test that plays a whole match.
 - Zero runtime dependencies beyond Phaser; strict ESLint + Prettier; production build code-split
-  so Phaser is cached separately from game code (~37 kB gzipped for the game).
+  so Phaser is cached separately from game code (~41 kB gzipped for the game).
 
 ---
 
@@ -125,7 +129,8 @@ tap-vs-hold behaviour, and the gamepad mapping.
 
 ## Game rules
 
-- **Best of N** rounds (default 3). First to `ceil(N / 2)` round wins takes the match.
+- **First-to-N** rounds. Pick FIRST TO 1 / 2 / 3 on the setup screen (default FIRST TO 2 =
+  best of three; FIRST TO 3 plays up to five rounds).
 - **60 s** per round. On timeout the fighter with the larger health _fraction_ wins the round;
   if it is exactly level the round is a **draw** and is replayed (no round is awarded).
 - **Chip damage**: blocking an attack still costs a sliver of health, so turtling isn't free.
@@ -153,14 +158,14 @@ tap-vs-hold behaviour, and the gamepad mapping.
 │   ├── main.js                 # Phaser game config + scene registration
 │   ├── style.css               # page shell, loader, mobile layout
 │   ├── config/                 # constants, palette, balance (the tuning surface)
-│   ├── core/                   # EventBus, SettingsManager, GameState
-│   ├── utils/                  # math, random, format, tween helpers
+│   ├── core/                   # EventBus, Settings, Stats, Storage
+│   ├── utils/                  # math, random, format, tween helpers, texture factory
 │   ├── data/animations.js      # the sprite library manifest
 │   ├── audio/                  # WebAudio synth + music engine
-│   ├── systems/                # Combat, VFX, Camera, Input, Animator, FloatingText, …
+│   ├── systems/                # Combat, VFX, Camera, Input, Arena, FloatingText, …
 │   ├── entities/               # Fighter, AiController
-│   ├── scenes/                 # Boot, Menu, Setup, Fight, Hud, Pause, Results, Gallery
-│   └── ui/                     # Button, Panel, MenuList, Toggle
+│   ├── scenes/                 # Boot, Preload, Menu, Setup, Fight, Hud, Pause, Results, Gallery
+│   └── ui/                     # Button, Bar, Slider, Toggle, MenuNav, JoyPad, SettingsPanel
 ├── tests/
 │   ├── helpers/headless.mjs    # jsdom + @napi-rs/canvas Phaser shim
 │   ├── smoke.test.mjs          # plays a full match headlessly

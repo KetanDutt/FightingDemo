@@ -3,6 +3,7 @@ import { EVENTS, GROUND_Y } from '../config/constants.js';
 import { CSS_COLORS } from '../config/palette.js';
 import { bus } from '../core/EventBus.js';
 import { audio } from '../audio/index.js';
+import { settings } from '../core/Settings.js';
 import { boxesOverlap, chipDamage, scaledDamage } from './combatMath.js';
 
 const POWER_BY_KEY = { punch: 'light', headbutt: 'medium', stomp: 'heavy' };
@@ -94,6 +95,9 @@ export class CombatSystem {
     const damage = blocked ? chipDamage(def) : scaledDamage(def.damage, comboCount);
 
     const result = defender.receiveHit({ def, damage, from: attacker, blocked });
+
+    // Accessibility: hit-stop can be turned off entirely in settings.
+    if (settings.get('hitStop') === false) return 0;
 
     this.#feedback({
       attacker,

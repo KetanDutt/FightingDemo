@@ -14,9 +14,15 @@ export const DEFAULT_SETTINGS = {
   screenShake: 1,
   /** Reduces flashing, shaking and particle counts. */
   reducedMotion: false,
+  /** Freeze frames on hit (hit-stop) for extra impact. */
+  hitStop: true,
+  /** Deuteranopia-safe blue/orange health bars. */
+  colorblindMode: false,
   /** Particle quality: 0 = off, 1 = normal, 2 = high. */
   particleQuality: 1,
   difficulty: 'normal',
+  /** Default round count selector: FIRST TO 2 = best of three. */
+  roundCount: 'bo3',
   /** Force the on-screen controls even on desktop (useful for touch laptops). */
   showTouchControls: false,
   showFps: false,
@@ -33,8 +39,11 @@ function sanitise(raw) {
     ? Number(settings.particleQuality)
     : 1;
   if (!['easy', 'normal', 'hard'].includes(settings.difficulty)) settings.difficulty = 'normal';
+  if (!['first', 'bo3', 'bo5'].includes(settings.roundCount)) settings.roundCount = 'bo3';
   settings.muted = Boolean(settings.muted);
   settings.reducedMotion = Boolean(settings.reducedMotion);
+  settings.hitStop = Boolean(settings.hitStop);
+  settings.colorblindMode = Boolean(settings.colorblindMode);
   settings.showTouchControls = Boolean(settings.showTouchControls);
   settings.showFps = Boolean(settings.showFps);
   settings.lastSkin = typeof settings.lastSkin === 'string' ? settings.lastSkin : 'classic';
