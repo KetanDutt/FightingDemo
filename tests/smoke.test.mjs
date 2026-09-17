@@ -55,6 +55,9 @@ try {
   setup.scene.start('Fight', {
     mode: 'arcade',
     difficulty: 'hard',
+    // Pinned: the test scripts a best-of-three match; the persisted default
+    // may change (it is now first-to-3) without the smoke test caring.
+    roundCount: 'bo3',
     playerSkin: 'classic',
     enemySkin: 'ember',
   });

@@ -21,8 +21,8 @@ export const DEFAULT_SETTINGS = {
   /** Particle quality: 0 = off, 1 = normal, 2 = high. */
   particleQuality: 1,
   difficulty: 'normal',
-  /** Default round count selector: FIRST TO 2 = best of three. */
-  roundCount: 'bo3',
+  /** Default round count selector: FIRST TO 3 (best of five). */
+  roundCount: 'bo5',
   /** Force the on-screen controls even on desktop (useful for touch laptops). */
   showTouchControls: false,
   /** Bottom-centre keyboard legend during fights (H or click collapses it). */
@@ -41,7 +41,7 @@ function sanitise(raw) {
     ? Number(settings.particleQuality)
     : 1;
   if (!['easy', 'normal', 'hard'].includes(settings.difficulty)) settings.difficulty = 'normal';
-  if (!['first', 'bo3', 'bo5'].includes(settings.roundCount)) settings.roundCount = 'bo3';
+  if (!['first', 'bo3', 'bo5'].includes(settings.roundCount)) settings.roundCount = 'bo5';
   settings.muted = Boolean(settings.muted);
   settings.reducedMotion = Boolean(settings.reducedMotion);
   settings.hitStop = Boolean(settings.hitStop);

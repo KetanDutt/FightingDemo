@@ -106,7 +106,7 @@ combos are worth doing, but they are not free, and a raw stomp (17) is still a b
 | Rule           | Value                                                                                                    |
 | -------------- | -------------------------------------------------------------------------------------------------------- |
 | Clock          | 60 s                                                                                                     |
-| Rounds to win  | Selectable: FIRST TO 1 / 2 / 3 (bo1 / bo3 / bo5), default FIRST TO 2                                     |
+| Rounds to win  | Selectable: FIRST TO 1 / 2 / 3 (bo1 / bo3 / bo5), default FIRST TO 3                                     |
 | Hard cap       | bo3 caps at 3 rounds, bo5 at 5 — a match can never exceed its option's cap                               |
 | Round intro    | ~2.5 s (fighter reveal + "Round N / Ready… / FIGHT!")                                                    |
 | Round outro    | 2.6 s                                                                                                    |
@@ -169,17 +169,17 @@ Two details that matter more than they look:
 
 |                                 | Rookie (easy) | Challenger (normal) | Ape King (hard) |
 | ------------------------------- | ------------- | ------------------- | --------------- |
-| Reaction                        | 820 ms        | 520 ms              | 210 ms          |
-| Decision jitter                 | ±360 ms       | ±240 ms             | ±120 ms         |
-| Aggression                      | 0.18          | 0.34                | 0.74            |
-| Block chance                    | 0.12          | 0.28                | 0.50            |
-| Punish chance                   | 0.10          | 0.26                | 0.58            |
-| Combo chance                    | 0.04          | 0.16                | 0.46            |
-| Preferred spacing               | 600 px        | 480 px              | 350 px          |
-| Attack cooldown                 | 1 100 ms      | 620 ms              | 220 ms          |
-| Retreat below health            | 22 %          | 28 %                | 34 %            |
-| Jump chance                     | 0.04          | 0.08                | 0.13            |
-| Move mix (punch/headbutt/stomp) | 68 / 24 / 8   | 50 / 32 / 18        | 34 / 36 / 30    |
+| Reaction                        | 740 ms        | 400 ms              | 170 ms          |
+| Decision jitter                 | ±340 ms       | ±200 ms             | ±100 ms         |
+| Aggression                      | 0.22          | 0.46                | 0.84            |
+| Block chance                    | 0.15          | 0.36                | 0.58            |
+| Punish chance                   | 0.12          | 0.38                | 0.70            |
+| Combo chance                    | 0.05          | 0.24                | 0.56            |
+| Preferred spacing               | 580 px        | 440 px              | 330 px          |
+| Attack cooldown                 | 950 ms        | 450 ms              | 150 ms          |
+| Retreat below health            | 22 %          | 24 %                | 30 %            |
+| Jump chance                     | 0.05          | 0.10                | 0.16            |
+| Move mix (punch/headbutt/stomp) | 62 / 26 / 12  | 46 / 32 / 22        | 28 / 36 / 36    |
 
 Move mix matters: easy throws mostly pokes, hard throws heavies and knocks you down.
 
@@ -212,9 +212,9 @@ moves and fights back):
 
 | Difficulty | Time to KO (60 s cap) |
 | ---------- | --------------------- |
-| Rookie     | ~43 s                 |
-| Challenger | ~31 s                 |
-| Ape King   | ~17 s                 |
+| Rookie     | ~37 s                 |
+| Challenger | ~17 s                 |
+| Ape King   | ~12 s                 |
 
 ---
 
@@ -222,7 +222,7 @@ moves and fights back):
 
 | Mode         | Description                                                                                                                                                 |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Arcade**   | The default: best of 3 against the AI at the chosen difficulty.                                                                                             |
+| **Arcade**   | The default: first to 3 rounds against the AI at the chosen difficulty (Challenger by default).                                                             |
 | **Training** | Infinite health, no clock, KO just resets. The HUD shows real damage numbers so you can lab combos; the dummy either spars back or stands still for drills. |
 | **Gallery**  | Scrub every animation in the library frame by frame, with the frame data on screen.                                                                         |
 

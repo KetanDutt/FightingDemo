@@ -113,10 +113,11 @@ export class ResultsScene extends Phaser.Scene {
     bob(titleText, { offset: -12, duration: 2400 });
 
     // Portrait of the winning fighter, off to the side where the stats panel
-    // doesn't bury it. Draws show your own fighter.
+    // doesn't bury it. Draws show your own fighter. x=330 keeps the whole
+    // (wide, trimmed) art board inside the left canvas edge.
     const skin = getSkin(this.winner === 'enemy' ? this.config.enemySkin : this.config.playerSkin);
     const portrait = this.add
-      .sprite(300, GROUND_Y + 40, `${TEXTURE_KEYS.MONKEY}-${ANIMS.IDLE}`)
+      .sprite(330, GROUND_Y + 40, `${TEXTURE_KEYS.MONKEY}-${ANIMS.IDLE}`)
       .setOrigin(SPRITE_ORIGIN.x, SPRITE_ORIGIN.y)
       .setScale(1.15)
       .setTint(skin.tint)
@@ -135,7 +136,7 @@ export class ResultsScene extends Phaser.Scene {
     }
 
     const shadow = this.add
-      .image(300, GROUND_Y, FX_TEXTURES.shadow)
+      .image(330, GROUND_Y, FX_TEXTURES.shadow)
       .setAlpha(0.4)
       .setDisplaySize(400, 96)
       .setDepth(DEPTH.SHADOW);

@@ -32,8 +32,10 @@ export class SetupScene extends Phaser.Scene {
 
   init(data = {}) {
     this.mode = data.mode ?? MODE.ARCADE;
-    this.difficulty = settings.get('difficulty');
-    this.roundCount = settings.get('roundCount') ?? 'bo3';
+    // Defaults: Challenger skill, first to 3 rounds (both persisted, so a
+    // deliberate player choice sticks across sessions).
+    this.difficulty = settings.get('difficulty') ?? DIFFICULTY.NORMAL;
+    this.roundCount = settings.get('roundCount') ?? 'bo5';
     this.dummy = 'cpu';
     this.playerSkinId = settings.get('lastSkin');
     this.enemySkinId = this.#contrastingSkin(this.playerSkinId);
@@ -106,8 +108,10 @@ export class SetupScene extends Phaser.Scene {
     this.enemyPreview = this.#createPreview(GAME_WIDTH * 0.71, -1);
     this.#refreshPreviews();
 
+    // Label rows sit between the fighters' feet (GROUND_Y) and the canvas
+    // edge — keep both rows high enough that nothing clips at y 1080.
     this.add
-      .text(GAME_WIDTH * 0.29, GROUND_Y + 92, 'YOU', {
+      .text(GAME_WIDTH * 0.29, GROUND_Y + 72, 'YOU', {
         fontFamily: FONTS.PRIMARY,
         fontSize: '40px',
         fontStyle: 'bold',
@@ -117,7 +121,7 @@ export class SetupScene extends Phaser.Scene {
       .setDepth(DEPTH.UI);
 
     this.enemyLabel = this.add
-      .text(GAME_WIDTH * 0.71, GROUND_Y + 92, 'OPPONENT', {
+      .text(GAME_WIDTH * 0.71, GROUND_Y + 72, 'OPPONENT', {
         fontFamily: FONTS.PRIMARY,
         fontSize: '40px',
         fontStyle: 'bold',
@@ -151,7 +155,7 @@ export class SetupScene extends Phaser.Scene {
     this.enemyPreview.sprite.setTint(enemySkin.tint);
     this.playerName?.destroy();
     this.playerName = this.add
-      .text(GAME_WIDTH * 0.29, GROUND_Y + 148, playerSkin.name, {
+      .text(GAME_WIDTH * 0.29, GROUND_Y + 118, playerSkin.name, {
         fontFamily: FONTS.PRIMARY,
         fontSize: '32px',
         color: CSS_COLORS.offWhite,
@@ -161,7 +165,7 @@ export class SetupScene extends Phaser.Scene {
 
     if (this.enemySkinName) this.enemySkinName.destroy();
     this.enemySkinName = this.add
-      .text(GAME_WIDTH * 0.71, GROUND_Y + 148, enemySkin.name, {
+      .text(GAME_WIDTH * 0.71, GROUND_Y + 118, enemySkin.name, {
         fontFamily: FONTS.PRIMARY,
         fontSize: '32px',
         color: CSS_COLORS.offWhite,
@@ -422,8 +426,10 @@ export class SetupScene extends Phaser.Scene {
   }
 
   #buildFooter() {
+    // Corner anchors: the centre-bottom lanes stay free for the preview
+    // labels (YOU / skin names), which otherwise collide with the buttons.
     const back = new Button(this, {
-      x: GAME_WIDTH / 2 - 200,
+      x: 260,
       y: GAME_HEIGHT - 70,
       width: 300,
       height: 92,
@@ -436,7 +442,7 @@ export class SetupScene extends Phaser.Scene {
       .appear(420);
 
     const fight = new Button(this, {
-      x: GAME_WIDTH / 2 + 200,
+      x: GAME_WIDTH - 260,
       y: GAME_HEIGHT - 70,
       width: 380,
       height: 92,

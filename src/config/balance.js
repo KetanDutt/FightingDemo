@@ -148,7 +148,7 @@ export const ROUND_RULES = {
   /** Turn a stored selector ('first'|'bo3'|'bo5') into concrete rules. */
   forSelector: (selector) =>
     ROUND_RULES.roundOptions.find((option) => option.id === selector) ??
-    ROUND_RULES.roundOptions[1],
+    ROUND_RULES.roundOptions[2],
 };
 
 export const CAMERA_FX = {
@@ -167,49 +167,53 @@ export const CAMERA_FX = {
  *  - spacing: preferred distance to keep (design px)
  *  - attackCooldown: minimum pause between the AI's own attacks (ms). This is
  *    the main "how hard does it hit back" knob.
+ *
+ * Invariants (asserted by tests/unit/ai.test.mjs and the balance tests):
+ * easy.reaction > normal.reaction > hard.reaction, aggression/blockChance
+ * strictly ordered, attack weights sum to 1.
  */
 export const AI_PROFILES = {
   easy: {
     label: 'Rookie',
-    reaction: 820,
-    decisionJitter: 360,
-    aggression: 0.18,
-    blockChance: 0.12,
-    punishChance: 0.1,
-    comboChance: 0.04,
-    spacing: 600,
-    attackCooldown: 1100,
+    reaction: 740,
+    decisionJitter: 340,
+    aggression: 0.22,
+    blockChance: 0.15,
+    punishChance: 0.12,
+    comboChance: 0.05,
+    spacing: 580,
+    attackCooldown: 950,
     retreatHealth: 0.22,
-    jumpChance: 0.04,
-    attackWeights: { punch: 0.68, headbutt: 0.24, stomp: 0.08 },
+    jumpChance: 0.05,
+    attackWeights: { punch: 0.62, headbutt: 0.26, stomp: 0.12 },
   },
   normal: {
     label: 'Challenger',
-    reaction: 520,
-    decisionJitter: 240,
-    aggression: 0.34,
-    blockChance: 0.28,
-    punishChance: 0.26,
-    comboChance: 0.16,
-    spacing: 480,
-    attackCooldown: 620,
-    retreatHealth: 0.28,
-    jumpChance: 0.08,
-    attackWeights: { punch: 0.5, headbutt: 0.32, stomp: 0.18 },
+    reaction: 400,
+    decisionJitter: 200,
+    aggression: 0.46,
+    blockChance: 0.36,
+    punishChance: 0.38,
+    comboChance: 0.24,
+    spacing: 440,
+    attackCooldown: 450,
+    retreatHealth: 0.24,
+    jumpChance: 0.1,
+    attackWeights: { punch: 0.46, headbutt: 0.32, stomp: 0.22 },
   },
   hard: {
     label: 'Ape King',
-    reaction: 210,
-    decisionJitter: 120,
-    aggression: 0.74,
-    blockChance: 0.5,
-    punishChance: 0.58,
-    comboChance: 0.46,
-    spacing: 350,
-    attackCooldown: 220,
-    retreatHealth: 0.34,
-    jumpChance: 0.13,
-    attackWeights: { punch: 0.34, headbutt: 0.36, stomp: 0.3 },
+    reaction: 170,
+    decisionJitter: 100,
+    aggression: 0.84,
+    blockChance: 0.58,
+    punishChance: 0.7,
+    comboChance: 0.56,
+    spacing: 330,
+    attackCooldown: 150,
+    retreatHealth: 0.3,
+    jumpChance: 0.16,
+    attackWeights: { punch: 0.28, headbutt: 0.36, stomp: 0.36 },
   },
 };
 

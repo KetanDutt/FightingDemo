@@ -108,11 +108,14 @@ export class GalleryScene extends Phaser.Scene {
   }
 
   #buildInfo() {
-    const x = GAME_WIDTH * 0.5 + 130;
+    // Top-right column. The old spot (below the fighter, GROUND_Y+150/214)
+    // sat past the bottom canvas edge and under the control row, so the
+    // description and frame data were clipped off-screen.
+    const x = GAME_WIDTH - 290;
     this.nameText = this.add
-      .text(x, GROUND_Y + 92, '', {
+      .text(x, 178, '', {
         fontFamily: FONTS.DISPLAY,
-        fontSize: '58px',
+        fontSize: '54px',
         fontStyle: 'bold',
         color: CSS_COLORS.white,
       })
@@ -120,21 +123,21 @@ export class GalleryScene extends Phaser.Scene {
       .setDepth(DEPTH.UI);
 
     this.descText = this.add
-      .text(x, GROUND_Y + 150, '', {
+      .text(x, 292, '', {
         fontFamily: FONTS.PRIMARY,
-        fontSize: '30px',
+        fontSize: '28px',
         color: CSS_COLORS.offWhite,
         align: 'center',
-        wordWrap: { width: 900 },
+        wordWrap: { width: 470 },
       })
       .setOrigin(0.5)
       .setAlpha(0.8)
       .setDepth(DEPTH.UI);
 
     this.dataText = this.add
-      .text(x, GROUND_Y + 214, '', {
+      .text(x, 384, '', {
         fontFamily: FONTS.PRIMARY,
-        fontSize: '28px',
+        fontSize: '26px',
         color: CSS_COLORS.gold,
       })
       .setOrigin(0.5)

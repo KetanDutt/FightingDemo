@@ -131,3 +131,6 @@ public/assets/raw/
 
 # Scratch / debug scripts
 .tmp/
+
+# Layout audit screenshots (tools/audit-layout.mjs)
+.layout-audit/
