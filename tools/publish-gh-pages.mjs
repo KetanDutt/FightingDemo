@@ -78,6 +78,13 @@ console.log('▶ Looking up the current gh-pages head…');
 // lookup works on single-branch CI checkouts and fresh clones alike.
 const lsRemote = git(['ls-remote', 'origin', `refs/heads/${BRANCH}`], { check: false });
 const parent = lsRemote ? lsRemote.split(/\s+/)[0] : null;
+
+if (parent) {
+  // Shallow CI checkouts only contain `main` objects, and `git commit-tree -p`
+  // needs the parent commit locally — pull the branch's objects into
+  // FETCH_HEAD (an explicit ref, so no remote-tracking refspec is required).
+  git(['fetch', '--no-tags', 'origin', BRANCH]);
+}
 const sourceSha = git(['rev-parse', '--short=9', 'HEAD']);
 
 const dirty = git(['status', '--porcelain'], { check: false });
