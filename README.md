@@ -4,6 +4,10 @@
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF.svg)](https://vitejs.dev)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/Node-%3E%3D18-green.svg)](https://nodejs.org)
+[![Deploy to GitHub Pages](https://github.com/KetanDutt/FightingDemo/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/KetanDutt/FightingDemo/actions/workflows/deploy-pages.yml)
+
+**🎮 Play online: <https://ketandutt.github.io/FightingDemo/>** — every push to `main` is built
+and published automatically (see [Deploying](#deploying)).
 
 A polished, production-ready 2D fighting-game demo built with **Phaser 3** + **Vite**.
 One-on-one matches against a monkey opponent, three unique special attacks per fighter,
@@ -184,17 +188,18 @@ tap-vs-hold behaviour, and the gamepad mapping.
 
 ## npm scripts
 
-| Script                    | Description                                   |
-| ------------------------- | --------------------------------------------- |
-| `dev`                     | Vite dev server (`0.0.0.0:5173`, HMR)         |
-| `build`                   | Production build → `dist/`                    |
-| `preview`                 | Preview the production build                  |
-| `test`                    | `test:unit` then `test:smoke`                 |
-| `test:unit`               | `node --test "tests/unit/*.test.mjs"`         |
-| `test:smoke`              | Headless end-to-end match                     |
-| `lint` / `lint:fix`       | ESLint                                        |
-| `format` / `format:check` | Prettier                                      |
-| `analyze:assets`          | Frame counts, atlas sizes, GPU texture budget |
+| Script                    | Description                                      |
+| ------------------------- | ------------------------------------------------ |
+| `dev`                     | Vite dev server (`0.0.0.0:5173`, HMR)            |
+| `build`                   | Production build → `dist/`                       |
+| `preview`                 | Preview the production build                     |
+| `test`                    | `test:unit` then `test:smoke`                    |
+| `test:unit`               | `node --test "tests/unit/*.test.mjs"`            |
+| `test:smoke`              | Headless end-to-end match                        |
+| `lint` / `lint:fix`       | ESLint                                           |
+| `format` / `format:check` | Prettier                                         |
+| `analyze:assets`          | Frame counts, atlas sizes, GPU texture budget    |
+| `deploy`                  | Build + publish `dist/` to the `gh-pages` branch |
 
 ---
 
@@ -242,15 +247,24 @@ unavailable, though the VFX layer is tuned for WebGL.
 
 ## Deploying
 
+**GitHub Pages is automated.** Pushing to `main` runs the deploy workflow
+(`.github/workflows/deploy-pages.yml`): lint → unit + smoke tests → `vite build` → publish
+`dist/` to the `gh-pages` branch. It can also be triggered manually from the
+[Actions tab](https://github.com/KetanDutt/FightingDemo/actions/workflows/deploy-pages.yml)
+(_Run workflow_). The live site: <https://ketandutt.github.io/FightingDemo/>.
+
+To deploy by hand from a machine, `npm run deploy` runs the exact same build + publish step
+(`tools/publish-gh-pages.mjs`). `dist/` itself never touches a source branch.
+
 `npm run build` emits a fully static `dist/` — no server-side rendering, no API, no headers
-required. Drop it on any static host (Netlify, Vercel, GitHub Pages, S3, nginx):
+required. Drop it on any static host (Netlify, Vercel, S3, nginx) as well:
 
 ```bash
 npm run build
 npx vite preview        # sanity check the build locally
 ```
 
-If you host it in a sub-directory, set `base` in `vite.config.js`.
+The build uses `base: './'`, so it works from any sub-directory without reconfiguration.
 
 ---
 

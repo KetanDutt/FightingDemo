@@ -49,8 +49,40 @@ All notable changes to this project are documented here. The project follows
   a last-resort loader notice in `index.html`).
 - Docs: README gamepad jump cell (`A` is punch, not jump), gallery keys, SFX count (28, not 25),
   event table payloads/consumers, camera description (no look-ahead), curtain-transition wording.
+- **The settings panel was drawn behind the menu.** The panel container kept the default depth 0
+  while menu buttons render at `DEPTH.UI` (120), so the FIGHT / TRAINING buttons punched through
+  the dimmer and sat on top of the panel — and input went to them first. The panel is now a
+  modal layer at `DEPTH.OVERLAY`.
+- **UI clipped at the canvas edges.** Gallery move descriptions/frame data sat at y≈1053/1117
+  (below the 1080 canvas bottom, under the control row) — they moved to a proper top-right info
+  column. Setup "YOU / OPPONENT" and skin-name labels sat at y≈1032/1088 and collided with the
+  footer buttons — the label rows moved up and the footer buttons anchored to the screen corners.
+  The results portrait's trimmed art board poked 13px past the left edge. (Found with the new
+  `tools/audit-layout.mjs` bounds audit, which boots every scene headlessly and screenshots it.)
 
 ### Added
+
+- **Tougher AI at every difficulty.** All three profiles were buffed: quicker reactions and
+  attack cooldowns (Challenger 620→450 ms, Ape King 220→150 ms), more aggression, guarding,
+  punishes and combos, tighter spacing and a heavier move mix. Strict difficulty ordering and
+  the adaptation clamps are unchanged (asserted by the unit tests). Re-measured time to KO a
+  passive player: Rookie ~37 s (was ~43 s), Challenger ~17 s (was ~31 s), Ape King ~12 s
+  (was ~17 s).
+- **New match defaults: Challenger, first to 3.** The fighter-setup screen now opens on the
+  Challenger difficulty and the FIRST TO 3 round format (`roundCount` default `'bo5'`, junk
+  values fall back to it); both stay persisted, so a deliberate player choice still sticks.
+- **Layout audit tool** (`node tools/audit-layout.mjs`) — boots the real game headlessly, walks
+  every scene (menus, gallery, fight, HUD, pause + settings, results), reports visible UI whose
+  bounds fall outside the 1920×1080 design canvas and dumps a PNG of each scene to
+  `.layout-audit/` for eyeballing.
+- **GitHub Pages deploy pipeline.** `Deploy to GitHub Pages` workflow (`.github/workflows/`)
+  publishes on every push to `main` (and manual dispatch): lint → unit + smoke tests →
+  `vite build` → commit `dist/` to the `gh-pages` branch → Pages serves the compiled game.
+  `npm run deploy` runs the same build + publish locally (`tools/publish-gh-pages.mjs`,
+  `--skip-build` to publish an existing `dist/`). Deploys are linear commits parented on the
+  previous `gh-pages` head and pushed with a lease, with a concurrency group so superseded
+  runs cancel. One-time repo setting: Pages → _Deploy from a branch_ → `gh-pages` / root
+  (see `docs/DEPLOYMENT.md`).
 
 - **On-screen controls for touch, keyboard legend for desktop.** Touch devices get the d-pad +
   action buttons (auto-enabled on touch hardware, on first tap, or via the `showTouchControls`

@@ -27,7 +27,7 @@ All settings are persisted to `localStorage` under the key `monkey-mayhem:v1:set
 | Key          | Type   | Default  | Options                  | Description                               |
 | ------------ | ------ | -------- | ------------------------ | ----------------------------------------- |
 | `difficulty` | string | 'normal' | 'easy', 'normal', 'hard' | AI difficulty for arcade mode             |
-| `roundCount` | string | 'bo3'    | 'first', 'bo3', 'bo5'    | Round count selector (FIRST TO 1 / 2 / 3) |
+| `roundCount` | string | 'bo5'    | 'first', 'bo3', 'bo5'    | Round count selector (FIRST TO 1 / 2 / 3) |
 
 ## Controls
 

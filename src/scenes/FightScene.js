@@ -49,7 +49,7 @@ export class FightScene extends Phaser.Scene {
     this.matchConfig = {
       mode: data.mode ?? MODE.ARCADE,
       difficulty: data.difficulty ?? settings.get('difficulty') ?? DIFFICULTY.NORMAL,
-      roundCount: data.roundCount ?? settings.get('roundCount') ?? 'bo3',
+      roundCount: data.roundCount ?? settings.get('roundCount') ?? 'bo5',
       playerSkin: data.playerSkin ?? settings.get('lastSkin') ?? 'classic',
       enemySkin: data.enemySkin ?? 'ember',
       /** Training only: 'cpu' spars back, 'still' stands there for drills. */

@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { COLORS, CSS_COLORS } from '../config/palette.js';
-import { FONTS, GAME_HEIGHT, GAME_WIDTH } from '../config/constants.js';
+import { DEPTH, FONTS, GAME_HEIGHT, GAME_WIDTH } from '../config/constants.js';
 import { settings } from '../core/Settings.js';
 import { stats } from '../core/Stats.js';
 import { Button } from './Button.js';
@@ -181,6 +181,10 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
     this.#refreshQuality();
     this.setAlpha(0);
     this.setScale(0.9);
+    // The panel is modal: it must render (and hit-test) above the host menu's
+    // buttons, which live at DEPTH.UI. Without this it is drawn *behind* the
+    // existing menu and the dimmer never covers the buttons.
+    this.setDepth(DEPTH.OVERLAY);
     scene.add.existing(this);
   }
 
