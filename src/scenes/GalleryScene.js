@@ -14,6 +14,7 @@ import { COLORS, CSS_COLORS } from '../config/palette.js';
 import { ANIMATION_DATA } from '../data/animations.js';
 import { Arena } from '../systems/Arena.js';
 import { Button } from '../ui/Button.js';
+import { sectionLabel, titleText } from '../ui/text.js';
 import { FX_TEXTURES } from '../utils/textures.js';
 import { sortedFrameNames } from '../utils/frames.js';
 import { fadeIn, popIn, pulse, slideIn } from '../utils/fx.js';
@@ -38,7 +39,7 @@ export class GalleryScene extends Phaser.Scene {
     this.speedIndex = 2;
 
     this.arena = new Arena(this, { reducedMotion: settings.get('reducedMotion') });
-    this.cameras.main.fadeIn(260, 13, 18, 32);
+    this.cameras.main.fadeIn(260, 11, 15, 26);
 
     this.#buildStage();
     this.#buildCharacter();
@@ -70,26 +71,18 @@ export class GalleryScene extends Phaser.Scene {
       .setBlendMode(Phaser.BlendModes.ADD)
       .setDepth(DEPTH.BG_NEAR + 2);
 
-    this.tweens.add({
-      targets: spotlight,
-      alpha: { from: 0.16, to: 0.3 },
-      duration: 3200,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut',
-    });
+    if (!settings.get('reducedMotion')) {
+      this.tweens.add({
+        targets: spotlight,
+        alpha: { from: 0.16, to: 0.3 },
+        duration: 3200,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
 
-    this.add
-      .text(GAME_WIDTH / 2, 108, 'MOVE GALLERY', {
-        fontFamily: FONTS.DISPLAY,
-        fontSize: '76px',
-        fontStyle: 'bold',
-        color: CSS_COLORS.gold,
-        stroke: '#1a0f00',
-        strokeThickness: 12,
-      })
-      .setOrigin(0.5)
-      .setDepth(DEPTH.UI);
+    titleText(this, GAME_WIDTH / 2, 108, 'Move gallery', { size: 76 }).setDepth(DEPTH.UI);
   }
 
   #buildCharacter() {
@@ -113,31 +106,34 @@ export class GalleryScene extends Phaser.Scene {
     // description and frame data were clipped off-screen.
     const x = GAME_WIDTH - 290;
     this.nameText = this.add
-      .text(x, 178, '', {
+      .text(x, 180, '', {
         fontFamily: FONTS.DISPLAY,
-        fontSize: '54px',
-        fontStyle: 'bold',
+        fontSize: '56px',
+        fontStyle: '800',
+        letterSpacing: 2,
         color: CSS_COLORS.white,
       })
       .setOrigin(0.5)
       .setDepth(DEPTH.UI);
 
     this.descText = this.add
-      .text(x, 292, '', {
+      .text(x, 296, '', {
         fontFamily: FONTS.PRIMARY,
-        fontSize: '28px',
-        color: CSS_COLORS.offWhite,
+        fontSize: '27px',
+        fontStyle: '400',
+        color: CSS_COLORS.muted,
         align: 'center',
         wordWrap: { width: 470 },
       })
       .setOrigin(0.5)
-      .setAlpha(0.8)
       .setDepth(DEPTH.UI);
 
     this.dataText = this.add
-      .text(x, 384, '', {
-        fontFamily: FONTS.PRIMARY,
-        fontSize: '26px',
+      .text(x, 388, '', {
+        fontFamily: FONTS.DISPLAY,
+        fontSize: '30px',
+        fontStyle: '700',
+        letterSpacing: 1,
         color: CSS_COLORS.gold,
       })
       .setOrigin(0.5)
@@ -146,12 +142,27 @@ export class GalleryScene extends Phaser.Scene {
 
   #buildList() {
     const x = 300;
-    let y = 230;
+    let y = 236;
+    this.listMarkers = [];
     this.listEntries = ANIMATION_DATA.map((entry, index) => {
+      // Amber slash marker shown on the selected row (signature tick).
+      const marker = this.add.graphics().setDepth(DEPTH.UI);
+      marker.fillStyle(COLORS.gold, 1);
+      marker.beginPath();
+      marker.moveTo(x - 30, y - 11);
+      marker.lineTo(x - 22, y - 11);
+      marker.lineTo(x - 27, y + 11);
+      marker.lineTo(x - 35, y + 11);
+      marker.closePath();
+      marker.fillPath();
+      marker.setVisible(false);
+      this.listMarkers.push(marker);
+
       const text = this.add
         .text(x, y, entry.label, {
           fontFamily: FONTS.PRIMARY,
-          fontSize: '34px',
+          fontSize: '32px',
+          fontStyle: '500',
           color: CSS_COLORS.offWhite,
         })
         .setOrigin(0, 0.5)
@@ -167,18 +178,11 @@ export class GalleryScene extends Phaser.Scene {
         if (index !== this.index) text.setColor(CSS_COLORS.offWhite);
       });
 
-      y += 62;
+      y += 60;
       return text;
     });
 
-    this.add
-      .text(x, 176, 'ANIMATIONS', {
-        fontFamily: FONTS.PRIMARY,
-        fontSize: '30px',
-        color: CSS_COLORS.gold,
-      })
-      .setOrigin(0, 0.5)
-      .setDepth(DEPTH.UI);
+    sectionLabel(this, x - 35, 182, 'Animations', { align: 'left' }).setDepth(DEPTH.UI);
 
     this.listEntries.forEach((entry, index) => {
       slideIn(entry, { from: 20, axis: 'x', duration: 200, delay: index * 35 });
@@ -193,46 +197,34 @@ export class GalleryScene extends Phaser.Scene {
       y,
       width: 220,
       height: 86,
-      label: 'PREV',
+      label: 'Prev',
+      icon: 'back',
       fontSize: 32,
       variant: 'ghost',
       onClick: () => this.#step(-1),
     }).setDepth(DEPTH.UI);
 
-    // The original prototype's "next" button art, reused as the primary control.
-    const nextImage = this.add
-      .image(GAME_WIDTH / 2 - 60, y, TEXTURE_KEYS.NEXT)
-      .setDisplaySize(300, 90)
-      .setDepth(DEPTH.UI)
-      .setInteractive({ useHandCursor: true });
-    // The art is 257x77, so hover tweens scale around the display size —
-    // tweening to 1 would shrink it back to its native pixels.
-    const nextBase = { x: nextImage.scaleX, y: nextImage.scaleY };
-    nextImage.on('pointerup', () => this.#step(1));
-    nextImage.on('pointerover', () => {
-      this.tweens.add({
-        targets: nextImage,
-        scaleX: nextBase.x * 1.06,
-        scaleY: nextBase.y * 1.06,
-        duration: 120,
-      });
-      audio.play('uiHover', { throttleMs: 60 });
-    });
-    nextImage.on('pointerout', () => {
-      this.tweens.add({
-        targets: nextImage,
-        scaleX: nextBase.x,
-        scaleY: nextBase.y,
-        duration: 120,
-      });
-    });
+    // Primary control: the same flat Button component as every other menu,
+    // with a vector "next" icon (the old next.png bitmap art is retired).
+    this.nextButton = new Button(this, {
+      x: GAME_WIDTH / 2 - 60,
+      y,
+      width: 300,
+      height: 90,
+      label: 'Next',
+      icon: 'next',
+      fontSize: 34,
+      variant: 'primary',
+      onClick: () => this.#step(1),
+    }).setDepth(DEPTH.UI);
 
     this.playButton = new Button(this, {
       x: GAME_WIDTH / 2 + 190,
       y,
       width: 200,
       height: 86,
-      label: 'PAUSE',
+      label: 'Pause',
+      icon: 'pause',
       fontSize: 32,
       variant: 'ghost',
       onClick: () => this.#togglePlay(),
@@ -243,7 +235,7 @@ export class GalleryScene extends Phaser.Scene {
       y,
       width: 200,
       height: 86,
-      label: 'LOOP: ON',
+      label: 'Loop: on',
       fontSize: 28,
       variant: 'ghost',
       onClick: () => this.#toggleLoop(),
@@ -254,7 +246,7 @@ export class GalleryScene extends Phaser.Scene {
       y,
       width: 220,
       height: 86,
-      label: 'SPEED 1x',
+      label: 'Speed 1x',
       fontSize: 30,
       variant: 'ghost',
       onClick: () => this.#cycleSpeed(),
@@ -265,7 +257,8 @@ export class GalleryScene extends Phaser.Scene {
       y: GAME_HEIGHT - 110,
       width: 220,
       height: 86,
-      label: 'BACK',
+      label: 'Back',
+      icon: 'back',
       fontSize: 32,
       variant: 'ghost',
       onClick: () => this.#goBack(),
@@ -277,15 +270,16 @@ export class GalleryScene extends Phaser.Scene {
       .text(
         GAME_WIDTH / 2 + 130,
         GAME_HEIGHT - 26,
-        '↑ ↓ / ← →  browse  ·  SPACE  play / pause  ·  L  loop  ·  ESC  back',
+        '↑ ↓ / ← → browse · SPACE play / pause · L loop · ESC back',
         {
           fontFamily: FONTS.PRIMARY,
           fontSize: '24px',
+          fontStyle: '400',
           color: CSS_COLORS.muted,
         },
       )
       .setOrigin(0.5)
-      .setAlpha(0.8)
+      .setAlpha(0.85)
       .setDepth(DEPTH.UI);
   }
 
@@ -305,7 +299,7 @@ export class GalleryScene extends Phaser.Scene {
     this.sprite.play({ key: definition.key, repeat: definition.loop || this.loop ? -1 : 0 }, false);
     this.sprite.anims.timeScale = SPEEDS[this.speedIndex];
 
-    this.nameText.setText(definition.label);
+    this.nameText.setText(definition.label.toUpperCase());
     this.descText.setText(definition.description);
     this.dataText.setText(
       `${frameCount} frames · ${definition.frameRate} fps · ${(duration / 1000).toFixed(2)}s · ${
@@ -320,6 +314,7 @@ export class GalleryScene extends Phaser.Scene {
       entry.setColor(i === this.index ? CSS_COLORS.gold : CSS_COLORS.offWhite);
       entry.setAlpha(i === this.index ? 1 : 0.65);
     });
+    this.listMarkers?.forEach((marker, i) => marker.setVisible(i === this.index));
 
     audio.play('uiClick', { volume: 0.6 });
     fadeIn(this.descText, { duration: 240, from: 0.2 });
@@ -333,17 +328,17 @@ export class GalleryScene extends Phaser.Scene {
     if (!this.sprite.anims.currentAnim) return;
     if (this.sprite.anims.isPaused) {
       this.sprite.anims.resume();
-      this.playButton.setLabel('PAUSE');
+      this.playButton.setLabel('Pause').setIcon('pause');
     } else {
       this.sprite.anims.pause();
-      this.playButton.setLabel('PLAY');
+      this.playButton.setLabel('Play').setIcon('play');
     }
     audio.play('uiClick', { volume: 0.7 });
   }
 
   #toggleLoop() {
     this.loop = !this.loop;
-    this.loopButton.setLabel(`LOOP: ${this.loop ? 'ON' : 'OFF'}`);
+    this.loopButton.setLabel(`Loop: ${this.loop ? 'on' : 'off'}`);
     this.#showAnimation(this.index);
   }
 
@@ -351,14 +346,14 @@ export class GalleryScene extends Phaser.Scene {
     this.speedIndex = (this.speedIndex + 1) % SPEEDS.length;
     const speed = SPEEDS[this.speedIndex];
     this.sprite.anims.timeScale = speed;
-    this.speedButton.setLabel(`SPEED ${speed}x`);
+    this.speedButton.setLabel(`Speed ${speed}x`);
     audio.play('uiClick', { volume: 0.7 });
   }
 
   #goBack() {
     audio.play('uiBack');
     audio.play('transition', { volume: 0.3 });
-    this.cameras.main.fadeOut(220, 13, 18, 32);
+    this.cameras.main.fadeOut(220, 11, 15, 26);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(SCENES.MENU);
     });

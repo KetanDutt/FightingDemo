@@ -73,7 +73,7 @@ export class Vfx {
         angle: { min: 200, max: 340 },
         scale: { start: 0.35, end: 0 },
         alpha: { start: 0.8, end: 0 },
-        tint: [COLORS.gold, 0xffffff, COLORS.heavySpark],
+        tint: [COLORS.gold, COLORS.white, COLORS.heavySpark],
         blendMode: 'ADD',
         emitting: false,
       })
@@ -88,7 +88,7 @@ export class Vfx {
         scale: { min: 0.4, max: 1.1 },
         alpha: { start: 1, end: 0.1 },
         gravityY: 780,
-        tint: [COLORS.gold, COLORS.red, COLORS.green, COLORS.blue, 0xffffff],
+        tint: [COLORS.gold, COLORS.red, COLORS.green, COLORS.blue, COLORS.white],
         emitting: false,
       })
       .setDepth(DEPTH.VFX_FRONT);
@@ -211,7 +211,7 @@ export class Vfx {
 
     if (power === 'heavy' && !this.reducedMotion) {
       // Swoosh streaks flying off in the attack direction.
-      this.debris.setParticleTint(0xffffff);
+      this.debris.setParticleTint(COLORS.white);
       this.debris.emitParticleAt(x - direction * 60, y, Math.round(8 * this.scale));
     }
   }
@@ -249,7 +249,7 @@ export class Vfx {
    */
   afterimage(container, sprite, options = {}) {
     if (this.scale <= 0) return null;
-    const { tint = 0xffffff, alpha = 0.4, duration = 260 } = options;
+    const { tint = COLORS.white, alpha = 0.4, duration = 260 } = options;
     const ghost = this.scene.add
       .image(0, 0, sprite.texture.key, sprite.frame.name)
       .setOrigin(sprite.originX, sprite.originY)

@@ -6,6 +6,7 @@ import { stats } from '../core/Stats.js';
 import { Button } from './Button.js';
 import { Slider } from './Slider.js';
 import { Toggle } from './Toggle.js';
+import { sectionLabel, titleText } from './text.js';
 import { popIn, popOut } from '../utils/fx.js';
 
 const QUALITY_LABELS = ['Off', 'Normal', 'High'];
@@ -40,27 +41,20 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
       .setInteractive();
     this.dimmer = scene.add
       .graphics({ x: GAME_WIDTH / 2 - x, y: GAME_HEIGHT / 2 - y })
-      .fillStyle(0x05070f, 0.72)
+      .fillStyle(COLORS.shadow, 0.66)
       .fillRect(-GAME_WIDTH / 2, -GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT);
     this.add([this.dimmer, this.backdrop]);
 
+    // Flat surface + hairline border; the dimmer does the separation work.
     const panel = scene.add.graphics();
-    panel.fillStyle(0x000000, 0.4);
-    panel.fillRoundedRect(-width / 2 + 6, -height / 2 + 10, width, height, 36);
     panel.fillStyle(COLORS.panel, 0.98);
-    panel.fillRoundedRect(-width / 2, -height / 2, width, height, 36);
-    panel.lineStyle(4, COLORS.gold, 0.8);
-    panel.strokeRoundedRect(-width / 2, -height / 2, width, height, 36);
+    panel.fillRoundedRect(-width / 2, -height / 2, width, height, 20);
+    panel.lineStyle(2, COLORS.border, 1);
+    panel.strokeRoundedRect(-width / 2, -height / 2, width, height, 20);
     this.add(panel);
 
-    const title = scene.add
-      .text(0, -height / 2 + 60, 'SETTINGS', {
-        fontFamily: FONTS.DISPLAY,
-        fontSize: '54px',
-        fontStyle: 'bold',
-        color: CSS_COLORS.gold,
-      })
-      .setOrigin(0.5);
+    const title = titleText(scene, -width / 2 + 56, -height / 2 + 66, 'Settings', { size: 52 });
+    title.setOrigin(0, 0.5);
     this.add(title);
 
     this.controls = [];
@@ -68,26 +62,30 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
     /* ------------------------- two-column layout ------------------------- */
 
     const divider = scene.add.graphics();
-    divider.lineStyle(2, COLORS.gold, 0.15);
-    divider.lineBetween(0, -height / 2 + 120, 0, height / 2 - 120);
+    divider.lineStyle(1.5, COLORS.border, 1);
+    divider.lineBetween(0, -height / 2 + 116, 0, height / 2 - 116);
     this.add(divider);
 
     // Left column: volume / shake sliders.
-    const leftX = -width / 2 + 60;
-    let leftY = -height / 2 + 180;
+    const leftX = -width / 2 + 56;
+    this.add(sectionLabel(scene, leftX, -height / 2 + 132, 'Audio & effects', { align: 'left' }));
+    // Compact (pause) panels are shorter — tighten the slider rows so the
+    // particles row never collides with the footer buttons.
+    const rowStep = compact ? 84 : 94;
+    let leftY = -height / 2 + (compact ? 184 : 196);
 
     const addSlider = (label, key) => {
       const slider = new Slider(scene, {
         x: leftX,
         y: leftY,
-        width: width * 0.42,
+        width: width * 0.38,
         value: settings.get(key),
         label,
         onChange: (value) => settings.set(key, value),
       });
       this.add(slider);
       this.controls.push(() => slider.setValue(settings.get(key), { silent: true }));
-      leftY += 96;
+      leftY += rowStep;
       return slider;
     };
 
@@ -98,20 +96,22 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
 
     // Particle quality lives under the sliders.
     const qualityLabel = scene.add
-      .text(leftX, leftY - 6, 'Particles', {
+      .text(leftX, leftY - 4, 'Particles', {
         fontFamily: FONTS.PRIMARY,
-        fontSize: '30px',
+        fontSize: '27px',
+        fontStyle: '500',
         color: CSS_COLORS.offWhite,
       })
       .setOrigin(0, 0.5);
     this.add(qualityLabel);
 
+    const qualityRowX = leftX + qualityLabel.width + 40 + 57;
     this.qualityButtons = QUALITY_LABELS.map((label, index) => {
       const button = new Button(scene, {
-        x: leftX + 150 + index * 130,
-        y: leftY - 6,
-        width: 116,
-        height: 56,
+        x: qualityRowX + index * 128,
+        y: leftY - 4,
+        width: 114,
+        height: 54,
         label,
         fontSize: 24,
         variant: 'ghost',
@@ -125,8 +125,9 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
     });
 
     // Right column: toggles.
-    const rightX = 60;
-    let rightY = -height / 2 + 176;
+    const rightX = 56;
+    this.add(sectionLabel(scene, rightX, -height / 2 + 132, 'Preferences', { align: 'left' }));
+    let rightY = -height / 2 + 190;
 
     const addToggle = (label, key) => {
       const toggle = new Toggle(scene, {
@@ -138,7 +139,7 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
       });
       this.add(toggle);
       this.controls.push(() => toggle.setValue(settings.get(key), { silent: true }));
-      rightY += 82;
+      rightY += 78;
       return toggle;
     };
 
@@ -153,14 +154,14 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
     addToggle('Control hints', 'showControlsHint');
 
     // Footer buttons
-    const footerY = height / 2 - 76;
+    const footerY = height / 2 - 72;
     this.resetButton = new Button(scene, {
-      x: -180,
+      x: -190,
       y: footerY,
       width: 300,
-      height: 84,
+      height: 80,
       label: 'Reset data',
-      fontSize: 30,
+      fontSize: 28,
       variant: 'danger',
       onClick: () => this.#resetData(),
     });
@@ -170,9 +171,9 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
       x: 190,
       y: footerY,
       width: 300,
-      height: 84,
+      height: 80,
       label: 'Done',
-      fontSize: 34,
+      fontSize: 32,
       variant: 'primary',
       onClick: () => this.close(),
     });
@@ -191,7 +192,7 @@ export class SettingsPanel extends Phaser.GameObjects.Container {
   #refreshQuality() {
     const current = settings.get('particleQuality');
     this.qualityButtons.forEach((button, index) => {
-      button.setAlpha(index === current ? 1 : 0.4);
+      button.setSelected(index === current);
     });
   }
 

@@ -17,6 +17,7 @@ import { COLORS, CSS_COLORS, SKINS, getSkin } from '../config/palette.js';
 import { Arena } from '../systems/Arena.js';
 import { Button } from '../ui/Button.js';
 import { MenuNav } from '../ui/MenuNav.js';
+import { sectionLabel, titleText } from '../ui/text.js';
 import { FX_TEXTURES } from '../utils/textures.js';
 import { fadeIn, popIn, pulse, slideIn } from '../utils/fx.js';
 import { audio } from '../audio/index.js';
@@ -48,7 +49,7 @@ export class SetupScene extends Phaser.Scene {
 
   create() {
     this.arena = new Arena(this, { reducedMotion: settings.get('reducedMotion') });
-    this.cameras.main.fadeIn(280, 13, 18, 32);
+    this.cameras.main.fadeIn(280, 11, 15, 26);
 
     this.#buildHeader();
     this.#buildPreviews();
@@ -67,64 +68,57 @@ export class SetupScene extends Phaser.Scene {
   }
 
   #buildHeader() {
-    const title = this.add
-      .text(
-        GAME_WIDTH / 2,
-        130,
-        this.mode === MODE.TRAINING ? 'TRAINING SETUP' : 'CHOOSE YOUR FIGHTER',
-        {
-          fontFamily: FONTS.DISPLAY,
-          fontSize: '82px',
-          fontStyle: 'bold',
-          color: CSS_COLORS.gold,
-          stroke: '#1a0f00',
-          strokeThickness: 12,
-        },
-      )
-      .setOrigin(0.5)
-      .setDepth(DEPTH.UI);
+    const title = titleText(
+      this,
+      GAME_WIDTH / 2,
+      124,
+      this.mode === MODE.TRAINING ? 'Training setup' : 'Choose your fighter',
+      { size: 80 },
+    ).setDepth(DEPTH.UI);
     popIn(title, { from: 0.8, to: 1, duration: 360 });
 
     this.modeText = this.add
       .text(
         GAME_WIDTH / 2,
-        212,
+        204,
         this.mode === MODE.TRAINING
           ? 'No timer, no knockouts — practise freely.'
           : 'First to win the round count below · 60 seconds per round',
         {
           fontFamily: FONTS.PRIMARY,
-          fontSize: '34px',
-          color: CSS_COLORS.offWhite,
+          fontSize: '30px',
+          fontStyle: '400',
+          color: CSS_COLORS.muted,
         },
       )
       .setOrigin(0.5)
-      .setAlpha(0.8)
       .setDepth(DEPTH.UI);
   }
 
   #buildPreviews() {
     this.playerPreview = this.#createPreview(GAME_WIDTH * 0.29, 1);
-    this.enemyPreview = this.#createPreview(GAME_WIDTH * 0.71, -1);
+    this.enemyPreview = this.#createPreview(GAME_WIDTH * 0.7, -1);
     this.#refreshPreviews();
 
     // Label rows sit between the fighters' feet (GROUND_Y) and the canvas
     // edge — keep both rows high enough that nothing clips at y 1080.
     this.add
-      .text(GAME_WIDTH * 0.29, GROUND_Y + 72, 'YOU', {
-        fontFamily: FONTS.PRIMARY,
+      .text(GAME_WIDTH * 0.29, GROUND_Y + 66, 'YOU', {
+        fontFamily: FONTS.DISPLAY,
         fontSize: '40px',
-        fontStyle: 'bold',
+        fontStyle: '800',
+        letterSpacing: 3,
         color: CSS_COLORS.gold,
       })
       .setOrigin(0.5)
       .setDepth(DEPTH.UI);
 
     this.enemyLabel = this.add
-      .text(GAME_WIDTH * 0.71, GROUND_Y + 72, 'OPPONENT', {
-        fontFamily: FONTS.PRIMARY,
+      .text(GAME_WIDTH * 0.7, GROUND_Y + 66, 'OPPONENT', {
+        fontFamily: FONTS.DISPLAY,
         fontSize: '40px',
-        fontStyle: 'bold',
+        fontStyle: '800',
+        letterSpacing: 3,
         color: CSS_COLORS.red,
       })
       .setOrigin(0.5)
@@ -155,39 +149,36 @@ export class SetupScene extends Phaser.Scene {
     this.enemyPreview.sprite.setTint(enemySkin.tint);
     this.playerName?.destroy();
     this.playerName = this.add
-      .text(GAME_WIDTH * 0.29, GROUND_Y + 118, playerSkin.name, {
-        fontFamily: FONTS.PRIMARY,
+      .text(GAME_WIDTH * 0.29, GROUND_Y + 112, playerSkin.name.toUpperCase(), {
+        fontFamily: FONTS.DISPLAY,
         fontSize: '32px',
-        color: CSS_COLORS.offWhite,
+        fontStyle: '700',
+        letterSpacing: 2,
+        color: CSS_COLORS.muted,
       })
       .setOrigin(0.5)
       .setDepth(DEPTH.UI);
 
     if (this.enemySkinName) this.enemySkinName.destroy();
     this.enemySkinName = this.add
-      .text(GAME_WIDTH * 0.71, GROUND_Y + 118, enemySkin.name, {
-        fontFamily: FONTS.PRIMARY,
+      .text(GAME_WIDTH * 0.7, GROUND_Y + 112, enemySkin.name.toUpperCase(), {
+        fontFamily: FONTS.DISPLAY,
         fontSize: '32px',
-        color: CSS_COLORS.offWhite,
+        fontStyle: '700',
+        letterSpacing: 2,
+        color: CSS_COLORS.muted,
       })
       .setOrigin(0.5)
       .setDepth(DEPTH.UI);
   }
 
   #buildSkinPicker() {
-    const label = this.add
-      .text(GAME_WIDTH / 2, 430, 'FIGHTER SKIN', {
-        fontFamily: FONTS.PRIMARY,
-        fontSize: '36px',
-        color: CSS_COLORS.gold,
-      })
-      .setOrigin(0.5)
-      .setDepth(DEPTH.UI);
+    const label = sectionLabel(this, GAME_WIDTH / 2, 428, 'Fighter skin').setDepth(DEPTH.UI);
     fadeIn(label, { duration: 300, delay: 120 });
 
     this.skinButtons = SKINS.map((skin, index) => {
       const x = GAME_WIDTH / 2 + (index - (SKINS.length - 1) / 2) * 150;
-      const y = 510;
+      const y = 512;
       const container = this.add.container(x, y).setDepth(DEPTH.UI);
 
       const swatch = this.add.graphics();
@@ -202,11 +193,12 @@ export class SetupScene extends Phaser.Scene {
 
       zone.on('pointerup', () => this.#selectSkin(skin.id));
       zone.on('pointerover', () => {
-        this.tweens.add({ targets: container, scaleX: 1.08, scaleY: 1.08, duration: 120 });
+        this.tweens.add({ targets: container, scaleX: 1.12, scaleY: 1.12, duration: 120 });
         audio.play('uiHover', { throttleMs: 60 });
       });
       zone.on('pointerout', () => {
-        this.tweens.add({ targets: container, scaleX: 1, scaleY: 1, duration: 120 });
+        const rest = skin.id === this.playerSkinId ? 1.06 : 1;
+        this.tweens.add({ targets: container, scaleX: rest, scaleY: rest, duration: 120 });
       });
 
       return { skin, swatch, border, container, zone };
@@ -216,19 +208,18 @@ export class SetupScene extends Phaser.Scene {
   }
 
   #paintSkinButtons() {
-    this.skinButtons.forEach(({ skin, swatch, border }) => {
+    this.skinButtons.forEach(({ skin, swatch, border, container }) => {
       const selected = skin.id === this.playerSkinId;
       swatch.clear();
-      swatch.fillStyle(0x000000, 0.35);
-      swatch.fillRoundedRect(-52, -46, 104, 104, 24);
       swatch.fillStyle(Phaser.Display.Color.HexStringToColor(skin.swatch).color, 1);
-      swatch.fillRoundedRect(-56, -56, 104, 104, 24);
-      swatch.fillStyle(0xffffff, 0.18);
-      swatch.fillRoundedRect(-48, -50, 88, 40, 18);
+      swatch.fillRoundedRect(-52, -52, 104, 104, 16);
 
       border.clear();
-      border.lineStyle(selected ? 6 : 3, selected ? COLORS.gold : 0x8b93b0, selected ? 1 : 0.5);
-      border.strokeRoundedRect(-56, -56, 104, 104, 24);
+      border.lineStyle(selected ? 4 : 2.5, selected ? COLORS.gold : COLORS.border, 1);
+      border.strokeRoundedRect(-56, -56, 112, 112, 18);
+      // Keep the hover tween's rest scale honest when selection changes.
+      this.tweens.killTweensOf(container);
+      container.setScale(selected ? 1.06 : 1);
     });
   }
 
@@ -255,14 +246,7 @@ export class SetupScene extends Phaser.Scene {
       return;
     }
 
-    const label = this.add
-      .text(GAME_WIDTH / 2, 640, 'OPPONENT SKILL', {
-        fontFamily: FONTS.PRIMARY,
-        fontSize: '36px',
-        color: CSS_COLORS.gold,
-      })
-      .setOrigin(0.5)
-      .setDepth(DEPTH.UI);
+    const label = sectionLabel(this, GAME_WIDTH / 2, 612, 'Opponent skill').setDepth(DEPTH.UI);
     fadeIn(label, { duration: 300, delay: 200 });
 
     this.difficultyButtons = [DIFFICULTY.EASY, DIFFICULTY.NORMAL, DIFFICULTY.HARD].map(
@@ -270,10 +254,10 @@ export class SetupScene extends Phaser.Scene {
         const profile = AI_PROFILES[key];
         const button = new Button(this, {
           x: GAME_WIDTH / 2 + (index - 1) * 340,
-          y: 700,
+          y: 716,
           width: 310,
-          height: 104,
-          label: profile.label.toUpperCase(),
+          height: 100,
+          label: profile.label,
           fontSize: 34,
           variant: 'ghost',
           onClick: () => this.#selectDifficulty(key),
@@ -284,13 +268,15 @@ export class SetupScene extends Phaser.Scene {
     );
 
     this.difficultyHint = this.add
-      .text(GAME_WIDTH / 2, 780, '', {
+      .text(GAME_WIDTH / 2, 798, '', {
         fontFamily: FONTS.PRIMARY,
-        fontSize: '28px',
+        fontSize: '26px',
+        fontStyle: '500',
         color: CSS_COLORS.offWhite,
+        stroke: CSS_COLORS.bg,
+        strokeThickness: 5,
       })
       .setOrigin(0.5)
-      .setAlpha(0.75)
       .setDepth(DEPTH.UI);
 
     this.#paintDifficulty();
@@ -300,24 +286,17 @@ export class SetupScene extends Phaser.Scene {
   #buildRoundPicker() {
     if (this.mode === MODE.TRAINING) return;
 
-    const label = this.add
-      .text(GAME_WIDTH / 2, 862, 'ROUNDS', {
-        fontFamily: FONTS.PRIMARY,
-        fontSize: '30px',
-        color: CSS_COLORS.gold,
-      })
-      .setOrigin(0.5)
-      .setDepth(DEPTH.UI);
+    const label = sectionLabel(this, GAME_WIDTH / 2, 858, 'Rounds').setDepth(DEPTH.UI);
     fadeIn(label, { duration: 300, delay: 260 });
 
     this.roundButtons = ROUND_RULES.roundOptions.map((option, index) => {
       const button = new Button(this, {
         x: GAME_WIDTH / 2 + (index - 1) * 200,
-        y: 922,
+        y: 920,
         width: 180,
-        height: 64,
+        height: 62,
         label: option.label,
-        fontSize: 24,
+        fontSize: 26,
         variant: 'ghost',
         onClick: () => this.#selectRoundCount(option.id),
       }).setDepth(DEPTH.UI);
@@ -330,7 +309,7 @@ export class SetupScene extends Phaser.Scene {
 
   #paintRoundPicker() {
     this.roundButtons?.forEach(({ id, button }) => {
-      button.setAlpha(id === this.roundCount ? 1 : 0.45);
+      button.setSelected(id === this.roundCount);
     });
   }
 
@@ -343,7 +322,7 @@ export class SetupScene extends Phaser.Scene {
 
   #paintDifficulty() {
     this.difficultyButtons?.forEach(({ key, button }) => {
-      button.setAlpha(key === this.difficulty ? 1 : 0.45);
+      button.setSelected(key === this.difficulty);
     });
     const profile = AI_PROFILES[this.difficulty];
     if (this.difficultyHint) {
@@ -365,29 +344,22 @@ export class SetupScene extends Phaser.Scene {
   #buildDummyPicker() {
     if (this.mode !== MODE.TRAINING) return;
 
-    const label = this.add
-      .text(GAME_WIDTH / 2, 640, 'TRAINING DUMMY', {
-        fontFamily: FONTS.PRIMARY,
-        fontSize: '36px',
-        color: CSS_COLORS.gold,
-      })
-      .setOrigin(0.5)
-      .setDepth(DEPTH.UI);
+    const label = sectionLabel(this, GAME_WIDTH / 2, 612, 'Training dummy').setDepth(DEPTH.UI);
     fadeIn(label, { duration: 300, delay: 200 });
 
     this.dummyButtons = [
-      { id: 'cpu', label: 'SPARS BACK', hint: 'The dummy fights back — practise under pressure.' },
+      { id: 'cpu', label: 'Spars back', hint: 'The dummy fights back — practise under pressure.' },
       {
         id: 'still',
-        label: 'STANDS STILL',
+        label: 'Stands still',
         hint: 'The dummy plants its feet — drill combos freely.',
       },
     ].map((option, index) => {
       const button = new Button(this, {
         x: GAME_WIDTH / 2 + (index - 0.5) * 340,
-        y: 700,
+        y: 716,
         width: 310,
-        height: 104,
+        height: 100,
         label: option.label,
         fontSize: 30,
         variant: 'ghost',
@@ -398,13 +370,15 @@ export class SetupScene extends Phaser.Scene {
     });
 
     this.dummyHint = this.add
-      .text(GAME_WIDTH / 2, 780, '', {
+      .text(GAME_WIDTH / 2, 798, '', {
         fontFamily: FONTS.PRIMARY,
-        fontSize: '28px',
+        fontSize: '26px',
+        fontStyle: '500',
         color: CSS_COLORS.offWhite,
+        stroke: CSS_COLORS.bg,
+        strokeThickness: 5,
       })
       .setOrigin(0.5)
-      .setAlpha(0.75)
       .setDepth(DEPTH.UI);
 
     this.#paintDummy();
@@ -413,7 +387,7 @@ export class SetupScene extends Phaser.Scene {
 
   #paintDummy() {
     this.dummyButtons?.forEach(({ id, button }) => {
-      button.setAlpha(id === this.dummy ? 1 : 0.45);
+      button.setSelected(id === this.dummy);
     });
     const current = this.dummyButtons?.find((entry) => entry.id === this.dummy);
     if (this.dummyHint && current) this.dummyHint.setText(current.hint);
@@ -433,7 +407,8 @@ export class SetupScene extends Phaser.Scene {
       y: GAME_HEIGHT - 70,
       width: 300,
       height: 92,
-      label: 'BACK',
+      label: 'Back',
+      icon: 'back',
       fontSize: 34,
       variant: 'ghost',
       onClick: () => this.#goBack(),
@@ -442,14 +417,14 @@ export class SetupScene extends Phaser.Scene {
       .appear(420);
 
     const fight = new Button(this, {
-      x: GAME_WIDTH - 260,
+      x: GAME_WIDTH - 240,
       y: GAME_HEIGHT - 70,
-      width: 380,
+      width: 340,
       height: 92,
-      label: 'FIGHT!',
-      icon: '🔥',
+      label: 'Fight!',
+      icon: 'fight',
       fontSize: 40,
-      variant: 'danger',
+      variant: 'primary',
       onClick: () => this.#startFight(),
     })
       .setDepth(DEPTH.UI)
@@ -470,7 +445,7 @@ export class SetupScene extends Phaser.Scene {
 
   #goBack() {
     audio.play('uiBack');
-    this.cameras.main.fadeOut(220, 13, 18, 32);
+    this.cameras.main.fadeOut(220, 11, 15, 26);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(SCENES.MENU);
     });
@@ -481,7 +456,7 @@ export class SetupScene extends Phaser.Scene {
     this.transitioning = true;
     audio.play('uiConfirm');
     audio.play('transition', { volume: 0.45 });
-    this.cameras.main.fadeOut(280, 13, 18, 32);
+    this.cameras.main.fadeOut(280, 11, 15, 26);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(SCENES.FIGHT, {
         mode: this.mode,

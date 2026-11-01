@@ -1,9 +1,12 @@
 import Phaser from 'phaser';
 import { SCENES } from '../config/constants.js';
+import { CSS_COLORS } from '../config/palette.js';
 import { createFxTextures } from '../utils/textures.js';
+import { loadFonts } from '../utils/fonts.js';
 
 /**
- * Boots the game: paints every procedural texture once, applies global
+ * Boots the game: waits for the web fonts (so canvas text never flashes a
+ * fallback face), paints every procedural texture once, applies global
  * settings and hands over to the loading scene.
  */
 export class BootScene extends Phaser.Scene {
@@ -11,9 +14,10 @@ export class BootScene extends Phaser.Scene {
     super({ key: SCENES.BOOT });
   }
 
-  create() {
+  async create() {
+    await loadFonts();
     createFxTextures(this);
-    this.cameras.main.setBackgroundColor('#0d1220');
+    this.cameras.main.setBackgroundColor(CSS_COLORS.bg);
 
     // Extra pointers so the on-screen D-pad and attack buttons can be used at
     // the same time on touch devices.

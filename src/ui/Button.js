@@ -3,13 +3,19 @@ import { COLORS, CSS_COLORS } from '../config/palette.js';
 import { FONTS } from '../config/constants.js';
 import { fadeIn, popIn, popOut, pulse } from '../utils/fx.js';
 import { audio } from '../audio/index.js';
+import { drawIcon, ICON_NAMES } from './Icon.js';
 
 /**
- * A polished, reusable button.
+ * A reusable menu button.
  *
- * Features: rounded panel + border, hover / press / disabled states, springy
- * tweens, hover + click SFX, keyboard "click" support for tests and an
- * optional icon glyph.
+ * Design: flat fill + hairline border, no gloss and no drop shadow — chrome
+ * stays quiet and the label (condensed caps) carries the weight. An optional
+ * vector icon sits left of the label. Variants: `primary` (brand amber),
+ * `ghost` (neutral surface), `danger`, `success`. Picker buttons can be
+ * marked with `setSelected(true)` for a filled accent state.
+ *
+ * Features: hover / press / disabled / selected states, springy tweens,
+ * hover + click SFX, keyboard "click" support and an animated entrance.
  */
 export class Button extends Phaser.GameObjects.Container {
   constructor(scene, config = {}) {
@@ -37,37 +43,33 @@ export class Button extends Phaser.GameObjects.Container {
     this.clickSound = sound;
     this.isEnabled = enabled;
     this.onHover = onHover;
-    this.hoverScale = 1.045;
-    this.pressScale = 0.955;
-
-    const palette = Button.paletteFor(variant);
-    this.palette = palette;
+    this.hoverScale = 1.03;
+    this.pressScale = 0.965;
+    this.hovered = false;
+    this.selected = false;
 
     this.bg = scene.add.graphics();
-    this.border = scene.add.graphics();
-    this.add([this.bg, this.border]);
+    this.add(this.bg);
 
     this.label = scene.add
-      .text(icon ? 14 : 0, 0, label, {
-        fontFamily: FONTS.PRIMARY,
+      .text(0, 0, '', {
+        fontFamily: FONTS.DISPLAY,
         fontSize: `${fontSize}px`,
-        color: palette.text,
-        fontStyle: 'bold',
+        fontStyle: '800',
+        letterSpacing: Math.max(1, Math.round(fontSize * 0.05)),
       })
       .setOrigin(0.5);
     this.add(this.label);
 
-    if (icon) {
-      this.icon = scene.add
-        .text(-this.label.width / 2 - 12, 0, icon, {
-          fontFamily: FONTS.PRIMARY,
-          fontSize: `${fontSize + 6}px`,
-        })
-        .setOrigin(1, 0.5);
-      this.add(this.icon);
+    this.iconGraphics = null;
+    if (icon && ICON_NAMES.includes(icon)) {
+      this.iconName = icon;
+      this.iconGraphics = scene.add.graphics();
+      this.add(this.iconGraphics);
     }
 
-    this.#draw(1);
+    this.setLabel(label);
+    this.#draw();
 
     this.setSize(width, height);
     this.setInteractive(
@@ -84,38 +86,63 @@ export class Button extends Phaser.GameObjects.Container {
     scene.add.existing(this);
   }
 
-  static paletteFor(variant) {
-    switch (variant) {
-      case 'danger':
-        return {
-          fill: COLORS.redDark,
-          fillHover: COLORS.red,
-          border: COLORS.red,
-          text: CSS_COLORS.white,
-        };
-      case 'ghost':
-        return {
-          fill: COLORS.panel,
-          fillHover: COLORS.panelLight,
-          border: COLORS.gold,
-          text: CSS_COLORS.gold,
-        };
-      case 'success':
-        return {
-          fill: COLORS.greenDark,
-          fillHover: COLORS.green,
-          border: COLORS.green,
-          text: CSS_COLORS.white,
-        };
-      case 'primary':
-      default:
-        return {
-          fill: COLORS.goldDark,
-          fillHover: COLORS.gold,
-          border: COLORS.gold,
-          text: '#23180a',
-        };
+  static paletteFor(variant, { selected = false, hover = false } = {}) {
+    const base = {
+      primary: {
+        fill: COLORS.gold,
+        fillHover: COLORS.goldLight,
+        border: COLORS.gold,
+        borderHover: COLORS.goldLight,
+        text: CSS_COLORS.accentInk,
+        textHover: CSS_COLORS.accentInk,
+      },
+      danger: {
+        fill: COLORS.redDark,
+        fillHover: COLORS.red,
+        border: COLORS.red,
+        borderHover: COLORS.red,
+        text: CSS_COLORS.white,
+        // Bright hover fill gets dark ink text (same rule as the gold primary).
+        textHover: CSS_COLORS.accentInk,
+      },
+      success: {
+        fill: COLORS.greenDark,
+        fillHover: COLORS.green,
+        border: COLORS.green,
+        borderHover: COLORS.green,
+        text: CSS_COLORS.white,
+        textHover: CSS_COLORS.accentInk,
+      },
+      ghost: {
+        fill: COLORS.panel,
+        fillHover: COLORS.panelLight,
+        border: COLORS.border,
+        borderHover: COLORS.gold,
+        text: CSS_COLORS.offWhite,
+        textHover: CSS_COLORS.gold,
+      },
+    }[variant] ?? { fill: COLORS.gold, border: COLORS.gold, text: CSS_COLORS.accentInk };
+
+    if (selected) {
+      // Filled accent state used by picker rows (difficulty, rounds, quality).
+      return {
+        fill: COLORS.gold,
+        fillHover: COLORS.goldLight,
+        border: COLORS.gold,
+        borderHover: COLORS.goldLight,
+        text: CSS_COLORS.accentInk,
+        textHover: CSS_COLORS.accentInk,
+      };
     }
+    if (!hover) return base;
+    return {
+      fill: base.fillHover,
+      fillHover: base.fillHover,
+      border: base.borderHover,
+      borderHover: base.borderHover,
+      text: base.textHover ?? base.text,
+      textHover: base.textHover ?? base.text,
+    };
   }
 
   #onDestroy() {
@@ -123,29 +150,41 @@ export class Button extends Phaser.GameObjects.Container {
     this.scene?.tweens?.killTweensOf(this);
   }
 
-  #draw(hoverAmount) {
-    const { width, height, palette } = this;
-    const radius = Math.min(28, height / 2.5);
-    const fill = hoverAmount > 0.5 ? palette.fillHover : palette.fill;
+  #draw() {
+    const { width, height } = this;
+    const palette = Button.paletteFor(this.variant, {
+      selected: this.selected,
+      hover: this.hovered && this.isEnabled,
+    });
+    const radius = Math.min(12, height / 3);
+    const isGhostIdle = this.variant === 'ghost' && !this.selected && !this.hovered;
 
     this.bg.clear();
-    this.bg.fillStyle(0x000000, 0.28);
-    this.bg.fillRoundedRect(-width / 2 + 3, -height / 2 + 8, width, height, radius);
-    this.bg.fillStyle(fill, 1);
+    this.bg.fillStyle(palette.fill, isGhostIdle ? 0.92 : 1);
     this.bg.fillRoundedRect(-width / 2, -height / 2, width, height, radius);
-    // subtle top gloss
-    this.bg.fillStyle(0xffffff, 0.12);
-    this.bg.fillRoundedRect(
-      -width / 2 + 8,
-      -height / 2 + 6,
-      width - 16,
-      height * 0.36,
-      radius * 0.7,
-    );
+    this.bg.lineStyle(2.5, palette.border, 1);
+    this.bg.strokeRoundedRect(-width / 2, -height / 2, width, height, radius);
 
-    this.border.clear();
-    this.border.lineStyle(4, palette.border, hoverAmount > 0.5 ? 1 : 0.75);
-    this.border.strokeRoundedRect(-width / 2, -height / 2, width, height, radius);
+    this.label.setColor(palette.text);
+    this.#layoutContent(palette.text);
+  }
+
+  /** Centres [icon + label] as one group and repaints the icon colour. */
+  #layoutContent(textColor) {
+    const gap = 16;
+    const iconSize = this.iconGraphics ? Math.round(this.label.height * 0.62) : 0;
+    const total = (this.iconGraphics ? iconSize + gap : 0) + this.label.width;
+    let startX = -total / 2;
+    if (this.iconGraphics) {
+      this.iconGraphics.setPosition(startX + iconSize / 2, 1);
+      startX += iconSize + gap;
+    }
+    this.label.setPosition(startX + this.label.width / 2, 0);
+    if (this.iconGraphics) {
+      this.iconGraphics.clear();
+      const iconColor = Phaser.Display.Color.HexStringToColor(textColor).color;
+      drawIcon(this.iconGraphics, this.iconName, iconSize, iconColor, 1);
+    }
   }
 
   #onOver(pointer) {
@@ -153,7 +192,8 @@ export class Button extends Phaser.GameObjects.Container {
     // Touch pointers fire over+out around every tap; only re-arm hover visuals
     // for the mouse so taps don't double-tween the scale.
     if (pointer?.wasTouch) return;
-    this.#draw(1);
+    this.hovered = true;
+    this.#draw();
     this.onHover?.(this);
     this.scene?.input?.setDefaultCursor?.('pointer');
     this.scene.tweens.add({
@@ -169,8 +209,9 @@ export class Button extends Phaser.GameObjects.Container {
   #onOut() {
     // Sliding off mid-press cancels the click.
     this.pressed = false;
+    this.hovered = false;
     if (!this.isEnabled) return;
-    this.#draw(0);
+    this.#draw();
     this.scene?.input?.setDefaultCursor?.('default');
     this.scene.tweens.add({
       targets: this,
@@ -216,7 +257,7 @@ export class Button extends Phaser.GameObjects.Container {
   activate() {
     if (!this.isEnabled || !this.onClick) return false;
     audio.play(this.clickSound, { throttleMs: 40 });
-    pulse(this, { amount: 1.1, duration: 120, baseScale: 1 });
+    pulse(this, { amount: 1.06, duration: 120, baseScale: 1 });
     this.onClick(this);
     return true;
   }
@@ -224,13 +265,30 @@ export class Button extends Phaser.GameObjects.Container {
   setEnabled(value) {
     this.isEnabled = Boolean(value);
     this.pressed = false;
-    this.setAlpha(this.isEnabled ? 1 : 0.45);
-    this.#draw(0);
+    this.hovered = false;
+    this.setAlpha(this.isEnabled ? 1 : 0.4);
+    this.#draw();
+    return this;
+  }
+
+  /** Picker-style selected state (filled accent for ghost buttons). */
+  setSelected(value) {
+    this.selected = Boolean(value);
+    this.#draw();
     return this;
   }
 
   setLabel(text) {
-    this.label.setText(text);
+    this.label.setText(String(text).toUpperCase());
+    this.#draw();
+    return this;
+  }
+
+  /** Swaps the vector icon (keeps the current state colours). */
+  setIcon(name) {
+    if (!this.iconGraphics || !ICON_NAMES.includes(name)) return this;
+    this.iconName = name;
+    this.#draw();
     return this;
   }
 

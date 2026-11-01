@@ -19,19 +19,23 @@ export class Toggle extends Phaser.GameObjects.Container {
     this.label = scene.add
       .text(0, 0, label, {
         fontFamily: FONTS.PRIMARY,
-        fontSize: '30px',
+        fontSize: '28px',
+        fontStyle: '500',
         color: CSS_COLORS.offWhite,
       })
       .setOrigin(0, 0.5);
     this.add(this.label);
 
-    this.track = scene.add.graphics({ x: width + 40, y: 0 });
+    // The switch sits to the right of the label, never on top of it.
+    const trackX = this.label.width + 52;
+    this.track = scene.add.graphics({ x: trackX, y: 0 });
     this.add(this.track);
 
-    this.knob = scene.add.graphics({ x: width + 40, y: 0 });
+    this.knob = scene.add.graphics({ x: trackX, y: 0 });
     this.add(this.knob);
 
-    this.zone = scene.add.zone(width / 2 + 20, 0, width + this.label.width + 80, 72).setOrigin(0.5);
+    const totalWidth = trackX + width;
+    this.zone = scene.add.zone(totalWidth / 2, 0, totalWidth + 24, 76).setOrigin(0.5);
     this.zone.setInteractive({ useHandCursor: true });
     this.add(this.zone);
     this.zone.on('pointerup', () => this.toggle());
@@ -46,16 +50,16 @@ export class Toggle extends Phaser.GameObjects.Container {
     const r = h / 2;
 
     this.track.clear();
-    this.track.fillStyle(this.value ? COLORS.greenDark : COLORS.panelLight, 1);
+    // On = brand accent (an enabled setting is the accent's job here, not a
+    // "success" state); off = quiet surface with a hairline border.
+    this.track.fillStyle(this.value ? COLORS.gold : COLORS.panelLight, 1);
     this.track.fillRoundedRect(-w / 2, -h / 2, w, h, r);
-    this.track.lineStyle(3, this.value ? COLORS.green : 0x5b6785, 1);
+    this.track.lineStyle(2.5, this.value ? COLORS.gold : COLORS.border, 1);
     this.track.strokeRoundedRect(-w / 2, -h / 2, w, h, r);
 
     const knobX = (this.value ? 1 : -1) * (w / 2 - h / 2 - 4);
     this.knob.clear();
-    this.knob.fillStyle(0x000000, 0.3);
-    this.knob.fillCircle(knobX, 3, h * 0.36);
-    this.knob.fillStyle(0xffffff, 1);
+    this.knob.fillStyle(this.value ? COLORS.accentInk : COLORS.offWhite, 1);
     this.knob.fillCircle(knobX, 0, h * 0.36);
 
     if (animate && this.scene?.tweens) {

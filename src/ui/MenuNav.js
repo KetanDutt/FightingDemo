@@ -35,18 +35,11 @@ export class MenuNav {
     this.index = -1;
     this.enabled = enabled;
 
+    // A single crisp focus ring (dark underlay + accent) — no pulsing.
     this.ring = scene.add
       .graphics()
       .setDepth(DEPTH.UI + 5)
       .setVisible(false);
-    this.pulseTween = scene.tweens.add({
-      targets: this.ring,
-      alpha: { from: 0.45, to: 1 },
-      duration: 620,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut',
-    });
 
     const keyboard = scene.input?.keyboard;
     this.bindings = [];
@@ -153,30 +146,33 @@ export class MenuNav {
 
   #drawRing() {
     const item = this.items[this.index];
-    if (!item || !this.scene?.sys?.isActive?.()) {
+    // Note: during scene `create()` `sys.isActive()` is still false, so the
+    // guard must only reject a *destroyed* scene — otherwise the ring would
+    // stay hidden until the first arrow-key press.
+    if (!item || !this.scene) {
       this.ring.setVisible(false);
       return;
     }
     const width = item.width ?? 200;
     const height = item.height ?? 80;
-    const radius = Math.min(30, height / 2.4);
+    const radius = Math.min(16, height / 3);
 
     this.ring.clear();
-    this.ring.lineStyle(5, COLORS.gold, 0.9);
+    this.ring.lineStyle(7, COLORS.shadow, 0.45);
     this.ring.strokeRoundedRect(
-      item.x - width / 2 - 12,
-      item.y - height / 2 - 12,
-      width + 24,
-      height + 24,
-      radius + 8,
+      item.x - width / 2 - 10,
+      item.y - height / 2 - 10,
+      width + 20,
+      height + 20,
+      radius + 6,
     );
-    this.ring.lineStyle(2, COLORS.gold, 0.28);
+    this.ring.lineStyle(3, COLORS.gold, 1);
     this.ring.strokeRoundedRect(
-      item.x - width / 2 - 22,
-      item.y - height / 2 - 22,
-      width + 44,
-      height + 44,
-      radius + 14,
+      item.x - width / 2 - 10,
+      item.y - height / 2 - 10,
+      width + 20,
+      height + 20,
+      radius + 6,
     );
     this.ring.setVisible(this.enabled);
   }
@@ -185,7 +181,6 @@ export class MenuNav {
     const keyboard = this.scene?.input?.keyboard;
     if (keyboard) this.bindings.forEach(([event, handler]) => keyboard.off(event, handler));
     this.bindings = [];
-    this.pulseTween?.remove?.();
     this.ring?.destroy();
     this.items = [];
   }

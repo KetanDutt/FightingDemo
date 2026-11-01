@@ -11,8 +11,10 @@ import { COLORS, CSS_COLORS } from '../config/palette.js';
 import { FX_TEXTURES } from '../utils/textures.js';
 import { ANIMATION_DATA } from '../data/animations.js';
 import { createAnimations } from '../utils/frames.js';
+import { titleText } from '../ui/text.js';
 import { fadeIn, popIn } from '../utils/fx.js';
 import { audio } from '../audio/index.js';
+import { settings } from '../core/Settings.js';
 
 const TIPS = [
   'Hold BLOCK to shrug off light attacks — but heavy hits still chip away.',
@@ -54,91 +56,83 @@ export class PreloadScene extends Phaser.Scene {
     });
 
     this.load.image(TEXTURE_KEYS.JOYPAD, 'assets/joypad.png');
-    this.load.image(TEXTURE_KEYS.NEXT, 'assets/next.png');
+    // Note: assets/next.png is no longer loaded — the gallery's Next control
+    // is a flat Button with a vector icon now.
   }
 
   #buildLoaderUi() {
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
 
+    titleText(this, cx, cy - 224, 'Monkey Mayhem', { size: 96 });
+
     this.add
-      .text(cx, cy - 220, 'MONKEY MAYHEM', {
-        fontFamily: FONTS.DISPLAY,
-        fontSize: '96px',
-        fontStyle: 'bold',
-        color: CSS_COLORS.gold,
-        stroke: '#0b0f1a',
-        strokeThickness: 12,
+      .text(cx, cy - 138, 'FIGHTING DEMO', {
+        fontFamily: FONTS.PRIMARY,
+        fontSize: '28px',
+        fontStyle: '600',
+        letterSpacing: 9,
+        color: CSS_COLORS.muted,
       })
       .setOrigin(0.5);
 
-    this.add
-      .text(cx, cy - 140, 'Fighting Demo', {
-        fontFamily: FONTS.PRIMARY,
-        fontSize: '40px',
-        color: CSS_COLORS.offWhite,
-      })
-      .setOrigin(0.5)
-      .setAlpha(0.8);
-
-    const barWidth = 720;
-    const barHeight = 34;
+    const barWidth = 680;
+    const barHeight = 26;
     this.barWidth = barWidth;
 
-    this.add
-      .graphics()
-      .fillStyle(0x000000, 0.45)
-      .fillRoundedRect(
-        cx - barWidth / 2 - 8,
-        cy - barHeight / 2 - 8,
-        barWidth + 16,
-        barHeight + 16,
-        22,
-      )
-      .fillStyle(COLORS.panel, 1)
-      .fillRoundedRect(cx - barWidth / 2, cy - barHeight / 2, barWidth, barHeight, 18);
+    const track = this.add.graphics();
+    track.fillStyle(COLORS.ink, 0.9);
+    track.fillRoundedRect(cx - barWidth / 2, cy - barHeight / 2, barWidth, barHeight, 13);
+    track.lineStyle(2, COLORS.border, 1);
+    track.strokeRoundedRect(cx - barWidth / 2, cy - barHeight / 2, barWidth, barHeight, 13);
 
     this.barFill = this.add
-      .image(cx - barWidth / 2 + 6, cy, FX_TEXTURES.pixel)
+      .image(cx - barWidth / 2 + 5, cy, FX_TEXTURES.pixel)
       .setOrigin(0, 0.5)
-      .setDisplaySize(1, barHeight - 12)
+      .setDisplaySize(1, barHeight - 10)
       .setTint(COLORS.gold);
 
     this.percentText = this.add
-      .text(cx, cy + 58, '0%', {
-        fontFamily: FONTS.PRIMARY,
-        fontSize: '34px',
+      .text(cx, cy + 52, '0%', {
+        fontFamily: FONTS.DISPLAY,
+        fontSize: '36px',
+        fontStyle: '800',
         color: CSS_COLORS.offWhite,
       })
       .setOrigin(0.5);
 
     this.statusText = this.add
-      .text(cx, cy + 120, 'Loading sprites…', {
+      .text(cx, cy + 108, 'Loading sprites…', {
         fontFamily: FONTS.PRIMARY,
-        fontSize: '28px',
+        fontSize: '26px',
+        fontStyle: '400',
         color: CSS_COLORS.muted,
       })
       .setOrigin(0.5);
 
     this.tipText = this.add
-      .text(cx, cy + 240, 'Tip: ' + TIPS[0], {
+      .text(cx, cy + 224, 'Tip: ' + TIPS[0], {
         fontFamily: FONTS.PRIMARY,
-        fontSize: '30px',
-        color: CSS_COLORS.gold,
+        fontSize: '27px',
+        fontStyle: '400',
+        color: CSS_COLORS.muted,
         align: 'center',
         wordWrap: { width: 1100 },
       })
       .setOrigin(0.5)
-      .setAlpha(0.75);
+      .setAlpha(0.8);
 
-    this.tweens.add({
-      targets: this.tipText,
-      alpha: { from: 0.35, to: 0.95 },
-      duration: 1600,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut',
-    });
+    // Respect reduced motion: static tip instead of a pulsing one.
+    if (!settings.get('reducedMotion')) {
+      this.tweens.add({
+        targets: this.tipText,
+        alpha: { from: 0.45, to: 0.85 },
+        duration: 1600,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
 
     // Cycle through tips
     this.tipIndex = 0;
@@ -156,8 +150,8 @@ export class PreloadScene extends Phaser.Scene {
 
   #onProgress(value) {
     if (!this.barFill) return;
-    const width = Math.max(1, (this.barWidth - 12) * value);
-    this.barFill.setDisplaySize(width, 22);
+    const width = Math.max(1, (this.barWidth - 10) * value);
+    this.barFill.setDisplaySize(width, 16);
     this.percentText?.setText(`${Math.round(value * 100)}%`);
   }
 
@@ -185,12 +179,11 @@ export class PreloadScene extends Phaser.Scene {
     if (this.failed) return;
     createAnimations(this);
 
-    const cx = GAME_WIDTH / 2;
-    const cy = GAME_HEIGHT / 2;
-
-    // Show off the character for a beat before the menu appears.
+    // Show off the character for a beat before the menu appears — parked in
+    // the bottom-left corner (same spot as the menu mascot) so it never
+    // covers the centred title or the progress bar.
     const monkey = this.add
-      .sprite(cx, cy + 40, `${TEXTURE_KEYS.MONKEY}-${ANIMS.IDLE}`)
+      .sprite(300, GAME_HEIGHT - 30, `${TEXTURE_KEYS.MONKEY}-${ANIMS.IDLE}`)
       .setOrigin(0.5, 1)
       .setScale(1.1);
     monkey.play({ key: ANIMS.IDLE, repeat: -1 });
@@ -205,7 +198,7 @@ export class PreloadScene extends Phaser.Scene {
     fadeIn(monkey, { duration: 200 });
 
     this.time.delayedCall(520, () => {
-      this.cameras.main.fadeOut(220, 13, 18, 32);
+      this.cameras.main.fadeOut(220, 11, 15, 26);
       this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
         this.scene.start(SCENES.MENU);
       });

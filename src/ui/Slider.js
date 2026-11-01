@@ -43,9 +43,10 @@ export class Slider extends Phaser.GameObjects.Container {
 
     if (label) {
       this.label = scene.add
-        .text(0, -34, label, {
+        .text(0, -36, label, {
           fontFamily: FONTS.PRIMARY,
-          fontSize: '30px',
+          fontSize: '27px',
+          fontStyle: '500',
           color: CSS_COLORS.offWhite,
         })
         .setOrigin(0, 0.5);
@@ -53,9 +54,10 @@ export class Slider extends Phaser.GameObjects.Container {
     }
 
     this.valueText = scene.add
-      .text(width + 26, 0, format(this.value), {
-        fontFamily: FONTS.PRIMARY,
-        fontSize: '28px',
+      .text(width + 28, 0, format(this.value), {
+        fontFamily: FONTS.DISPLAY,
+        fontSize: '30px',
+        fontStyle: '700',
         color: CSS_COLORS.gold,
       })
       .setOrigin(0, 0.5);
@@ -104,10 +106,10 @@ export class Slider extends Phaser.GameObjects.Container {
     const r = h / 2;
 
     this.track.clear();
-    this.track.fillStyle(0x000000, 0.4);
-    this.track.fillRoundedRect(-4, -h / 2 - 2, w + 8, h + 4, r + 2);
     this.track.fillStyle(COLORS.panelLight, 1);
     this.track.fillRoundedRect(0, -h / 2, w, h, r);
+    this.track.lineStyle(2, COLORS.border, 1);
+    this.track.strokeRoundedRect(0, -h / 2, w, h, r);
 
     const filled = Math.max(0, w * this.value);
     this.fill.clear();
@@ -117,9 +119,7 @@ export class Slider extends Phaser.GameObjects.Container {
     }
 
     this.knob.clear();
-    this.knob.fillStyle(0x000000, 0.35);
-    this.knob.fillCircle(filled, 4, h * 0.95);
-    this.knob.fillStyle(0xffffff, 1);
+    this.knob.fillStyle(COLORS.white, 1);
     this.knob.fillCircle(filled, 0, h * 0.95);
     this.knob.lineStyle(3, this.color, 1);
     this.knob.strokeCircle(filled, 0, h * 0.95);
