@@ -86,7 +86,7 @@ export class FightScene extends Phaser.Scene {
   }
 
   create() {
-    this.cameras.main.setBackgroundColor('#0d1220');
+    this.cameras.main.setBackgroundColor(CSS_COLORS.bg);
     this.arena = new Arena(this, { reducedMotion: settings.get('reducedMotion') });
     this.vfx = new Vfx(this, {
       quality: settings.get('particleQuality'),
@@ -158,7 +158,7 @@ export class FightScene extends Phaser.Scene {
 
     this.matchStats.startedAt = this.time.now;
     audio.playMusic('battle');
-    this.cameras.main.fadeIn(320, 13, 18, 32);
+    this.cameras.main.fadeIn(320, 11, 15, 26);
 
     this.time.delayedCall(340, () => this.#startRound());
   }
@@ -264,12 +264,13 @@ export class FightScene extends Phaser.Scene {
       .text(
         GAME_WIDTH / 2,
         300,
-        '◀ ▶ move · ▲ jump · ▼ block · tap PUNCH / HEAD / STOMP to attack',
+        'D-pad move · up jump · down block · tap PUNCH / HEAD / STOMP to attack',
         {
           fontFamily: FONTS.PRIMARY,
           fontSize: '30px',
+          fontStyle: '500',
           color: CSS_COLORS.offWhite,
-          stroke: '#0b0f1a',
+          stroke: CSS_COLORS.bg,
           strokeThickness: 6,
         },
       )
@@ -353,7 +354,7 @@ export class FightScene extends Phaser.Scene {
           this.player.unlock();
           this.enemy.unlock();
           audio.play('fight');
-          this.cameraFx?.flash(0xffffff, 120, 0.25);
+          this.cameraFx?.flash(COLORS.white, 120, 0.25);
           this.cameraFx?.zoomPunch(1.03, 300);
         });
       },
@@ -469,7 +470,7 @@ export class FightScene extends Phaser.Scene {
     audio.play('transition', { volume: 0.35 });
     bus.emit('hud:fadeOut');
 
-    this.cameras.main.fadeOut(520, 13, 18, 32);
+    this.cameras.main.fadeOut(520, 11, 15, 26);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.stop(SCENES.HUD);
       this.scene.start(SCENES.RESULTS, {
@@ -513,18 +514,17 @@ export class FightScene extends Phaser.Scene {
 
     const { color = CSS_COLORS.gold, x = GAME_WIDTH / 2, y = GAME_HEIGHT * 0.34 } = options;
 
-    this.vfx?.ring(x, y, { color: 0xfff3a8, endScale: 3.2, duration: 540, alpha: 0.8 });
-    this.vfx?.flash(x, y, { color: 0xffffff, scale: 2.2, duration: 220, alpha: 0.6 });
+    this.vfx?.ring(x, y, { color: COLORS.hitSpark, endScale: 3.2, duration: 540, alpha: 0.8 });
+    this.vfx?.flash(x, y, { color: COLORS.white, scale: 2.2, duration: 220, alpha: 0.6 });
 
     const callout = this.add
       .text(x, y, text, {
         fontFamily: FONTS.DISPLAY,
         fontSize: '150px',
-        fontStyle: 'bold',
+        fontStyle: '800',
+        letterSpacing: 4,
         color,
-        stroke: '#1a0f00',
-        strokeThickness: 18,
-        shadow: { offsetX: 0, offsetY: 10, color: '#000000', blur: 22, fill: true },
+        shadow: { offsetX: 0, offsetY: 10, color: CSS_COLORS.shadow, blur: 0, fill: true },
       })
       .setOrigin(0.5)
       .setDepth(DEPTH.BANNER)
@@ -600,11 +600,10 @@ export class FightScene extends Phaser.Scene {
       .text(0, 0, main, {
         fontFamily: FONTS.DISPLAY,
         fontSize: '140px',
-        fontStyle: 'bold',
+        fontStyle: '800',
+        letterSpacing: 4,
         color: CSS_COLORS.gold,
-        stroke: '#1a0f00',
-        strokeThickness: 18,
-        shadow: { offsetX: 0, offsetY: 12, color: '#000000', blur: 24, fill: true },
+        shadow: { offsetX: 0, offsetY: 10, color: CSS_COLORS.shadow, blur: 0, fill: true },
       })
       .setOrigin(0.5);
 
@@ -612,13 +611,14 @@ export class FightScene extends Phaser.Scene {
 
     if (sub) {
       const subText = this.add
-        .text(0, 110, sub, {
+        .text(0, 108, sub.toUpperCase(), {
           fontFamily: FONTS.PRIMARY,
-          fontSize: '46px',
-          color: CSS_COLORS.offWhite,
+          fontSize: '34px',
+          fontStyle: '600',
+          letterSpacing: 6,
+          color: CSS_COLORS.muted,
         })
-        .setOrigin(0.5)
-        .setAlpha(0.9);
+        .setOrigin(0.5);
       container.add(subText);
     }
 
@@ -712,7 +712,7 @@ export class FightScene extends Phaser.Scene {
     });
     this.cameraFx?.shake(CAMERA_FX.shakeOnKo, 520);
     this.cameraFx?.zoomTo(1.08, 480);
-    this.cameraFx?.flash(0xffffff, 220, 0.5);
+    this.cameraFx?.flash(COLORS.white, 220, 0.5);
 
     const loser = side === 'player' ? this.player : this.enemy;
     this.vfx?.burst(loser.x, GROUND_Y - 180, { count: 30, tint: COLORS.red });
@@ -792,7 +792,7 @@ export class FightScene extends Phaser.Scene {
 
     if (!this.vignetteOverlay) {
       this.vignetteOverlay = this.add.graphics().setDepth(DEPTH.OVERLAY - 1);
-      this.vignetteOverlay.fillStyle(0xff0000, 1);
+      this.vignetteOverlay.fillStyle(COLORS.red, 1);
       this.vignetteOverlay.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
       this.vignetteOverlay.setBlendMode(Phaser.BlendModes.ADD);
     }
@@ -931,7 +931,7 @@ export class FightScene extends Phaser.Scene {
     audio.play('transition', { volume: 0.4 });
     audio.stopMusic(0.4);
     this.scene.stop(SCENES.HUD);
-    this.cameras.main.fadeOut(240, 13, 18, 32);
+    this.cameras.main.fadeOut(240, 11, 15, 26);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(SCENES.MENU);
     });

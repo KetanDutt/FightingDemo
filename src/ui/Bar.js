@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { COLORS } from '../config/palette.js';
+import { settings } from '../core/Settings.js';
 import { clamp01 } from '../utils/math.js';
 
 /**
@@ -19,7 +20,7 @@ export class Bar extends Phaser.GameObjects.Container {
       radius = 14,
       fillColor = COLORS.green,
       lagColor = COLORS.gold,
-      trackColor = 0x0a0e1b,
+      trackColor = COLORS.bg,
       /** `true` makes the bar drain towards the right (player two). */
       flip = false,
       dangerThreshold = 0.25,
@@ -58,10 +59,10 @@ export class Bar extends Phaser.GameObjects.Container {
   #drawTrack(color) {
     const { barWidth: w, barHeight: h, radius: r } = this;
     this.track.clear();
-    this.track.fillStyle(0x000000, 0.45);
-    this.track.fillRoundedRect(-w / 2 - 4, -h / 2 - 4, w + 8, h + 8, r + 4);
     this.track.fillStyle(color, 1);
     this.track.fillRoundedRect(-w / 2, -h / 2, w, h, r);
+    this.track.lineStyle(2, COLORS.border, 1);
+    this.track.strokeRoundedRect(-w / 2, -h / 2, w, h, r);
   }
 
   #barRect(ratio) {
@@ -92,19 +93,10 @@ export class Bar extends Phaser.GameObjects.Container {
         fillRect.height,
         fillRect.radius,
       );
-      // gloss
-      this.fill.fillStyle(0xffffff, 0.18);
-      this.fill.fillRoundedRect(
-        fillRect.x + 6,
-        fillRect.y + 5,
-        Math.max(0, fillRect.width - 12),
-        fillRect.height * 0.32,
-        fillRect.radius * 0.6,
-      );
     }
 
     this.overlay.clear();
-    this.overlay.lineStyle(3, 0xffffff, 0.25);
+    this.overlay.lineStyle(2, COLORS.white, 0.14);
     this.overlay.strokeRoundedRect(
       -this.barWidth / 2,
       -this.barHeight / 2,
@@ -113,7 +105,7 @@ export class Bar extends Phaser.GameObjects.Container {
       this.radius,
     );
     if (this.showTicks) {
-      this.overlay.lineStyle(2, 0x000000, 0.25);
+      this.overlay.lineStyle(2, COLORS.shadow, 0.22);
       for (let i = 1; i < 5; i += 1) {
         const x = -this.barWidth / 2 + (this.barWidth / 5) * i;
         this.overlay.lineBetween(x, -this.barHeight / 2 + 4, x, this.barHeight / 2 - 4);
@@ -186,10 +178,11 @@ export class Bar extends Phaser.GameObjects.Container {
 
   /** Keeps the danger pulse going while health is critical. */
   setDanger(isDanger) {
-    if (isDanger && !this.dangerTween) {
+    // Reduced motion: the red fill already signals danger, so skip the pulse.
+    if (isDanger && !this.dangerTween && !settings.get('reducedMotion')) {
       this.dangerTween = this.scene.tweens.add({
         targets: this,
-        alpha: { from: 1, to: 0.65 },
+        alpha: { from: 1, to: 0.72 },
         duration: 420,
         yoyo: true,
         repeat: -1,

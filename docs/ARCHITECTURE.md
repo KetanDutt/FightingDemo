@@ -277,12 +277,12 @@ Details in [AUDIO.md](AUDIO.md).
 
 ## 9. Configuration surfaces
 
-| File                  | What lives there                                                            | Why it is separate                            |
-| --------------------- | --------------------------------------------------------------------------- | --------------------------------------------- |
-| `config/constants.js` | Screen size, anchor, events, depths, timings, default settings              | Never changes at runtime                      |
-| `config/palette.js`   | Colour tokens (+ the colour-blind variant)                                  | One place to re-skin                          |
-| `config/balance.js`   | Fighter stats, attack frame data, combo rules, round rules, **AI profiles** | The tuning surface — designers edit only this |
-| `data/animations.js`  | Sprite manifest (frame counts, rates, chaining)                             | Art-side contract                             |
+| File                  | What lives there                                                            | Why it is separate                                                                                                    |
+| --------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `config/constants.js` | Screen size, anchor, events, depths, timings, default settings              | Never changes at runtime                                                                                              |
+| `config/palette.js`   | Colour tokens (+ the colour-blind variant)                                  | One place to re-skin (Unslop principles: [Unslop](https://github.com/heydamir/unslop) by Damir Sokolovsky, CC BY 4.0) |
+| `config/balance.js`   | Fighter stats, attack frame data, combo rules, round rules, **AI profiles** | The tuning surface — designers edit only this                                                                         |
+| `data/animations.js`  | Sprite manifest (frame counts, rates, chaining)                             | Art-side contract                                                                                                     |
 
 Tuning the game means editing `balance.js` — nothing else needs to change, and the unit tests
 re-validate the invariants (heavier attacks do more damage, `easy < normal < hard`, weights sum

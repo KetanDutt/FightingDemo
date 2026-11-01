@@ -16,6 +16,7 @@ import { Arena } from '../systems/Arena.js';
 import { Vfx } from '../systems/Vfx.js';
 import { Button } from '../ui/Button.js';
 import { MenuNav } from '../ui/MenuNav.js';
+import { sectionLabel, titleText } from '../ui/text.js';
 import { FX_TEXTURES } from '../utils/textures.js';
 import { bob, fadeIn, popIn, slideIn, tweenNumber } from '../utils/fx.js';
 import { formatAccuracy } from '../utils/math.js';
@@ -57,7 +58,7 @@ export class ResultsScene extends Phaser.Scene {
       reducedMotion: settings.get('reducedMotion'),
     });
 
-    this.cameras.main.fadeIn(320, 13, 18, 32);
+    this.cameras.main.fadeIn(320, 11, 15, 26);
 
     this.#buildWinner();
     this.#buildStats();
@@ -69,7 +70,7 @@ export class ResultsScene extends Phaser.Scene {
       { volume: 0.9 },
     );
 
-    if (this.winner === 'player') {
+    if (this.winner === 'player' && !settings.get('reducedMotion')) {
       this.time.addEvent({
         delay: 420,
         loop: true,
@@ -97,20 +98,11 @@ export class ResultsScene extends Phaser.Scene {
         ? CSS_COLORS.offWhite
         : CSS_COLORS.red;
 
-    const titleText = this.add
-      .text(GAME_WIDTH / 2, 170, title, {
-        fontFamily: FONTS.DISPLAY,
-        fontSize: '132px',
-        fontStyle: 'bold',
-        color,
-        stroke: '#1a0f00',
-        strokeThickness: 16,
-        shadow: { offsetX: 0, offsetY: 12, color: '#000000', blur: 24, fill: true },
-      })
-      .setOrigin(0.5)
-      .setDepth(DEPTH.UI);
-    popIn(titleText, { from: 0.6, to: 1, duration: 520, ease: 'Back.easeOut' });
-    bob(titleText, { offset: -12, duration: 2400 });
+    const heading = titleText(this, GAME_WIDTH / 2, 168, title, { size: 128, color }).setDepth(
+      DEPTH.UI,
+    );
+    popIn(heading, { from: 0.6, to: 1, duration: 520, ease: 'Back.easeOut' });
+    if (!settings.get('reducedMotion')) bob(heading, { offset: -12, duration: 2400 });
 
     // Portrait of the winning fighter, off to the side where the stats panel
     // doesn't bury it. Draws show your own fighter. x=330 keeps the whole
@@ -145,7 +137,7 @@ export class ResultsScene extends Phaser.Scene {
     this.add
       .text(
         GAME_WIDTH / 2,
-        268,
+        262,
         victory
           ? `${skin.name} takes the crown`
           : this.winner === 'draw'
@@ -153,35 +145,39 @@ export class ResultsScene extends Phaser.Scene {
             : 'Better luck next round',
         {
           fontFamily: FONTS.PRIMARY,
-          fontSize: '40px',
-          color: CSS_COLORS.offWhite,
+          fontSize: '32px',
+          fontStyle: '400',
+          color: CSS_COLORS.muted,
         },
       )
       .setOrigin(0.5)
-      .setAlpha(0.85)
       .setDepth(DEPTH.UI);
   }
 
   #buildStats() {
     const panelWidth = 760;
-    const panelHeight = 340;
+    const panelHeight = 396;
     const x = GAME_WIDTH / 2;
-    const y = 480;
+    const y = 486;
 
     const panel = this.add.graphics().setDepth(DEPTH.UI);
-    panel.fillStyle(0x000000, 0.4);
-    panel.fillRoundedRect(
-      x - panelWidth / 2 + 6,
-      y - panelHeight / 2 + 8,
-      panelWidth,
-      panelHeight,
-      30,
-    );
-    panel.fillStyle(COLORS.panel, 0.94);
-    panel.fillRoundedRect(x - panelWidth / 2, y - panelHeight / 2, panelWidth, panelHeight, 30);
-    panel.lineStyle(4, COLORS.gold, 0.6);
-    panel.strokeRoundedRect(x - panelWidth / 2, y - panelHeight / 2, panelWidth, panelHeight, 30);
+    panel.fillStyle(COLORS.panel, 0.96);
+    panel.fillRoundedRect(x - panelWidth / 2, y - panelHeight / 2, panelWidth, panelHeight, 18);
+    panel.lineStyle(2, COLORS.border, 1);
+    panel.strokeRoundedRect(x - panelWidth / 2, y - panelHeight / 2, panelWidth, panelHeight, 18);
     slideIn(panel, { from: 40, duration: 320, delay: 200 });
+
+    // Section header inside the panel.
+    const header = sectionLabel(
+      this,
+      x - panelWidth / 2 + 44,
+      y - panelHeight / 2 + 52,
+      'Match stats',
+      {
+        align: 'left',
+      },
+    ).setDepth(DEPTH.UI);
+    slideIn(header, { from: 20, axis: 'x', duration: 260, delay: 240 });
 
     const rows = [
       ['Rounds won', `${this.rounds.player} — ${this.rounds.enemy}`],
@@ -192,23 +188,40 @@ export class ResultsScene extends Phaser.Scene {
       ['Match score', `${Math.round(this.score)}`],
     ];
 
+    const rowsTop = y - panelHeight / 2 + 92;
+    const rowStep = 46;
+
     rows.forEach(([label, value], index) => {
-      const rowY = y - 112 + index * 46;
+      const rowY = rowsTop + index * rowStep;
+
+      // Hairline separator between rows (not above the first).
+      if (index > 0) {
+        const separator = this.add.graphics().setDepth(DEPTH.UI);
+        separator.lineStyle(1.5, COLORS.border, 0.7);
+        separator.lineBetween(
+          x - panelWidth / 2 + 44,
+          rowY - rowStep / 2,
+          x + panelWidth / 2 - 44,
+          rowY - rowStep / 2,
+        );
+      }
+
       const left = this.add
-        .text(x - panelWidth / 2 + 48, rowY, label, {
+        .text(x - panelWidth / 2 + 44, rowY, label, {
           fontFamily: FONTS.PRIMARY,
-          fontSize: '32px',
-          color: CSS_COLORS.offWhite,
+          fontSize: '27px',
+          fontStyle: '500',
+          color: CSS_COLORS.muted,
         })
         .setOrigin(0, 0.5)
-        .setAlpha(0.8)
         .setDepth(DEPTH.UI);
 
       const right = this.add
-        .text(x + panelWidth / 2 - 48, rowY, value, {
+        .text(x + panelWidth / 2 - 44, rowY, value, {
           fontFamily: FONTS.DISPLAY,
-          fontSize: '34px',
-          fontStyle: 'bold',
+          fontSize: '36px',
+          fontStyle: '800',
+          letterSpacing: 1,
           color: CSS_COLORS.gold,
         })
         .setOrigin(1, 0.5)
@@ -244,11 +257,12 @@ export class ResultsScene extends Phaser.Scene {
     this.add
       .text(
         GAME_WIDTH / 2,
-        y + 190,
-        `Career · ${record.wins}W / ${record.losses}L  ·  Best combo ${record.bestCombo}  ·  Best score ${record.bestScore}`,
+        y + panelHeight / 2 + 36,
+        `Career · ${record.wins}W / ${record.losses}L · Best combo ${record.bestCombo} · Best score ${record.bestScore}`,
         {
           fontFamily: FONTS.PRIMARY,
-          fontSize: '28px',
+          fontSize: '26px',
+          fontStyle: '500',
           color: CSS_COLORS.muted,
         },
       )
@@ -259,12 +273,12 @@ export class ResultsScene extends Phaser.Scene {
   #buildButtons() {
     const rematch = new Button(this, {
       x: GAME_WIDTH / 2 - 220,
-      y: GAME_HEIGHT - 130,
+      y: GAME_HEIGHT - 120,
       width: 360,
-      height: 96,
-      label: 'REMATCH',
-      icon: '🥊',
-      fontSize: 38,
+      height: 92,
+      label: 'Rematch',
+      icon: 'rematch',
+      fontSize: 36,
       variant: 'primary',
       onClick: () => this.#rematch(),
     })
@@ -273,12 +287,12 @@ export class ResultsScene extends Phaser.Scene {
 
     const menu = new Button(this, {
       x: GAME_WIDTH / 2 + 220,
-      y: GAME_HEIGHT - 130,
+      y: GAME_HEIGHT - 120,
       width: 360,
-      height: 96,
-      label: 'MAIN MENU',
-      icon: '🏠',
-      fontSize: 38,
+      height: 92,
+      label: 'Main menu',
+      icon: 'home',
+      fontSize: 36,
       variant: 'ghost',
       onClick: () => this.#toMenu(),
     })
@@ -291,7 +305,7 @@ export class ResultsScene extends Phaser.Scene {
   #rematch() {
     audio.play('uiConfirm');
     audio.play('transition', { volume: 0.4 });
-    this.cameras.main.fadeOut(260, 13, 18, 32);
+    this.cameras.main.fadeOut(260, 11, 15, 26);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(SCENES.FIGHT, this.config);
     });
@@ -300,7 +314,7 @@ export class ResultsScene extends Phaser.Scene {
   #toMenu() {
     audio.play('uiBack');
     audio.play('transition', { volume: 0.35 });
-    this.cameras.main.fadeOut(260, 13, 18, 32);
+    this.cameras.main.fadeOut(260, 11, 15, 26);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(SCENES.MENU);
     });

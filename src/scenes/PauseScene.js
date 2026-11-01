@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
 import { DEPTH, FONTS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../config/constants.js';
-import { CSS_COLORS } from '../config/palette.js';
+import { COLORS, CSS_COLORS } from '../config/palette.js';
 import { Button } from '../ui/Button.js';
 import { MenuNav } from '../ui/MenuNav.js';
 import { SettingsPanel } from '../ui/SettingsPanel.js';
+import { titleText } from '../ui/text.js';
 import { popIn, slideIn } from '../utils/fx.js';
 import { audio } from '../audio/index.js';
 import { settings } from '../core/Settings.js';
@@ -29,37 +30,32 @@ export class PauseScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive();
 
-    this.add.graphics().fillStyle(0x05070f, 0.78).fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    this.add.graphics().fillStyle(COLORS.shadow, 0.78).fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-    const title = this.add
-      .text(GAME_WIDTH / 2, 250, 'PAUSED', {
-        fontFamily: FONTS.DISPLAY,
-        fontSize: '104px',
-        fontStyle: 'bold',
-        color: CSS_COLORS.gold,
-        stroke: '#1a0f00',
-        strokeThickness: 14,
-      })
-      .setOrigin(0.5)
-      .setDepth(DEPTH.UI);
+    const title = titleText(this, GAME_WIDTH / 2, 240, 'Paused', { size: 104 }).setDepth(DEPTH.UI);
     popIn(title, { from: 0.7, to: 1, duration: 320 });
 
     const buttons = [
-      { label: 'RESUME', icon: '▶️', variant: 'primary', action: () => this.#resume() },
-      { label: 'RESTART', icon: '🔄', variant: 'ghost', action: () => this.#request('restart') },
-      { label: 'SETTINGS', icon: '⚙️', variant: 'ghost', action: () => this.#openSettings() },
-      { label: 'QUIT', icon: '🚪', variant: 'danger', action: () => this.#confirmQuit() },
+      { label: 'Resume', icon: 'play', variant: 'primary', action: () => this.#resume() },
+      {
+        label: 'Restart',
+        icon: 'restart',
+        variant: 'ghost',
+        action: () => this.#request('restart'),
+      },
+      { label: 'Settings', icon: 'settings', variant: 'ghost', action: () => this.#openSettings() },
+      { label: 'Quit', icon: 'quit', variant: 'danger', action: () => this.#confirmQuit() },
     ];
 
     const navItems = buttons.map((definition, index) =>
       new Button(this, {
         x: GAME_WIDTH / 2,
-        y: 430 + index * 122,
-        width: 460,
-        height: 96,
+        y: 416 + index * 118,
+        width: 440,
+        height: 92,
         label: definition.label,
         icon: definition.icon,
-        fontSize: 38,
+        fontSize: 36,
         variant: definition.variant,
         onClick: definition.action,
       })
@@ -74,16 +70,17 @@ export class PauseScene extends Phaser.Scene {
     this.hint = this.add
       .text(
         GAME_WIDTH / 2,
-        GAME_HEIGHT - 130,
-        touchMode ? 'Tap RESUME to continue' : 'Press ESC to resume  ·  M to mute',
+        GAME_HEIGHT - 128,
+        touchMode ? 'Tap Resume to continue' : 'ESC resume · M mute',
         {
           fontFamily: FONTS.PRIMARY,
-          fontSize: '30px',
+          fontSize: '27px',
+          fontStyle: '500',
           color: CSS_COLORS.offWhite,
         },
       )
       .setOrigin(0.5)
-      .setAlpha(0.7)
+      .setAlpha(0.85)
       .setDepth(DEPTH.UI);
     slideIn(this.hint, { from: 30, duration: 260, delay: 300 });
 
@@ -91,18 +88,18 @@ export class PauseScene extends Phaser.Scene {
     this.controlsLine = this.add
       .text(
         GAME_WIDTH / 2,
-        GAME_HEIGHT - 72,
+        GAME_HEIGHT - 74,
         touchMode
-          ? 'D-pad move · ▲ jump · ▼ / BLOCK guard · PUNCH / HEAD / STOMP attack'
-          : '← → move · ↑ / Space jump · ↓ block · J punch · K headbutt · L stomp',
+          ? 'D-pad move · up jump · down / BLOCK guard · PUNCH / HEAD / STOMP attack'
+          : '← → move · ↑ / Space jump · ↓ block · J punch · K head · L stomp',
         {
           fontFamily: FONTS.PRIMARY,
-          fontSize: '26px',
+          fontSize: '25px',
+          fontStyle: '400',
           color: CSS_COLORS.muted,
         },
       )
       .setOrigin(0.5)
-      .setAlpha(0.75)
       .setDepth(DEPTH.UI);
     slideIn(this.controlsLine, { from: 30, duration: 260, delay: 360 });
 
@@ -141,11 +138,11 @@ export class PauseScene extends Phaser.Scene {
   #confirmQuit() {
     if (!this.quitArmed) {
       this.quitArmed = true;
-      this.quitButton?.setLabel('SURE?');
+      this.quitButton?.setLabel('Sure?');
       audio.play('uiDenied', { volume: 0.8 });
       this.time.delayedCall(3000, () => {
         this.quitArmed = false;
-        this.quitButton?.setLabel('QUIT');
+        this.quitButton?.setLabel('Quit');
       });
       return;
     }

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { FONTS } from '../config/constants.js';
-import { CSS_COLORS } from '../config/palette.js';
+import { COLORS, CSS_COLORS } from '../config/palette.js';
+import { drawIcon } from './Icon.js';
 
 /**
  * On-screen keyboard controls legend for the fight scene.
@@ -137,9 +138,9 @@ export class ControlsHint extends Phaser.GameObjects.Container {
     const width = Math.max(30, text.width + 24);
     const height = text.height + 14;
     const background = scene.add.graphics();
-    background.fillStyle(0xffffff, 0.13);
+    background.fillStyle(COLORS.white, 0.13);
     background.fillRoundedRect(-width / 2, -height / 2, width, height, 10);
-    background.lineStyle(2, 0xffffff, 0.35);
+    background.lineStyle(2, COLORS.white, 0.35);
     background.strokeRoundedRect(-width / 2, -height / 2, width, height, 10);
     const container = scene.add.container(0, 0, [background, text]);
     return { container, width, height };
@@ -193,10 +194,11 @@ export class ControlsHint extends Phaser.GameObjects.Container {
       .text(0, 0, altLine, {
         fontFamily: FONTS.PRIMARY,
         fontSize: `${ALT_FONT_SIZE}px`,
+        fontStyle: '400',
         color: CSS_COLORS.muted,
       })
       .setOrigin(0.5)
-      .setAlpha(0.8);
+      .setAlpha(0.85);
 
     const contentHeight = rowHeight + ROW_GAP + alt.height;
     row.setPosition(-rowWidth / 2, -contentHeight / 2 + rowHeight / 2);
@@ -205,21 +207,21 @@ export class ControlsHint extends Phaser.GameObjects.Container {
     const backgroundWidth = Math.max(rowWidth, alt.width) + PAD_X * 2;
     const backgroundHeight = contentHeight + PAD_Y * 2;
     const background = scene.add.graphics();
-    background.fillStyle(0x05070f, 0.62);
+    background.fillStyle(COLORS.ink, 0.78);
     background.fillRoundedRect(
       -backgroundWidth / 2,
       -backgroundHeight / 2,
       backgroundWidth,
       backgroundHeight,
-      26,
+      16,
     );
-    background.lineStyle(2, 0xffc93c, 0.28);
+    background.lineStyle(1.5, COLORS.border, 0.9);
     background.strokeRoundedRect(
       -backgroundWidth / 2,
       -backgroundHeight / 2,
       backgroundWidth,
       backgroundHeight,
-      26,
+      16,
     );
 
     const zone = scene.add
@@ -233,18 +235,31 @@ export class ControlsHint extends Phaser.GameObjects.Container {
 
   #buildCollapsed() {
     const { scene } = this;
+    const icon = scene.add.graphics();
+    drawIcon(
+      icon,
+      'keyboard',
+      24,
+      Phaser.Display.Color.HexStringToColor(CSS_COLORS.offWhite).color,
+      0.9,
+    );
     const label = scene.add
-      .text(0, 0, '⌨ CONTROLS · H', {
+      .text(0, 0, 'CONTROLS · H', {
         fontFamily: FONTS.PRIMARY,
-        fontSize: '26px',
-        fontStyle: 'bold',
+        fontSize: '24px',
+        fontStyle: '700',
         color: CSS_COLORS.offWhite,
+        letterSpacing: 1,
       })
-      .setOrigin(0.5);
-    const backgroundWidth = label.width + 56;
-    const backgroundHeight = label.height + 26;
+      .setOrigin(0, 0.5);
+    const gap = 12;
+    const totalWidth = 24 + gap + label.width;
+    icon.setPosition(-totalWidth / 2 + 12, 0);
+    label.setPosition(-totalWidth / 2 + 24 + gap, 0);
+    const backgroundWidth = totalWidth + 44;
+    const backgroundHeight = Math.max(label.height, 24) + 24;
     const background = scene.add.graphics();
-    background.fillStyle(0x05070f, 0.62);
+    background.fillStyle(COLORS.ink, 0.78);
     background.fillRoundedRect(
       -backgroundWidth / 2,
       -backgroundHeight / 2,
@@ -252,7 +267,7 @@ export class ControlsHint extends Phaser.GameObjects.Container {
       backgroundHeight,
       20,
     );
-    background.lineStyle(2, 0xffc93c, 0.28);
+    background.lineStyle(1.5, COLORS.border, 0.9);
     background.strokeRoundedRect(
       -backgroundWidth / 2,
       -backgroundHeight / 2,
@@ -267,6 +282,6 @@ export class ControlsHint extends Phaser.GameObjects.Container {
       .setInteractive({ useHandCursor: true });
     zone.on('pointerup', () => this.toggle());
 
-    this.collapsedGroup.add([background, label, zone]);
+    this.collapsedGroup.add([background, icon, label, zone]);
   }
 }

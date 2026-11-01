@@ -1,4 +1,5 @@
 import { DEPTH, FONTS } from '../config/constants.js';
+import { CSS_COLORS } from '../config/palette.js';
 
 /**
  * Pool of floating texts (damage numbers, "BLOCKED!", combo call-outs).
@@ -27,10 +28,11 @@ export class FloatingText {
       .text(0, 0, '', {
         fontFamily: FONTS.DISPLAY,
         fontSize: '54px',
-        fontStyle: 'bold',
-        color: '#ffffff',
-        stroke: '#0b0f1a',
-        strokeThickness: 8,
+        fontStyle: '800',
+        letterSpacing: 1,
+        color: CSS_COLORS.offWhite,
+        stroke: CSS_COLORS.bg,
+        strokeThickness: 6,
       })
       .setOrigin(0.5)
       .setDepth(this.depth)
@@ -48,7 +50,7 @@ export class FloatingText {
    */
   spawn(x, y, message, options = {}) {
     const {
-      color = '#ffffff',
+      color = CSS_COLORS.offWhite,
       fontSize = 54,
       duration = 780,
       rise = 110,

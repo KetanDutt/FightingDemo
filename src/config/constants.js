@@ -163,9 +163,13 @@ export const DEPTH = {
 };
 
 export const FONTS = {
-  /** Phaser falls back gracefully when a web font is unavailable. */
-  PRIMARY: '"Trebuchet MS", "Segoe UI", system-ui, sans-serif',
-  DISPLAY: '"Trebuchet MS", "Segoe UI", system-ui, sans-serif',
+  /**
+   * UI/body text. Phaser falls back gracefully when a web font is
+   * unavailable (offline, blocked font CDN), so system stacks come last.
+   */
+  PRIMARY: '"Inter", system-ui, -apple-system, "Segoe UI", sans-serif',
+  /** Display type for titles, buttons, timers and scores — condensed caps. */
+  DISPLAY: '"Saira Condensed", "Arial Narrow", "Inter", sans-serif',
 };
 
 export const TEXTURE_KEYS = {

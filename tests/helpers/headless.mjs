@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { JSDOM } from 'jsdom';
-import { createCanvas, loadImage } from '@napi-rs/canvas';
+import { createCanvas, loadImage, GlobalFonts } from '@napi-rs/canvas';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const projectRoot = path.resolve(here, '..', '..');
@@ -59,9 +59,49 @@ export async function createHeadlessEnvironment() {
     return ensureNapiCanvas(this).getContext('2d');
   };
 
+  // Phaser's Text objects resize their backing canvas *after* grabbing the
+  // context, so resizing the jsdom element must also resize the napi canvas —
+  // otherwise all canvas text is drawn into a 1x1 surface and vanishes.
+  for (const prop of ['width', 'height']) {
+    const descriptor = Object.getOwnPropertyDescriptor(window.HTMLCanvasElement.prototype, prop);
+    Object.defineProperty(window.HTMLCanvasElement.prototype, prop, {
+      configurable: true,
+      get: descriptor.get,
+      set(value) {
+        descriptor.set.call(this, value);
+        if (this.__napiCanvas) {
+          const size = Math.max(1, Number(value) || 1);
+          if (prop === 'width') this.__napiCanvas.width = size;
+          else this.__napiCanvas.height = size;
+        }
+      },
+    });
+  }
+
   window.HTMLCanvasElement.prototype.toDataURL = function toDataURL() {
     return 'data:image/png;base64,';
   };
+
+  // Register the game's web fonts (bundled via @fontsource) with the canvas
+  // backend so headless screenshots render the same type as the browser.
+  const fontFiles = [
+    [
+      '@fontsource/saira-condensed',
+      [600, 700, 800, 900].map((w) => `saira-condensed-latin-${w}-normal.woff2`),
+    ],
+    ['@fontsource/inter', [400, 500, 600, 700].map((w) => `inter-latin-${w}-normal.woff2`)],
+  ];
+  for (const [pkg, files] of fontFiles) {
+    for (const file of files) {
+      const full = path.join(projectRoot, 'node_modules', pkg, 'files', file);
+      if (!fs.existsSync(full)) continue;
+      try {
+        GlobalFonts.registerFromPath(full);
+      } catch {
+        /* optional — screenshots fall back to DejaVu */
+      }
+    }
+  }
 
   // Phaser gates renderers on these feature detections, and jsdom has no
   // canvas implementation of its own — we provide the @napi-rs/canvas ones.

@@ -53,9 +53,10 @@ export class TouchButton extends Phaser.GameObjects.Container {
         .text(0, fontSize * 0.75, subLabel, {
           fontFamily: FONTS.PRIMARY,
           fontSize: `${Math.round(fontSize * 0.62)}px`,
-          color: 'rgba(255,255,255,0.75)',
+          color: CSS_COLORS.white,
         })
-        .setOrigin(0.5);
+        .setOrigin(0.5)
+        .setAlpha(0.75);
       this.add(this.subLabel);
     }
 
@@ -78,13 +79,14 @@ export class TouchButton extends Phaser.GameObjects.Container {
   #drawRing(pressAmount) {
     const { radius: r } = this;
     this.ring.clear();
-    this.ring.fillStyle(0x000000, 0.35);
-    this.ring.fillCircle(0, 4, r);
-    this.ring.fillStyle(this.baseColor, pressAmount > 0 ? 0.85 : 0.42);
+    // Flat translucent disc + coloured ring; no gloss, no drop shadow.
+    this.ring.fillStyle(this.baseColor, pressAmount > 0 ? 0.72 : 0.26);
     this.ring.fillCircle(0, 0, r);
-    this.ring.fillStyle(0xffffff, pressAmount > 0 ? 0.22 : 0.1);
-    this.ring.fillCircle(0, -r * 0.25, r * 0.58);
-    this.ring.lineStyle(4, 0xffffff, pressAmount > 0 ? 0.95 : 0.55);
+    this.ring.lineStyle(
+      3.5,
+      pressAmount > 0 ? COLORS.white : this.baseColor,
+      pressAmount > 0 ? 0.95 : 0.85,
+    );
     this.ring.strokeCircle(0, 0, r);
   }
 

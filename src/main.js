@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from './config/constants.js';
+import { CSS_COLORS } from './config/palette.js';
 import { BootScene } from './scenes/BootScene.js';
 import { PreloadScene } from './scenes/PreloadScene.js';
 import { MenuScene } from './scenes/MenuScene.js';
@@ -21,7 +22,7 @@ import { settings } from './core/Settings.js';
 const config = {
   type: Phaser.AUTO,
   parent: 'game',
-  backgroundColor: '#0d1220',
+  backgroundColor: CSS_COLORS.bg,
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
   scale: {

@@ -3,10 +3,15 @@
  *
  * Every colour used by the UI lives here so the whole game can be re-themed
  * from a single file.
+ *
+ * System: a near-black ink backdrop, two quiet surface tones, one hairline
+ * border colour and a single amber brand accent. Strong colours are reserved
+ * for meaning (danger, success, the player's own actions) — chrome stays
+ * neutral so important content stands out.
  */
 
 export const COLORS = {
-  // Backdrop
+  // Backdrop (procedural arena)
   skyTop: 0x101a33,
   skyBottom: 0x2b3a63,
   sunGlow: 0xffb867,
@@ -17,8 +22,9 @@ export const COLORS = {
   groundTop: 0x47365a,
   groundLine: 0x6b5285,
 
-  // UI
+  // Brand + semantic
   gold: 0xffc93c,
+  goldLight: 0xffd76a,
   goldDark: 0xc48f14,
   red: 0xff5d5d,
   redDark: 0xa12b2b,
@@ -26,12 +32,19 @@ export const COLORS = {
   greenDark: 0x2c7d43,
   blue: 0x4fc3f7,
   purple: 0x9b6cff,
-  white: 0xffffff,
-  offWhite: 0xf5f7ff,
-  panel: 0x141b30,
-  panelLight: 0x1f2947,
-  shadow: 0x05070f,
+
+  // UI surfaces, text and borders
   ink: 0x0b0f1a,
+  bg: 0x0b0f1a,
+  panel: 0x131a2e,
+  panelLight: 0x1a2340,
+  border: 0x2b3757,
+  white: 0xffffff,
+  offWhite: 0xf2f5ff,
+  muted: 0x8f99bd,
+  /** Text colour on top of the gold accent. */
+  accentInk: 0x241a04,
+  shadow: 0x05070f,
 
   // Combat feedback
   hitSpark: 0xfff3a8,
@@ -42,13 +55,22 @@ export const COLORS = {
 
 export const CSS_COLORS = {
   gold: '#ffc93c',
+  goldLight: '#ffd76a',
   red: '#ff5d5d',
   green: '#5ddc7a',
   blue: '#4fc3f7',
+  purple: '#9b6cff',
   white: '#ffffff',
-  offWhite: '#f5f7ff',
-  muted: '#97a0c2',
-  panel: '#141b30',
+  offWhite: '#f2f5ff',
+  muted: '#8f99bd',
+  panel: '#131a2e',
+  panelLight: '#1a2340',
+  border: '#2b3757',
+  bg: '#0b0f1a',
+  ink: '#0b0f1a',
+  shadow: '#05070f',
+  accent: '#ffc93c',
+  accentInk: '#241a04',
 };
 
 /**

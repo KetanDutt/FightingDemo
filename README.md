@@ -272,6 +272,9 @@ The build uses `base: './'`, so it works from any sub-directory without reconfig
 
 - Original project and art: **Ketan Dutt** (© 2026).
 - Engine: Phaser 3 by Photon Storm.
+- UI design principles: [Unslop](https://github.com/heydamir/unslop) by Damir Sokolovsky
+  ([@heydamir](https://github.com/heydamir)), licensed under
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 - This repository is distributed for **viewing and evaluation only**: copying, modification,
   distribution, commercial use, and use of the code or art for training or improving
   machine-learning/AI systems are prohibited without prior written permission.

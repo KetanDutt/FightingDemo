@@ -30,6 +30,8 @@
     "deploy": "node tools/publish-gh-pages.mjs"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/saira-condensed": "^5.3.0",
     "phaser": "^3.90.0"
   },
   "devDependencies": {

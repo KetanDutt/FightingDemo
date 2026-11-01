@@ -43,7 +43,7 @@ export class JoyPad extends Phaser.GameObjects.Container {
       const highlight = scene.add.graphics({ x: localX, y: localY }).setAlpha(0);
       highlight.fillStyle(COLORS.gold, 0.55);
       highlight.fillCircle(0, 0, zoneRadius * 0.86);
-      highlight.lineStyle(4, 0xffffff, 0.7);
+      highlight.lineStyle(4, COLORS.white, 0.7);
       highlight.strokeCircle(0, 0, zoneRadius * 0.86);
       this.add(highlight);
       this.highlights[direction] = highlight;

@@ -1,6 +1,6 @@
 import { COMBO, FIGHTER_STATS } from '../config/balance.js';
 import { EVENTS, GROUND_Y } from '../config/constants.js';
-import { CSS_COLORS } from '../config/palette.js';
+import { COLORS, CSS_COLORS } from '../config/palette.js';
 import { bus } from '../core/EventBus.js';
 import { audio } from '../audio/index.js';
 import { settings } from '../core/Settings.js';
@@ -148,7 +148,7 @@ export class CombatSystem {
     if (blocked) {
       this.vfx?.impact(impactX, impactY, { power: 'block', direction });
       this.vfx?.ring(defender.x + defender.facing * 60, impactY, {
-        color: 0xa9e4ff,
+        color: COLORS.blockSpark,
         endScale: 1.1,
         duration: 260,
       });
@@ -179,7 +179,11 @@ export class CombatSystem {
       } else {
         const label = `${Math.round(damage)}`;
         const color =
-          power === 'heavy' ? CSS_COLORS.gold : power === 'medium' ? '#ffd08a' : CSS_COLORS.white;
+          power === 'heavy'
+            ? CSS_COLORS.gold
+            : power === 'medium'
+              ? CSS_COLORS.goldLight
+              : CSS_COLORS.offWhite;
         this.text.spawn(defender.x, impactY - 130, label, {
           color,
           fontSize: power === 'heavy' ? 74 : 56,

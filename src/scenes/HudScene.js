@@ -3,6 +3,8 @@ import { DEPTH, EVENTS, FONTS, GAME_WIDTH, MODE, SCENES } from '../config/consta
 import { COLORS, CSS_COLORS, colorblindFill, getSkin } from '../config/palette.js';
 import { ROUND_RULES } from '../config/balance.js';
 import { Bar } from '../ui/Bar.js';
+import { drawIcon } from '../ui/Icon.js';
+import { hexCss } from '../ui/text.js';
 import { pulse, shakeObject, slideIn } from '../utils/fx.js';
 import { bus, on } from '../core/EventBus.js';
 import { audio } from '../audio/index.js';
@@ -59,7 +61,7 @@ export class HudScene extends Phaser.Scene {
   /* ---------------------------------- build --------------------------------- */
 
   #buildBars() {
-    const barY = 96;
+    const barY = 100;
     const colorblind = settings.get('colorblindMode');
 
     this.playerGroup = this.add.container(0, 0).setDepth(DEPTH.UI);
@@ -85,50 +87,55 @@ export class HudScene extends Phaser.Scene {
       flip: true,
     });
 
+    // Name plate above the bar, in the fighter's skin accent.
     const nameStyle = {
       fontFamily: FONTS.DISPLAY,
-      fontSize: '46px',
-      fontStyle: 'bold',
-      color: CSS_COLORS.white,
-      stroke: '#0b0f1a',
-      strokeThickness: 8,
+      fontSize: '44px',
+      fontStyle: '800',
+      letterSpacing: 2,
     };
 
     const playerLabel = this.add
-      .text(180, barY - 4, this.playerName, nameStyle)
-      .setOrigin(0, 0.5)
-      .setTint(this.playerSkin.accent);
+      .text(180, 46, this.playerName.toUpperCase(), {
+        ...nameStyle,
+        color: hexCss(this.playerSkin.accent),
+      })
+      .setOrigin(0, 0.5);
 
     const enemyLabel = this.add
-      .text(GAME_WIDTH - 180, barY - 4, this.enemyName, nameStyle)
-      .setOrigin(1, 0.5)
-      .setTint(this.enemySkin.accent);
+      .text(GAME_WIDTH - 180, 46, this.enemyName.toUpperCase(), {
+        ...nameStyle,
+        color: hexCss(this.enemySkin.accent),
+      })
+      .setOrigin(1, 0.5);
 
     this.playerGroup.add([this.playerBar, playerLabel]);
     this.enemyGroup.add([this.enemyBar, enemyLabel]);
 
     // Combo call-outs
     this.playerCombo = this.add
-      .text(180, barY + 78, '', {
+      .text(180, barY + 100, '', {
         fontFamily: FONTS.DISPLAY,
-        fontSize: '44px',
-        fontStyle: 'bold',
+        fontSize: '46px',
+        fontStyle: '800',
+        letterSpacing: 1,
         color: CSS_COLORS.gold,
-        stroke: '#0b0f1a',
-        strokeThickness: 8,
+        stroke: CSS_COLORS.bg,
+        strokeThickness: 6,
       })
       .setOrigin(0, 0.5)
       .setAlpha(0)
       .setDepth(DEPTH.UI);
 
     this.enemyCombo = this.add
-      .text(GAME_WIDTH - 180, barY + 78, '', {
+      .text(GAME_WIDTH - 180, barY + 100, '', {
         fontFamily: FONTS.DISPLAY,
-        fontSize: '44px',
-        fontStyle: 'bold',
+        fontSize: '46px',
+        fontStyle: '800',
+        letterSpacing: 1,
         color: CSS_COLORS.red,
-        stroke: '#0b0f1a',
-        strokeThickness: 8,
+        stroke: CSS_COLORS.bg,
+        strokeThickness: 6,
       })
       .setOrigin(1, 0.5)
       .setAlpha(0)
@@ -138,70 +145,84 @@ export class HudScene extends Phaser.Scene {
   #buildTimer() {
     this.timerGroup = this.add.container(0, 0).setDepth(DEPTH.UI);
 
-    const plate = this.add.graphics();
-    plate.fillStyle(0x000000, 0.45);
-    plate.fillRoundedRect(GAME_WIDTH / 2 - 130, 30, 260, 130, 26);
-    plate.lineStyle(4, COLORS.gold, 0.8);
-    plate.strokeRoundedRect(GAME_WIDTH / 2 - 130, 30, 260, 130, 26);
+    // Quiet dark plate; the border only turns red when time runs low.
+    this.plate = this.add.graphics();
+    this.#drawPlate(COLORS.border);
 
     this.timerText = this.add
-      .text(GAME_WIDTH / 2, 82, String(ROUND_RULES.time), {
+      .text(GAME_WIDTH / 2, 76, String(ROUND_RULES.time), {
         fontFamily: FONTS.DISPLAY,
-        fontSize: '82px',
-        fontStyle: 'bold',
+        fontSize: '84px',
+        fontStyle: '800',
         color: CSS_COLORS.white,
-        stroke: '#0b0f1a',
-        strokeThickness: 10,
       })
       .setOrigin(0.5);
 
     this.roundText = this.add
-      .text(GAME_WIDTH / 2, 178, 'ROUND 1', {
+      .text(GAME_WIDTH / 2, 130, 'ROUND 1', {
         fontFamily: FONTS.PRIMARY,
-        fontSize: '32px',
+        fontSize: '24px',
+        fontStyle: '600',
+        letterSpacing: 4,
         color: CSS_COLORS.gold,
       })
       .setOrigin(0.5);
 
-    this.timerGroup.add([plate, this.timerText, this.roundText]);
+    this.timerGroup.add([this.plate, this.timerText, this.roundText]);
+  }
+
+  #drawPlate(borderColor) {
+    this.plate.clear();
+    this.plate.fillStyle(COLORS.ink, 0.82);
+    this.plate.fillRoundedRect(GAME_WIDTH / 2 - 120, 26, 240, 122, 14);
+    this.plate.lineStyle(2, borderColor, 1);
+    this.plate.strokeRoundedRect(GAME_WIDTH / 2 - 120, 26, 240, 122, 14);
   }
 
   #buildPips() {
+    // Diamond pips below the health bar — the signature round marker.
     this.pips = { player: [], enemy: [] };
     for (let i = 0; i < this.roundsToWin; i += 1) {
-      const playerPip = this.add
-        .circle(180 + i * 46, 78, 16, 0x000000, 0.5)
-        .setStrokeStyle(4, COLORS.gold, 0.7)
-        .setDepth(DEPTH.UI);
-      const enemyPip = this.add
-        .circle(GAME_WIDTH - 180 - i * 46, 78, 16, 0x000000, 0.5)
-        .setStrokeStyle(4, COLORS.gold, 0.7)
-        .setDepth(DEPTH.UI);
-      this.pips.player.push(playerPip);
-      this.pips.enemy.push(enemyPip);
+      const makePip = (x) =>
+        this.add
+          .rectangle(x, 162, 20, 20, COLORS.shadow, 0.5)
+          .setAngle(45)
+          .setStrokeStyle(3, COLORS.gold, 0.7)
+          .setDepth(DEPTH.UI);
+      this.pips.player.push(makePip(180 + i * 42));
+      this.pips.enemy.push(makePip(GAME_WIDTH - 180 - i * 42));
     }
   }
 
   #buildPauseButton() {
-    const button = this.add
-      .text(GAME_WIDTH - 60, 220, '⏸', {
-        fontFamily: FONTS.PRIMARY,
-        fontSize: '46px',
-        color: CSS_COLORS.white,
-      })
-      .setOrigin(0.5)
-      .setAlpha(0.65)
-      .setDepth(DEPTH.UI)
-      .setInteractive({ useHandCursor: true });
+    const group = this.add.container(GAME_WIDTH - 62, 226).setDepth(DEPTH.UI);
 
-    button.on('pointerup', () => {
+    const disc = this.add.graphics();
+    const drawDisc = (hover) => {
+      disc.clear();
+      disc.fillStyle(COLORS.ink, 0.82);
+      disc.fillCircle(0, 0, 30);
+      disc.lineStyle(2, hover ? COLORS.gold : COLORS.border, 1);
+      disc.strokeCircle(0, 0, 30);
+    };
+    drawDisc(false);
+
+    const icon = this.add.graphics();
+    drawIcon(icon, 'pause', 24, COLORS.offWhite, 0.9);
+
+    const zone = this.add.zone(0, 0, 72, 72).setOrigin(0.5);
+    zone.setInteractive({ useHandCursor: true });
+
+    zone.on('pointerup', () => {
       audio.play('uiClick');
       const fight = this.scene.get(SCENES.FIGHT);
       fight?.togglePause?.();
     });
-    button.on('pointerover', () => button.setAlpha(1));
-    button.on('pointerout', () => button.setAlpha(0.65));
-    this.pauseButton = button;
+    zone.on('pointerover', () => drawDisc(true));
+    zone.on('pointerout', () => drawDisc(false));
+
+    group.add([disc, icon, zone]);
+    this.pauseButton = group;
   }
 
   /* --------------------------------- events -------------------------------- */
@@ -230,6 +251,7 @@ export class HudScene extends Phaser.Scene {
     this.timerText.setText(String(Math.max(0, seconds)));
     const critical = seconds <= 10;
     this.timerText.setColor(critical ? CSS_COLORS.red : CSS_COLORS.white);
+    this.#drawPlate(critical ? COLORS.red : COLORS.border);
     if (critical && seconds !== this.lastCriticalSecond) {
       this.lastCriticalSecond = seconds;
       pulse(this.timerText, { amount: 1.18, duration: 150, baseScale: 1 });
@@ -272,7 +294,7 @@ export class HudScene extends Phaser.Scene {
         } else if (index === wins && wins + 1 >= this.roundsToWin) {
           pip.setFillStyle(COLORS.gold, 0.35);
         } else {
-          pip.setFillStyle(0x000000, 0.5);
+          pip.setFillStyle(COLORS.shadow, 0.5);
         }
       });
     };
@@ -291,7 +313,7 @@ export class HudScene extends Phaser.Scene {
       return;
     }
     const target = side === 'enemy' ? this.enemyCombo : this.playerCombo;
-    const labels = ['', '', '2 HIT!', '3 HIT!', '4 HIT!', '5 HIT!', '6 HIT!'];
+    const labels = ['', '', '2 HITS!', '3 HITS!', '4 HITS!', '5 HITS!', '6 HITS!'];
     const label = count <= 6 ? labels[count] : `${count} HIT COMBO!`;
     target.setText(label);
     target.setAlpha(1);
@@ -315,7 +337,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   #fadeOut() {
-    this.cameras.main.fadeOut(420, 13, 18, 32);
+    this.cameras.main.fadeOut(420, 11, 15, 26);
   }
 
   #cleanup() {

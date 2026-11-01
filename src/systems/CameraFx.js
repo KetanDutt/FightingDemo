@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { settings } from '../core/Settings.js';
+import { COLORS } from '../config/palette.js';
 
 /**
  * Camera juice: shake, zoom punches and colour flashes.
@@ -65,13 +66,13 @@ export class CameraFx {
     this.scene.tweens.add({ targets: this.camera, zoom: value, duration, ease: 'Sine.easeInOut' });
   }
 
-  flash(color = 0xffffff, duration = 120, alpha = 0.6) {
+  flash(color = COLORS.white, duration = 120, alpha = 0.6) {
     if (settings.get('reducedMotion')) return;
     const rgb = Phaser.Display.Color.IntegerToColor(color);
     this.camera.flash(duration, rgb.red, rgb.green, rgb.blue, false, undefined, alpha);
   }
 
-  fadeOut(duration = 300, color = 0x000000) {
+  fadeOut(duration = 300, color = COLORS.shadow) {
     return new Promise((resolve) => {
       const rgb = Phaser.Display.Color.IntegerToColor(color);
       this.camera.fadeOut(duration, rgb.red, rgb.green, rgb.blue);
@@ -79,7 +80,7 @@ export class CameraFx {
     });
   }
 
-  fadeIn(duration = 300, color = 0x000000) {
+  fadeIn(duration = 300, color = COLORS.shadow) {
     return new Promise((resolve) => {
       const rgb = Phaser.Display.Color.IntegerToColor(color);
       this.camera.fadeIn(duration, rgb.red, rgb.green, rgb.blue);
